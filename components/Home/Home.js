@@ -7,16 +7,28 @@ import IconF from 'react-native-vector-icons/FontAwesome';
 import IconA from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo from 'react-native-device-info';
-
+import { BASE_URL } from '../Configuration/Config';
 
 
 export const Home =  (props) =>{
- 
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    // Fetch categories from API here
+    // For this example, let's assume the API returns an array of category objects
+    const fetchedCategories = [
+      { id: 1, name: 'Camp Poster' },
+      { id: 2, name: 'Camp Report' },
+      { id: 3, name: 'Dashboard' },
+      // ... other categories
+    ];
+    setCategories(fetchedCategories);
+  }, []);
 //Version checking code-------------------------------------
   useEffect(() => {
+    const ApiVersionUrl = `${BASE_URL}${'/AccountApi/GetLatestAppVersion'}`;
     const checkAppVersion = async () => {
       try {
-           const response = await fetch('https://digiapi.netcastservice.co.in/AccountApi/GetLatestAppVersion', {
+           const response = await fetch(ApiVersionUrl, {
            method: 'GET',
            headers: {
           'Content-Type': 'application/json',
@@ -92,34 +104,23 @@ export const Home =  (props) =>{
     // Cleanup the event listener when the component is unmounted
     return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
   }, []);
+
     return(
         <View style={styles.container}>
        
-           <StatusBar backgroundColor="#7a057a"/>
+           <StatusBar backgroundColor="#0054a4"/>
           <View style={styles.container1}> 
-        <View style={styles.row}>    
-          <TouchableOpacity style={styles.button} onPress={()=> props.navigation.navigate("HB")}>
-          <IconA name="antdesign" size={30} color="#fff"/>
-            <Text style={styles.buttonText}>Hb Camp Activity</Text>
-          </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.button} onPress={()=> props.navigation.navigate("Revenue")}>
-          <IconA name="antdesign" size={30} color="#fff"/>
-            <Text style={styles.buttonText}>Revenue Prediction Activity</Text>
-          </TouchableOpacity> */}
-          <TouchableOpacity style={styles.button} onPress={()=> props.navigation.navigate("Mydromain")}>
-          <IconA name="antdesign" size={30} color="#fff"/>
-            <Text style={styles.buttonText}>MyDydro Tracking Format</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.row}>
-        <TouchableOpacity style={styles.button} onPress={()=> props.navigation.navigate("BrandSurvey")}>
-          <IconA name="antdesign" size={30} color="#fff" />
-            <Text style={styles.buttonText}>PRI. SEC. & Brand Survey</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button1} disabled>
-          <IconA name="antdesign" size={30} color="#fff"/>
-            <Text style={styles.buttonText}>Poster</Text>
-          </TouchableOpacity>
+        <View style={styles.container1} >    
+        {categories.map((category) => (
+        <TouchableOpacity
+          key={category.id}
+          style={styles.button}
+          onPress={() => props.navigation.navigate("HB")}
+        >
+          {/* <IconA name="antdesign" size={30} color="#fff" /> */}
+          <Text style={styles.buttonText}>{category.name}</Text>
+        </TouchableOpacity>
+      ))}
         </View>
           </View>
       </View>
@@ -129,14 +130,16 @@ export const Home =  (props) =>{
   const styles = StyleSheet.create({
     container: {
       backgroundColor:'#fff',
-      flex: 1,
+      flexGrow: 1,
       justifyContent: 'center',
       
     },
     container1: {
-      alignItems: 'center',
+ width:'100%',
       padding: 10,
-      // justifyContent: 'center',
+      flexGrow: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
       
     },
     row: {
@@ -144,15 +147,14 @@ export const Home =  (props) =>{
       marginBottom: 6,
     },
     button: {
-      flex: 1,
-      marginHorizontal: 3,
-      height: 100,
-      textAlign:'center',
-      backgroundColor: '#7a057a',
-      justifyContent: 'center',
+      width: '100%',
+      flexDirection: 'row',
       alignItems: 'center',
-      // borderRadius:10,
- 
+      justifyContent: 'center',
+      backgroundColor: '#0054a4',
+      padding: 10,
+      marginVertical: 10,
+      borderRadius: 5,
     },
     button1: {
       flex: 1,

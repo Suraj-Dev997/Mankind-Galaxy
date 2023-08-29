@@ -13,6 +13,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { SplashScreen } from '../MankindGalaxy/components/SplashScreen/SplashScreen';
 import { Home } from '../MankindGalaxy/components/Home/Home';
 import { Login } from '../MankindGalaxy/components/Login/Login';
+import Ham from '../MankindGalaxy/components/Layouts/Ham';
+import UserProfile from '../MankindGalaxy/components/Layouts/UserProfile';
 
 
 
@@ -25,7 +27,12 @@ function App(): JSX.Element {
  
   return (
     <NavigationContainer>
-    <Stack.Navigator initialRouteName='Splash' >
+    <Stack.Navigator initialRouteName='Splash' screenOptions={{
+     headerRight:()=><Ham/>,
+      headerTintColor:"#fff", headerStyle:{
+      backgroundColor:"#0054a4",  
+    },
+    }}>
        <Stack.Screen name='Home' component={Home} options={{title:"Mankind",headerLeft:()=>
     <View><Text style={styles.dot}>.</Text></View>
     ,
@@ -38,6 +45,8 @@ function App(): JSX.Element {
     {/* <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} /> */}
    
     <Stack.Screen name='Login' component={Login} options={{title:"User Login",headerShown: false }} />
+    <Stack.Screen name='UserProfile' component={UserProfile} />
+    <Stack.Screen name='Ham' component={Ham} />
     
     </Stack.Navigator>
       </NavigationContainer>
@@ -46,7 +55,7 @@ function App(): JSX.Element {
 
 const styles = StyleSheet.create({
   dot:{
-    color:'#7a057a'
+    color:'#0054a4'
   },
   sectionContainer: {
     marginTop: 32,

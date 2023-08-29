@@ -36,15 +36,10 @@ export const SplashScreen = ({navigation }) =>{
 
     return(
       <View style={styles.container}>
-        {/* <ImageBackground
-        source={require('.//images/Splash.jpg')} 
-        style={styles.backgroundImage}></ImageBackground> */}
-      {/* <Image
-        style={styles.img}
-        source={require('.//images/profile.png')}
-        resizeMode="contain"
-      /> */}
-      <Text style={styles.logo}>Mankind</Text>
+        <ImageBackground
+       source={require('./Images/Splash.jpg')}
+        style={styles.backgroundImage}></ImageBackground>
+     
     </View>
     );
   }
@@ -65,7 +60,7 @@ export const SplashScreen = ({navigation }) =>{
     logo: {
       fontSize:70,
       fontWeight:'800',
-      color: '#7a057a',
+      color: '#0054a4',
     },
     img: {
       width:'100%',

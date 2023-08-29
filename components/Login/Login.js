@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text,Alert, ActivityIndicator,Image} from 'react-native';
-
+import { BASE_URL } from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {axios} from 'axios';
 
@@ -12,7 +12,8 @@ export const Login = ({navigation }) =>{
 
 const handleLogin = async () => {
   setIsLoading(true);
-  const response = await fetch('https://digiapi.netcastservice.co.in/AccountApi/LoginValidate', {
+  const ApiUrl = `${BASE_URL}${'/AccountApi/LoginValidate'}`;
+  const response = await fetch(ApiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -77,17 +78,17 @@ const handleLogin = async () => {
     return(
       <View style={styles.container}>
         {isLoading ? (
-        <ActivityIndicator size="large" color="#7a057a" />
+        <ActivityIndicator size="large" color="#0054a4" />
       ) : (
         <>
-         {/* <Image
+         <Image
         style={styles.logo}
-        source={require('.//images/Logo.png')}
+        source={require('./Images/Logo.png')}
         resizeMode="contain"
-      /> */}
+      />
        <TextInput
         style={styles.input}
-        placeholder="EmpCode"
+        placeholder="Employee Code"
         placeholderTextColor="#999999"
         onChangeText={(text) => setEmpCode(text)}
         value={EmpCode}
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     paddingBottom:10,
     padding:20,
     // height: 50,
-    backgroundColor: '#7a057a',
+    backgroundColor: '#0054a4',
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -154,12 +155,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   forgotPasswordText: {
-    color: '#7a057a',
+    color: '#0054a4',
     fontSize: 14,
   },
   logo:{
-    width:"80%",
-    height:80,
+    width:"100%",
+    height:100,
     marginBottom:50,
     borderRadius:50,
 
