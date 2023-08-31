@@ -8,6 +8,7 @@ import IconA from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo from 'react-native-device-info';
 import { BASE_URL } from '../Configuration/Config';
+import LinearGradient from 'react-native-linear-gradient';
 
 
 export const Home =  (props) =>{
@@ -106,30 +107,38 @@ export const Home =  (props) =>{
   }, []);
 
     return(
+      <LinearGradient colors={['#dffbfe',  '#14bee1']} style={styles.container}>
         <View style={styles.container}>
        
            <StatusBar backgroundColor="#0054a4"/>
-          <View style={styles.container1}> 
-        <View style={styles.container1} >    
+         
+          <View > 
+        
+        <View style={[styles.container1,styles.elevation]} >    
         {categories.map((category) => (
+           <LinearGradient colors={['#4b93d8',  '#0054a4']} style={[styles.button,styles.elevation]}>
         <TouchableOpacity
           key={category.id}
-          style={styles.button}
           onPress={() => props.navigation.navigate("HB")}
         >
           {/* <IconA name="antdesign" size={30} color="#fff" /> */}
           <Text style={styles.buttonText}>{category.name}</Text>
         </TouchableOpacity>
+        </LinearGradient>
       ))}
         </View>
+     
           </View>
+          
       </View>
+      </LinearGradient>
+     
     );
   }
 
   const styles = StyleSheet.create({
     container: {
-      backgroundColor:'#fff',
+      // backgroundColor:'#fff',
       flexGrow: 1,
       justifyContent: 'center',
       
@@ -151,8 +160,8 @@ export const Home =  (props) =>{
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#0054a4',
-      padding: 10,
+      // backgroundColor: '#0054a4',
+      padding: 30,
       marginVertical: 10,
       borderRadius: 5,
     },
@@ -175,10 +184,14 @@ export const Home =  (props) =>{
     
     },
     buttonText: {
-      marginTop:10,
+   
       textAlign:'center',
       color: 'white',
       fontSize: 18,
      
+    },
+    elevation: {
+      elevation: 5 ,
+      shadowColor: '#000',
     },
   });

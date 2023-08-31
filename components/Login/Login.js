@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Text,Alert, ActivityIndicator,Image} from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, Text,Alert, ActivityIndicator,Image,ImageBackground} from 'react-native';
 import { BASE_URL } from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {axios} from 'axios';
@@ -76,7 +76,12 @@ const handleLogin = async () => {
   setIsLoading(false);
 };
     return(
-      <View style={styles.container}>
+      <ImageBackground
+      source={require('./Images/Splash.jpg')}
+      style={styles.backgroundImage}
+    >
+     
+        
         {isLoading ? (
         <ActivityIndicator size="large" color="#0054a4" />
       ) : (
@@ -87,21 +92,21 @@ const handleLogin = async () => {
         resizeMode="contain"
       />
        <TextInput
-        style={styles.input}
+        style={[styles.input,styles.elevation]}
         placeholder="Employee Code"
-        placeholderTextColor="#999999"
+        placeholderTextColor="#1c7cd8"
         onChangeText={(text) => setEmpCode(text)}
         value={EmpCode}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input,styles.elevation]}
         placeholder="Password"
-        placeholderTextColor="#999999"
+        placeholderTextColor="#1c7cd8"
         secureTextEntry={true}
         onChangeText={(text) => setPassword(text)}
         value={Password}
       />
-      <TouchableOpacity style={styles.buttonContainer}>
+      <TouchableOpacity style={[styles.buttonContainer,styles.elevation]}>
         <Text style={styles.buttonText}  onPress={handleLogin}>Login</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.forgotPasswordContainer}>
@@ -109,37 +114,45 @@ const handleLogin = async () => {
       </TouchableOpacity>
       </>
        )}
-    </View>
+
+    </ImageBackground>
     );
   };
 
   
   
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  backgroundImage: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    flex: 1,
+    resizeMode: 'cover', // or 'stretch' if you want the image to stretch to cover the entire screen
   },
+  // container: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   backgroundColor: '#F5F5F5',
+  // },
   input: {
     width: '80%',
     height: 50,
-    backgroundColor: '#FFFFFF',
-    borderColor: '#d4d4d2',
+    backgroundColor: '#eefaff',
+    color:'#0054a4',
+    borderColor: '#e6e6e6',
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 30,
     paddingHorizontal: 16,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   buttonContainer: {
-    // width: '40%',
+    width: '80%',
     paddingTop:10,
     paddingBottom:10,
     padding:20,
     // height: 50,
     backgroundColor: '#0054a4',
-    borderRadius: 5,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
@@ -164,5 +177,9 @@ const styles = StyleSheet.create({
     marginBottom:50,
     borderRadius:50,
 
-  }
+  },
+  elevation: {
+    elevation: 3,
+    shadowColor: '#272626',
+  },
 });
