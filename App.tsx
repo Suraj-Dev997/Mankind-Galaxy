@@ -14,7 +14,9 @@ import { SplashScreen } from '../MankindGalaxy/components/SplashScreen/SplashScr
 import { Home } from '../MankindGalaxy/components/Home/Home';
 import { Login } from '../MankindGalaxy/components/Login/Login';
 import Ham from '../MankindGalaxy/components/Layouts/Ham';
-import UserProfile from '../MankindGalaxy/components/Layouts/UserProfile';
+
+import { HomeMenu } from './components/Home/HomeMenu';
+
 
 
 
@@ -45,8 +47,8 @@ function App(): JSX.Element {
     {/* <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} /> */}
    
     <Stack.Screen name='Login' component={Login} options={{title:"User Login",headerShown: false }} />
-    <Stack.Screen name='UserProfile' component={UserProfile} />
     <Stack.Screen name='Ham' component={Ham} />
+    <Stack.Screen name='HomeMenu' component={HomeMenu} />
     
     </Stack.Navigator>
       </NavigationContainer>

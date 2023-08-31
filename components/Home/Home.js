@@ -9,9 +9,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo from 'react-native-device-info';
 import { BASE_URL } from '../Configuration/Config';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 
-export const Home =  (props) =>{
+export const Home =  () =>{
+  const navigation = useNavigation();
+
+  const handleCategoryPress = (categoryName) => {
+    // Navigate to HomeMenu with the selected category name
+    navigation.navigate('HomeMenu', { category: categoryName });
+  };
+
   const [categories, setCategories] = useState([]);
   useEffect(() => {
     // Fetch categories from API here
@@ -115,17 +123,31 @@ export const Home =  (props) =>{
           <View > 
         
         <View style={[styles.container1,styles.elevation]} >    
-        {categories.map((category) => (
+        {/* {categories.map((category) => (
            <LinearGradient colors={['#4b93d8',  '#0054a4']} style={[styles.button,styles.elevation]}>
         <TouchableOpacity
           key={category.id}
-          onPress={() => props.navigation.navigate("HB")}
+          onPress={() => props.navigation.navigate("HomeMenu")}
         >
-          {/* <IconA name="antdesign" size={30} color="#fff" /> */}
+ 
           <Text style={styles.buttonText}>{category.name}</Text>
         </TouchableOpacity>
         </LinearGradient>
-      ))}
+      ))} */}
+       {categories.map((category) => (
+         <LinearGradient
+         key={category.id} // Assigning a unique key
+         colors={['#4b93d8', '#0054a4']}
+         style={[styles.button, styles.elevation]}
+       >
+         <TouchableOpacity
+           onPress={() => handleCategoryPress(category.name)}
+         >
+           <Text style={styles.buttonText}>{category.name}</Text>
+         </TouchableOpacity>
+       </LinearGradient>
+      
+    ))}
         </View>
      
           </View>
@@ -163,7 +185,7 @@ export const Home =  (props) =>{
       // backgroundColor: '#0054a4',
       padding: 30,
       marginVertical: 10,
-      borderRadius: 5,
+      borderRadius: 50,
     },
     button1: {
       flex: 1,
@@ -187,7 +209,7 @@ export const Home =  (props) =>{
    
       textAlign:'center',
       color: 'white',
-      fontSize: 18,
+      fontSize: 22,
      
     },
     elevation: {
