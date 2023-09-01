@@ -1,9 +1,5 @@
 import React from 'react';
 import { View, StyleSheet, Text, ScrollView, StatusBar,TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Entypo';
-import Icon1 from 'react-native-vector-icons/MaterialIcons';
-import IconF from 'react-native-vector-icons/FontAwesome';
-import IconA from 'react-native-vector-icons/AntDesign';
 import { useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -44,7 +40,9 @@ export const HomeMenu = (props) => {
                           style={[styles.button, styles.elevation]}
                          
                         >
-                          <TouchableOpacity key={catposter}  onPress={()=> props.navigation.navigate("PosterList")}>
+                          <TouchableOpacity key={catposter}  onPress={() =>
+    props.navigation.navigate("PosterList", { category: catposter })
+  }>
                             <Text style={styles.buttonText}>{catposter}</Text>
                           </TouchableOpacity>
                         </LinearGradient>
