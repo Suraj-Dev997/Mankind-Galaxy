@@ -7,7 +7,7 @@ import IconA from 'react-native-vector-icons/AntDesign';
 import { useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 
-export const HomeMenu = () => {
+export const HomeMenu = (props) => {
   const route = useRoute();
   const { category } = route.params;
 
@@ -42,8 +42,9 @@ export const HomeMenu = () => {
                           key={innerIndex} // Assigning a unique key
                           colors={['#4b93d8', '#0054a4']}
                           style={[styles.button, styles.elevation]}
+                         
                         >
-                          <TouchableOpacity key={catposter}>
+                          <TouchableOpacity key={catposter}  onPress={()=> props.navigation.navigate("PosterList")}>
                             <Text style={styles.buttonText}>{catposter}</Text>
                           </TouchableOpacity>
                         </LinearGradient>
@@ -67,7 +68,7 @@ export const HomeMenu = () => {
                         colors={['#4b93d8', '#0054a4']}
                         style={[styles.button, styles.elevation]}
                       >
-                        <TouchableOpacity key={catreport}>
+                        <TouchableOpacity key={catreport}  onPress={()=> props.navigation.navigate("PosterList")}>
                           <Text style={styles.buttonText}>{catreport}</Text>
                         </TouchableOpacity>
                       </LinearGradient>

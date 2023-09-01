@@ -12,6 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
 
+
 export const Home =  () =>{
   const navigation = useNavigation();
 
@@ -121,7 +122,7 @@ export const Home =  () =>{
            <StatusBar backgroundColor="#0054a4"/>
          
           <View > 
-        
+          
         <View style={[styles.container1,styles.elevation]} >    
         {/* {categories.map((category) => (
            <LinearGradient colors={['#4b93d8',  '#0054a4']} style={[styles.button,styles.elevation]}>
