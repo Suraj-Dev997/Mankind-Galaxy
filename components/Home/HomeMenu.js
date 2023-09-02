@@ -66,9 +66,14 @@ export const HomeMenu = (props) => {
                         colors={['#4b93d8', '#0054a4']}
                         style={[styles.button, styles.elevation]}
                       >
-                        <TouchableOpacity key={catreport}  onPress={()=> props.navigation.navigate("PosterList")}>
+                         <TouchableOpacity key={catreport}  onPress={() =>
+    props.navigation.navigate("ReportList", { category: catreport })
+  }>
+                            <Text style={styles.buttonText}>{catreport}</Text>
+                          </TouchableOpacity>
+                        {/* <TouchableOpacity key={catreport}  onPress={()=> props.navigation.navigate("ReportList")}>
                           <Text style={styles.buttonText}>{catreport}</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                       </LinearGradient>
                     )
                   ))}

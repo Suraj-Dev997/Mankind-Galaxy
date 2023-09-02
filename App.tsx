@@ -16,6 +16,7 @@ import { Login } from '../MankindGalaxy/components/Login/Login';
 import Ham from '../MankindGalaxy/components/Layouts/Ham';
 import { HomeMenu } from './components/Home/HomeMenu';
 import PosterList from './components/PosterActivity/PosterList';
+import ReportList from './components/CampReport/ReportList';
 
 
 
@@ -50,6 +51,7 @@ function App(): JSX.Element {
     <Stack.Screen name='Ham' component={Ham} />
     <Stack.Screen name='HomeMenu' component={HomeMenu} options={{title:"Menu" }} /> 
     <Stack.Screen name='PosterList' component={PosterList} options={{title:"Doctors List" }} />
+    <Stack.Screen name='ReportList' component={ReportList} options={{title:"Doctors List" }} />
     
     </Stack.Navigator>
       </NavigationContainer>

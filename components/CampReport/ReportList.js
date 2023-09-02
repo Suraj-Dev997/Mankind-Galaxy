@@ -1,148 +1,152 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Image,TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal } from 'react-native';
 import { Button, Searchbar, IconButton } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 
 // Create separate components for each category's content
-const CategoryPoster = ({ users, filteredUsers, renderUserItem }) => (
-  <View style={styles.container}>
-    <Header />
-    <UserList filteredUsers={filteredUsers} renderUserItem={renderUserItem} />
-  </View>
-);
-
-// Add more components for other categories as needed
-
-const Header = () => (
-  <View style={styles.headerMain}>
-    <View style={styles.headertop}>
-      <Button
-        icon="plus"
-        mode="contained"
-        style={styles.addbtn}
-        onPress={() => console.log('Pressed')}
-      >
-        Add Doctor
-      </Button>
+const CategoryReport = ({ users, filteredUsers, renderUserItem }) => (
+    <View style={styles.container}>
+      <Header />
+      <UserList filteredUsers={filteredUsers} renderUserItem={renderUserItem} />
     </View>
-    <View style={styles.header}>
-      <Searchbar
-        placeholder="Search"
-       
+  );
+  
+  const Header = () => (
+    <View style={styles.headerMain}>
+      <View style={styles.headertop}>
+        <Button
+          icon="plus"
+          mode="contained"
+          style={styles.addbtn}
+          onPress={() => console.log('Pressed')}
+        >
+          Add Doctor
+        </Button>
+      </View>
+      <View style={styles.header}>
+        <Searchbar
+          placeholder="Search"
+        />
+      </View>
+    </View>
+  );
+  
+  const UserList = ({ filteredUsers, renderUserItem }) => (
+    <View style={styles.tableCont}>
+      <TableHeader />
+      <FlatList
+        data={filteredUsers}
+        renderItem={renderUserItem}
+        keyExtractor={(item) => item.id.toString()}
       />
     </View>
-  </View>
-);
-
-const UserList = ({ filteredUsers, renderUserItem }) => (
-  <View style={styles.tableCont}>
-    <TableHeader />
-    <FlatList
-      data={filteredUsers}
-      renderItem={renderUserItem}
-      keyExtractor={(item) => item.id.toString()}
-    />
-  </View>
-);
-
-const TableHeader = () => (
-  <View style={styles.tableHeader}>
-    <Text style={styles.columnHeader}>User info</Text>
-    <Text style={styles.columnHeader}>Actions</Text>
-  </View>
-);
-
-const PosterList = () => {
-  const route = useRoute();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchText, setSearchText] = useState('');
-
-  const onChangeSearch = (query) => setSearchQuery(query);
+  );
+  
+  const TableHeader = () => (
+    <View style={styles.tableHeader}>
+      <Text style={styles.columnHeader}>Name</Text>
+      <Text style={styles.columnHeader}>Date</Text>
+      <Text style={styles.columnHeader}>Actions</Text>
+    </View>
+  );
+  
+  const ReportList = () => {
+    const route = useRoute();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchText, setSearchText] = useState('');
+    const [selectedUser, setSelectedUser] = useState(null);
+  
+    const onChangeSearch = (query) => setSearchQuery(query);
+  
+    const handleInfoButtonClick = (user) => {
+      console.log('Info button clicked for user:', user);
+      setSelectedUser(user);
+    };
 
   let users = [];
-console.log(route.params.category);
+  console.log(route.params.category);
   switch (route.params.category) {
-    case 'Glucometer Poster':
+    case 'Glucometer Report':
       users = [
         {
           id: 1,
-          name: 'John Doe - Glucometer',
+          name: 'Suraj Report - Glucometer',
           qualification: 'Doctor',
-          image: 'https://zplusconnect.netcastservice.co.in/RDI.png',
+          Date:'10-02-2022',
         },
         {
           id: 2,
-          name: 'Jane Smith - Glucometer',
+          name: 'Suraj Report  - Glucometer',
           qualification: 'Engineer',
-          image: 'https://zplusconnect.netcastservice.co.in/RDI.png',
+          Date:'10-02-2022',
         },
         // Add more users for Glucometer category as needed
       ];
       break;
-    case 'Neuropathy Poster':
+    case 'Neuropathy Report':
       users = [
         {
           id: 3,
           name: 'Alice - Neuropathy',
           qualification: 'Doctor',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
+          Date:'10-02-2022',
         },
         {
           id: 4,
           name: 'Bob - Neuropathy',
           qualification: 'Engineer',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
+          Date:'10-02-2022',
         },
         // Add more users for Neuropathy category as needed
       ];
       break;
-      case 'HbA1c Poster':
+      case 'HbA1c Report':
       users = [
         {
           id: 3,
           name: 'Alice - HbA1c',
           qualification: 'Doctor',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
+          Date:'10-02-2022',
         },
         {
           id: 4,
           name: 'Bob - HbA1c',
           qualification: 'Engineer',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
+          Date:'10-02-2022',
         },
         // Add more users for Neuropathy category as needed
       ];
       break;
-      case 'BMD Poster':
+      case 'BMD Report':
       users = [
         {
           id: 3,
           name: 'Alice - BMD',
           qualification: 'Doctor',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
+          Date:'10-02-2022',
         },
         {
           id: 4,
           name: 'Bob - BMD',
           qualification: 'Engineer',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
+          Date:'10-02-2022',
         },
         // Add more users for Neuropathy category as needed
       ];
       break;
-      case 'Glucometer & Neuropathy Poster':
+      case 'Glucometer & Neuropathy Report':
       users = [
         {
           id: 3,
           name: 'Alice - Glucometer & Neuropathy',
           qualification: 'Doctor',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
+          Date:'10-02-2022',
         },
         {
           id: 4,
           name: 'Bob - Glucometer & Neuropathy',
           qualification: 'Engineer',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
+          Date:'10-02-2022',
         },
         // Add more users for Neuropathy category as needed
       ];
@@ -155,22 +159,20 @@ console.log(route.params.category);
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchText.toLowerCase())
   );
-
   const renderUserItem = ({ item }) => (
     <View style={styles.userItem}>
-      <Image source={{ uri: item.image }} style={styles.userImage} />
       <View style={styles.userInfo}>
         <Text>{item.name}</Text>
-        <Text>{item.qualification}</Text>
+      </View>
+      <View style={styles.userInfo}>
+        <Text>{item.Date}</Text>
       </View>
       <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.actionButton}>
-          <IconButton
-            icon="file-image"
-            iconColor="#0054a4"
-            size={20}
-            onPress={() => console.log('Pressed')}
-          />
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => handleInfoButtonClick(item)}
+        >
+          <IconButton icon="information" iconColor="#0054a4" size={20} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
@@ -193,11 +195,26 @@ console.log(route.params.category);
   );
 
   return (
-    <CategoryPoster users={users} filteredUsers={filteredUsers} renderUserItem={renderUserItem} />
+    <CategoryReport
+      users={users}
+      filteredUsers={filteredUsers}
+      renderUserItem={renderUserItem}
+    />
   );
 };
 
 const styles = StyleSheet.create({
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      modalContent: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        elevation: 5,
+      },
   container: {
       flex: 1,
       
@@ -286,14 +303,14 @@ const styles = StyleSheet.create({
     },
     actionButton: {
       // backgroundColor: 'blue',
-      // paddingHorizontal: 2,
-      paddingVertical: 6,
+      paddingHorizontal: 0,
+      paddingVertical: 5,
       // borderRadius: 4,
-      marginLeft: 1,
+      marginLeft: 0,
     },
     actionButtonText: {
       color: 'white',
     },
 });
 
-export default PosterList;
+export default ReportList;
