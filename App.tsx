@@ -17,6 +17,8 @@ import Ham from '../MankindGalaxy/components/Layouts/Ham';
 import { HomeMenu } from './components/Home/HomeMenu';
 import PosterList from './components/PosterActivity/PosterList';
 import ReportList from './components/CampReport/ReportList';
+import DashboardList from './components/Dashboard/DashboardList';
+
 
 
 
@@ -32,7 +34,7 @@ function App(): JSX.Element {
     <NavigationContainer>
     <Stack.Navigator initialRouteName='Splash' screenOptions={{
      headerRight:()=><Ham/>,
-      headerTintColor:"#fff", headerStyle:{
+      headerTintColor:"#ffffff", headerStyle:{
       backgroundColor:"#0054a4",  
     },
     }}>
@@ -52,6 +54,7 @@ function App(): JSX.Element {
     <Stack.Screen name='HomeMenu' component={HomeMenu} options={{title:"Menu" }} /> 
     <Stack.Screen name='PosterList' component={PosterList} options={{title:"Doctors List" }} />
     <Stack.Screen name='ReportList' component={ReportList} options={{title:"Doctors List" }} />
+    <Stack.Screen name='DashboardList' component={DashboardList} options={{title:"Download Report" }} />
     
     </Stack.Navigator>
       </NavigationContainer>

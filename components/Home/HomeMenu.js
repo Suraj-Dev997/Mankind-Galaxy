@@ -105,7 +105,9 @@ export const HomeMenu = (props) => {
                         colors={['#4b93d8', '#0054a4']}
                         style={[styles.button, styles.elevation]}
                       >
-                        <TouchableOpacity key={catdash}>
+                                <TouchableOpacity key={catdash}  onPress={() =>
+    props.navigation.navigate("DashboardList", { category: catdash })
+  }>
                           <Text style={styles.buttonText}>{catdash}</Text>
                         </TouchableOpacity>
                       </LinearGradient>
