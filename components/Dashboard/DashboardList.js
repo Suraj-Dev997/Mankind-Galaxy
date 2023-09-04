@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Mod
 import { Button, Searchbar, IconButton  } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { useRoute } from '@react-navigation/native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 // Create separate components for each category's content
@@ -15,10 +16,50 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
   
   const Header = () => {
     const [selectedValue, setSelectedValue] = useState('option1');
+    const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
+  const [showFromDatePicker, setShowFromDatePicker] = useState(false);
+  const [showToDatePicker, setShowToDatePicker] = useState(false);
+
+  const handleFromDateChange = (event, selectedDate) => {
+    setShowFromDatePicker(false);
+    if (selectedDate) {
+      setFromDate(selectedDate);
+    }
+  };
+
+  const handleToDateChange = (event, selectedDate) => {
+    setShowToDatePicker(false);
+    if (selectedDate) {
+      setToDate(selectedDate);
+    }
+  };
+
+  const showFromDate = () => {
+    setShowFromDatePicker(true);
+  };
+
+  const showToDate = () => {
+    setShowToDatePicker(true);
+  };
    
   
     return (
       <View style={styles.headerMain}>
+        <View style={[styles.row, styles.container1]}>
+              <TouchableOpacity style={[styles.button1, styles.elevation]}>
+                <Text style={styles.buttonText1}>Total Camps: </Text>
+                <Text style={styles.buttonText1}>10 </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button1, styles.elevation]}>
+                <Text style={styles.buttonText1}>Patient Screened:</Text>
+                <Text style={styles.buttonText1}>15 </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button1, styles.elevation]}>
+                <Text style={styles.buttonText1}>Patient Diagnosed:</Text>
+                <Text style={styles.buttonText1}>12 </Text>
+              </TouchableOpacity>
+            </View>
         <View style={styles.headertop}>
           <Button
             icon="download"
@@ -43,7 +84,63 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         </View>
           
         </View>
-      
+        {/* <View style={styles.header}>
+        <View style={{ flex:1,flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ marginRight: 8 }}>Select a date range:</Text>
+          <View style={styles.datePickerContainer}>
+            <Text style={styles.datePickerContainertext}>From: </Text>
+            <Button onPress={showFromDate}>{fromDate.toDateString()}</Button>
+            {showFromDatePicker && (
+              <DateTimePicker
+                value={fromDate}
+                mode="date"
+                onChange={handleFromDateChange}
+              />
+            )}
+          </View>
+          <View style={styles.datePickerContainer}>
+            <Text>To: </Text>
+            <Button onPress={showToDate}>{toDate.toDateString()}</Button>
+            {showToDatePicker && (
+              <DateTimePicker
+                value={toDate}
+                mode="date"
+                onChange={handleToDateChange}
+              />
+            )}
+          </View>
+        </View>
+     
+    </View> */}
+    <View style={styles.header}>
+    
+  <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+    
+    <View style={styles.datePickerContainer}>
+    
+      <Text style={styles.datePickerLabel}>From:</Text>
+      <Button style={styles.datePickerButton} onPress={showFromDate}>{fromDate.toDateString()}</Button>
+      {showFromDatePicker && (
+        <DateTimePicker
+          value={fromDate}
+          mode="date"
+          onChange={handleFromDateChange}
+        />
+      )}
+    </View>
+    <View style={styles.datePickerContainer}>
+      <Text style={styles.datePickerLabel}>To:</Text>
+      <Button style={styles.datePickerButton} onPress={showToDate}>{toDate.toDateString()}</Button>
+      {showToDatePicker && (
+        <DateTimePicker
+          value={toDate}
+          mode="date"
+          onChange={handleToDateChange}
+        />
+      )}
+    </View>
+  </View>
+</View>
       </View>
     );
   };
@@ -207,17 +304,59 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
 };
 
 const styles = StyleSheet.create({
+    container1: {
+        alignItems: 'center',
+        padding: 10,
+        justifyContent: 'center',
+        
+      },
+      row: {
+        flexDirection: 'row',
+        marginBottom: 6,
+      },
+      button1: {
+        flex: 1,
+        margin:2,
+        marginHorizontal: 2,
+      
+        height: 80,
+        textAlign:'center',
+        backgroundColor: '#fff',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius:10,
+    
+      },
+      buttonText1: {
+        textAlign:'center',
+        color: '#0054a4',
+        fontSize: 15,
+      },
+      elevation: {
+        elevation: 5 ,
+        shadowColor: '#000',
+      },
     containerDate: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
       },
       datePickerContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         alignItems: 'center',
+        paddingHorizontal:20,
       },
-      datePicker: {
-        width: 200,
+      datePickerLabel: {
+        fontSize: 16, // You can adjust the font size as needed
+        marginBottom: 3, // Spacing between label and button
+        color:'#0054a4',
+        fontWeight:'600',
+      },
+      datePickerButton: {
+        fontSize: 16, // You can adjust the font size as needed
+        backgroundColor:'#fff',
+        borderWidth: 1,
+        borderColor: '#d4d4d2',
       },
     modalContainer: {
         flex: 1,
