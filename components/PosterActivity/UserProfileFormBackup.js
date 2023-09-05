@@ -13,12 +13,19 @@ const UserProfileForm = () => {
     const options = {
       mediaType: 'photo',
       quality: 1,
+      maxWidth: 200, // Maximum width for the selected image (default is no limit)
+      maxHeight: 200, // Maximum height for the selected image (default is no limit)
+      cropping: true, // Enable image cropping (default is false)
+      multiple: false, // Allow selecting multiple images (default is false)
+      includeBase64: false, // Include the selected image as a base64 string (default is false)
+      includeExif: true, // Include EXIF data in the selected image (default is true)
     };
 
     launchImageLibrary(options, (response) => {
       if (!response.didCancel && !response.error) {
-        // Set the selected image as the avatar
-        setAvatarSource({ uri: response.uri });
+
+        setAvatarSource(response.assets[0].uri);
+        console.log(response.assets[0].uri);
       }
     });
   };
@@ -26,10 +33,11 @@ const UserProfileForm = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={chooseImage}>
+        {/* <Image style={{height:400,width:400}} source={{uri:avatarSource}}/> */}
         <View style={styles.avatarContainer}>
           {avatarSource ? (
             <Avatar.Image
-              source={{ uri: avatarSource.uri }}
+              source={{ uri: avatarSource }}
               size={80}
             />
           ) : (
