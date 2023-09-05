@@ -48,7 +48,7 @@ export const Home =  () =>{
         const latestVersion = data.toString();
         console.log(latestVersion);
         // const currentVersion = DeviceInfo.getVersion(); // Replace with your current app version
-        const currentVersion = '11' // Replace with your current app version
+        const currentVersion = '12' // Replace with your current app version
     
         
         console.log("Current b",currentVersion);

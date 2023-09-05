@@ -18,6 +18,8 @@ import { HomeMenu } from './components/Home/HomeMenu';
 import PosterList from './components/PosterActivity/PosterList';
 import ReportList from './components/CampReport/ReportList';
 import DashboardList from './components/Dashboard/DashboardList';
+import UserProfileForm from './components/PosterActivity/UserProfileForm';
+
 
 
 
@@ -55,6 +57,7 @@ function App(): JSX.Element {
     <Stack.Screen name='PosterList' component={PosterList} options={{title:"Doctors List" }} />
     <Stack.Screen name='ReportList' component={ReportList} options={{title:"Doctors List" }} />
     <Stack.Screen name='DashboardList' component={DashboardList} options={{title:"Download Report" }} />
+    <Stack.Screen name='UserProfileForm' component={UserProfileForm} options={{title:"UserProfileForm" }} />
     
     </Stack.Navigator>
       </NavigationContainer>

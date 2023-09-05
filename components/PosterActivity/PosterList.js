@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Image,TouchableOpacity } from 'react-native';
 import { Button, Searchbar, IconButton } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+
+
 
 // Create separate components for each category's content
 const CategoryPoster = ({ users, filteredUsers, renderUserItem }) => (
@@ -13,14 +16,17 @@ const CategoryPoster = ({ users, filteredUsers, renderUserItem }) => (
 
 // Add more components for other categories as needed
 
-const Header = () => (
-  <View style={styles.headerMain}>
+const Header = (props) => {
+  const navigation = useNavigation();
+
+  return(
+    <View style={styles.headerMain}>
     <View style={styles.headertop}>
       <Button
         icon="plus"
         mode="contained"
         style={styles.addbtn}
-        onPress={() => console.log('Pressed')}
+        onPress={()=> navigation.navigate("UserProfileForm")}
       >
         Add Doctor
       </Button>
@@ -32,7 +38,10 @@ const Header = () => (
       />
     </View>
   </View>
-);
+  )
+};
+
+
 
 const UserList = ({ filteredUsers, renderUserItem }) => (
   <View style={styles.tableCont}>
