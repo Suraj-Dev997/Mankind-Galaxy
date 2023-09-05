@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal } from 'react-native';
 import { Button, Searchbar, IconButton } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 // Create separate components for each category's content
 const CategoryReport = ({ users, filteredUsers, renderUserItem }) => (
@@ -11,14 +12,16 @@ const CategoryReport = ({ users, filteredUsers, renderUserItem }) => (
     </View>
   );
   
-  const Header = () => (
-    <View style={styles.headerMain}>
+  const Header = () => {
+    const navigation = useNavigation();
+
+    return(<View style={styles.headerMain}>
       <View style={styles.headertop}>
         <Button
           icon="plus"
           mode="contained"
           style={styles.addbtn}
-          onPress={() => console.log('Pressed')}
+          onPress={()=> navigation.navigate("AddCampReport")}
         >
           Add Doctor
         </Button>
@@ -28,8 +31,10 @@ const CategoryReport = ({ users, filteredUsers, renderUserItem }) => (
           placeholder="Search"
         />
       </View>
-    </View>
-  );
+    </View>)
+  };
+    
+
   
   const UserList = ({ filteredUsers, renderUserItem }) => (
     <View style={styles.tableCont}>
