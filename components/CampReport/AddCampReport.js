@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { TextInput, Button, Avatar } from 'react-native-paper';
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { TextInput, Button, Avatar,DefaultTheme  } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
@@ -14,6 +14,41 @@ const AddCampReport = () => {
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
   const [selectedValue, setSelectedValue] = useState('option1');
   const navigation = useNavigation();
+
+  const [textInputValue, setTextInputValue] = useState('');
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [dropdownItems] = useState(['Option 1', 'node', 'React']);
+
+  const toggleDropdown = () => {
+    setIsDropdownVisible(!isDropdownVisible);
+  };
+
+  const handleItemSelect = (item) => {
+    setSelectedItem(item);
+    setTextInputValue(item);
+    setIsDropdownVisible(false);
+  };
+
+  const filteredDropdownItems = dropdownItems.filter((item) =>
+    item.toLowerCase().includes(textInputValue.toLowerCase())
+  );
+  const renderDropdownItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.dropdownItem}
+      onPress={() => handleItemSelect(item)}
+    >
+      <Text>{item}</Text>
+    </TouchableOpacity>
+  );
+   const handleTextInputChange = (text) => {
+    setTextInputValue(text);
+    if (text.trim() === '') {
+      setIsDropdownVisible(false);
+    } else {
+      setIsDropdownVisible(true);
+    }
+  };
   
   const handleCampDateChange = (event, selectedDate) => {
     setShowCampDatePicker(false);
@@ -31,6 +66,7 @@ const AddCampReport = () => {
       
 
       <View style={styles.form}>
+        
       <View style={styles.pickcontainer}>
         <Picker
             selectedValue={selectedValue}
@@ -70,7 +106,7 @@ const AddCampReport = () => {
       />
     )}
   </View>
-  <TextInput
+  {/* <TextInput
           label="Name of Doctor"
           value={qualification}
           onChangeText={(text) => setQualification(text)}
@@ -78,7 +114,39 @@ const AddCampReport = () => {
           style={styles.input}
           outlineColor='#0054a4'
           activeOutlineColor='#08a5d8'
+        /> */}
+
+
+      <View style={styles.inputContainer}>
+        <TextInput
+        //  mode="outlined"
+        backgroundColor='#fff'
+        underlineColor='#fff'
+         style={styles.inputField}
+         outlineColor='#0054a4'
+         theme={{
+          ...DefaultTheme,
+          colors: {
+            ...DefaultTheme.colors,
+            primary: '#0054a4', // Change the label color to blue
+          },
+        }}
+         activeOutlineColor='#08a5d8'
+          // style={styles.inputField}
+          value={textInputValue}
+          onChangeText={handleTextInputChange}
+          label="Name of Doctor"
         />
+        {isDropdownVisible && (
+          <FlatList
+            data={filteredDropdownItems}
+            renderItem={renderDropdownItem}
+            keyExtractor={(item, index) => index.toString()}
+            style={styles.dropdownList}
+          />
+        )}
+      </View>
+
 
         <Button
         buttonColor='#0054a4'
@@ -94,6 +162,41 @@ const AddCampReport = () => {
 };
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    borderColor: '#0054a4',
+    borderWidth: 1,
+    borderRadius: 5,
+    overflow: 'hidden',
+    backgroundColor:'#fff',
+  },
+  inputField: {
+    padding: 0,
+    fontSize: 15,
+  },
+  dropdownList: {
+    maxHeight: 150, // Set a max height for the dropdown list
+    borderColor: '#ccc',
+    backgroundColor:'#fff',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderRadius: 5,
+  },
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  additionalInputLabel: {
+    marginTop: 16,
+    fontSize: 16,
+  },
+  additionalInput: {
+    borderColor: '#0054a4',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+    fontSize: 16,
+  },
   datePickerContainer: {
     flexDirection: 'column',
 // alignItems:'center'

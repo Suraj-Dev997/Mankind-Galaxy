@@ -1,0 +1,212 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Modal, FlatList,TextInput } from 'react-native';
+
+const UserProfileForm = () => {
+  const [textInputValue, setTextInputValue] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const dropdownItems = ['Option 1', 'Option 2', 'Option 3'];
+
+  const handleItemSelect = (item) => {
+    setSelectedItem(item);
+    setTextInputValue(item);
+    setIsModalVisible(false);
+  };
+
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.inputContainer}
+        onPress={() => setIsModalVisible(true)}
+      >
+        <Text style={styles.inputText}>
+          {selectedItem || 'Select an option'}
+        </Text>
+        <Text style={styles.dropdownIcon}>▼</Text>
+      </TouchableOpacity>
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <FlatList
+            data={dropdownItems}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.dropdownItem}
+                onPress={() => handleItemSelect(item)}
+              >
+                <Text>{item}</Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
+      </Modal>
+      <Text style={styles.additionalInputLabel}>Additional Input</Text>
+      <TextInput
+        value={textInputValue}
+        onChangeText={(text) => setTextInputValue(text)}
+        style={styles.additionalInput}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+  },
+  inputText: {
+    fontSize: 16,
+  },
+  dropdownIcon: {
+    fontSize: 20,
+  },
+  modalContainer: {
+    backgroundColor:'#fff',
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  dropdownItem: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  additionalInputLabel: {
+    marginTop: 16,
+    fontSize: 16,
+  },
+  additionalInput: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+    fontSize: 16,
+  },
+});
+
+export default UserProfileForm;
+
+
+
+
+
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, FlatList, TextInput } from 'react-native';
+
+const UserProfileForm = () => {
+  const [textInputValue, setTextInputValue] = useState('');
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [dropdownItems] = useState(['Option 1', 'node', 'React']);
+
+  const toggleDropdown = () => {
+    setIsDropdownVisible(!isDropdownVisible);
+  };
+
+  const handleItemSelect = (item) => {
+    setSelectedItem(item);
+    setTextInputValue(item);
+    setIsDropdownVisible(false);
+  };
+
+  const filteredDropdownItems = dropdownItems.filter((item) =>
+    item.toLowerCase().includes(textInputValue.toLowerCase())
+  );
+
+  const renderDropdownItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.dropdownItem}
+      onPress={() => handleItemSelect(item)}
+    >
+      <Text>{item}</Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.inputField}
+          value={textInputValue}
+          onChangeText={(text) => {
+            setTextInputValue(text);
+            setIsDropdownVisible(true); // Show dropdown when typing
+          }}
+          placeholder="Type or Select"
+        />
+        {isDropdownVisible && (
+          <FlatList
+            data={filteredDropdownItems}
+            renderItem={renderDropdownItem}
+            keyExtractor={(item, index) => index.toString()}
+            style={styles.dropdownList}
+          />
+        )}
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  inputContainer: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  inputField: {
+    padding: 10,
+    fontSize: 16,
+  },
+  dropdownList: {
+    maxHeight: 150, // Set a max height for the dropdown list
+    borderColor: '#ccc',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderRadius: 5,
+  },
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  additionalInputLabel: {
+    marginTop: 16,
+    fontSize: 16,
+  },
+  additionalInput: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+    fontSize: 16,
+  },
+});
+
+export default UserProfileForm;
+

@@ -23,7 +23,7 @@ const CategoryReport = ({ users, filteredUsers, renderUserItem }) => (
           style={styles.addbtn}
           onPress={()=> navigation.navigate("AddCampReport")}
         >
-          Add Doctor
+          Add Report
         </Button>
       </View>
       <View style={styles.header}>

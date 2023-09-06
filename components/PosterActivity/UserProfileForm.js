@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { TextInput, Button, Avatar } from 'react-native-paper';
+import { TextInput, Button, Avatar,Menu, Divider } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -10,6 +10,20 @@ const UserProfileForm = () => {
   const [avatarUri, setAvatarUri] = useState(null); // To store the URI of the selected image
   const [campDate, setCampDate] = useState(new Date());
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
+
+
+  const [textInputValue, setTextInputValue] = useState('');
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState('');
+
+  const showDropdown = () => setDropdownVisible(true);
+  const hideDropdown = () => setDropdownVisible(false);
+
+  const handleItemSelect = (item) => {
+    setSelectedItem(item);
+    hideDropdown();
+  };
+  const dropdownItems = ['Option 1', 'Option 2', 'Option 3'];
   
   const handleCampDateChange = (event, selectedDate) => {
     setShowCampDatePicker(false);
@@ -29,6 +43,7 @@ const UserProfileForm = () => {
       .then((image) => {
         // Set the URI of the selected and cropped image
         setAvatarUri(image.path);
+        console.log(image);
         console.log(image.path);
       })
       .catch((error) => {
@@ -95,6 +110,8 @@ const UserProfileForm = () => {
     )}
   </View>
 
+  
+
         <Button
         buttonColor='#0054a4'
           mode="contained"
@@ -107,6 +124,9 @@ const UserProfileForm = () => {
         </Button>
       </View>
     </View>
+
+     
+
   );
 };
 
