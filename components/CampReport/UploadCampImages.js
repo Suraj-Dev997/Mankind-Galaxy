@@ -25,12 +25,17 @@ const UploadCampImages = () => {
         multiple: true, // Allow multiple image selection
       });
   
-      const previews = images.map((image) => (
-        <Image
-          key={image.path}
-          source={{ uri: image.path }}
-          style={styles.previewImage}
-        />
+      const previews = images.map((image,index) => (
+        <TouchableOpacity
+          key={index}
+          onPress={() => handleDeleteImage(index)}
+        >
+          <Image
+            source={{ uri: image.path }}
+            style={styles.previewImage}
+          />
+          <Text style={styles.deleteButton}>Delete</Text>
+        </TouchableOpacity>
       ));
   
       setImagePreviews((prevPreviews) => [...prevPreviews, ...previews]);
@@ -39,7 +44,11 @@ const UploadCampImages = () => {
       console.error('Image picker error:', error);
     }
   };
-
+  const handleDeleteImage = (indexToDelete) => {
+    setImagePreviews((prevPreviews) =>
+      prevPreviews.filter((_, index) => index !== indexToDelete)
+    );
+  };
   const handlePdfUpload = () => {
     // You can implement PDF file upload logic here.
     // For demonstration purposes, I'm just displaying a text placeholder.
@@ -58,7 +67,7 @@ const UploadCampImages = () => {
           
           <TouchableOpacity onPress={handleImageUpload}>
             <Button
-              buttonColor="#0054a4"
+              // buttonColor="#0054a4"
               mode="contained"
               style={styles.uploadButton}
             >
@@ -100,6 +109,10 @@ const UploadCampImages = () => {
 };
 
 const styles = StyleSheet.create({
+  deleteButton: {
+    color: 'red',
+    textAlign: 'center',
+  },
     datePickerContainer: {
         flexDirection: 'column',
     // alignItems:'center'
@@ -170,8 +183,14 @@ const styles = StyleSheet.create({
         textAlign: 'center',
       },
   uploadButton: {
-    backgroundColor: '#0054a4',
+    backgroundColor: '#08a5d8',
+    borderColor:'#0054a4',
+    color:'#0054a4',
+    // borderStyle: 'dotted',
+    borderWidth:2,
     marginTop: 16,
+    padding:30,
+    borderRadius:5,
   },
   previewContainer: {
     flexDirection: 'row',
