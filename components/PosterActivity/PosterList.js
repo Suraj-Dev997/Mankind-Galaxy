@@ -63,6 +63,7 @@ const TableHeader = () => (
 
 const PosterList = () => {
   const route = useRoute();
+  const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchText, setSearchText] = useState('');
 
@@ -178,7 +179,7 @@ console.log(route.params.category);
             icon="file-image"
             iconColor="#0054a4"
             size={20}
-            onPress={() => console.log('Pressed')}
+            onPress={()=> navigation.navigate("PosterDownload")}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
