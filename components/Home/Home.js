@@ -8,6 +8,7 @@ import IconA from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo from 'react-native-device-info';
 import { BASE_URL } from '../Configuration/Config';
+import { BASE_URL1 } from '../Configuration/Config';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
@@ -17,25 +18,35 @@ export const Home =  () =>{
   const navigation = useNavigation();
 
   const handleCategoryPress = (categoryName) => {
-    // Navigate to HomeMenu with the selected category name
+
     navigation.navigate('HomeMenu', { category: categoryName });
   };
 
   const [categories, setCategories] = useState([]);
   useEffect(() => {
-    // Fetch categories from API here
-    // For this example, let's assume the API returns an array of category objects
-    const fetchedCategories = [
-      { id: 1, name: 'Camp Poster' },
-      { id: 2, name: 'Camp Report' },
-      { id: 3, name: 'Dashboard' },
-      // ... other categories
-    ];
-    setCategories(fetchedCategories);
+    // Define the API endpoint
+    const ApiUrl = `${BASE_URL}${'/cat/getAllCategory'}`;
+
+    // Make the API call using fetch
+    fetch(ApiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        // Check if the response data contains an array of categories
+        if (Array.isArray(data) && data.length > 0) {
+          // Assuming the categories are in the first element of the array
+          const fetchedCategories = data[0];
+
+          // Update the state with the fetched categories
+          setCategories(fetchedCategories);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching categories:', error);
+      });
   }, []);
 //Version checking code-------------------------------------
   useEffect(() => {
-    const ApiVersionUrl = `${BASE_URL}${'/AccountApi/GetLatestAppVersion'}`;
+    const ApiVersionUrl = `${BASE_URL1}${'/AccountApi/GetLatestAppVersion'}`;
     const checkAppVersion = async () => {
       try {
            const response = await fetch(ApiVersionUrl, {
@@ -135,20 +146,19 @@ export const Home =  () =>{
         </TouchableOpacity>
         </LinearGradient>
       ))} */}
-       {categories.map((category) => (
-         <LinearGradient
-         key={category.id} // Assigning a unique key
-         colors={['#4b93d8', '#0054a4']}
-         style={[styles.button, styles.elevation]}
-       >
-         <TouchableOpacity
-           onPress={() => handleCategoryPress(category.name)}
-         >
-           <Text style={styles.buttonText}>{category.name}</Text>
-         </TouchableOpacity>
-       </LinearGradient>
-      
-    ))}
+      {categories.map((category) => (
+  <LinearGradient
+    key={category.category_id} // Assigning a unique key
+    colors={['#4b93d8', '#0054a4']}
+    style={[styles.button, styles.elevation]}
+  >
+    <TouchableOpacity
+      onPress={() => handleCategoryPress(category.category_id)}
+    >
+      <Text style={styles.buttonText}>{category.categeory_name}</Text>
+    </TouchableOpacity>
+  </LinearGradient>
+))}
         </View>
      
           </View>

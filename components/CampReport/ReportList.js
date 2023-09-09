@@ -177,21 +177,21 @@ const CategoryReport = ({ users, filteredUsers, renderUserItem }) => (
           style={styles.actionButton}
           onPress={() => handleInfoButtonClick(item)}
         >
-          <IconButton icon="information" iconColor="#0054a4" size={20} />
+          <IconButton icon="information-outline" iconColor="#0054a4" size={25} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
-            icon="application-edit"
+            icon="square-edit-outline"
             iconColor="#0054a4"
-            size={20}
+            size={25}
             onPress={() => console.log('Pressed')}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
-            icon="delete"
+            icon="delete-outline"
             iconColor="#0054a4"
-            size={20}
+            size={25}
             onPress={() => console.log('Pressed')}
           />
         </TouchableOpacity>

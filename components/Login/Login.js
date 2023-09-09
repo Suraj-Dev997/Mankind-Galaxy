@@ -12,25 +12,27 @@ export const Login = ({navigation }) =>{
 
 const handleLogin = async () => {
   setIsLoading(true);
-  const ApiUrl = `${BASE_URL}${'/AccountApi/LoginValidate'}`;
+  const ApiUrl = `${BASE_URL}${'/auth/login'}`;
   const response = await fetch(ApiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ 
-      EmailId: null,
-      EmpCode: EmpCode,
-      Password: Password,
-      IpAddress: "::1",
-      UserDevice: null,
-      UserBrowser: null,
-      BrowserDetail: {},
-      LoginTypeField: "EMPCODE",
-      ClientId: "10001",
-      DeptId: "1",
-      UserId: null,
-      CusQuizid: null
+      empcode: EmpCode,
+        password: Password
+      // EmailId: null,
+      // EmpCode: EmpCode,
+      // Password: Password,
+      // IpAddress: "::1",
+      // UserDevice: null,
+      // UserBrowser: null,
+      // BrowserDetail: {},
+      // LoginTypeField: "EMPCODE",
+      // ClientId: "10001",
+      // DeptId: "1",
+      // UserId: null,
+      // CusQuizid: null
     }),
   });
   console.log(EmpCode)
@@ -55,7 +57,7 @@ const handleLogin = async () => {
    // const  isRemember=AsyncStorage.getItem('Name');
     //Alert.alert('Msg', isRemember);
     //console.log(isRemember);
-    if(responseData.errorCode=="1")
+    if(responseData.status=="SUCCESS")
     {
       navigation.navigate('Home');
 

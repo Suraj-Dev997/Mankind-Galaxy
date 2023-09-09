@@ -4,7 +4,7 @@ import UserProfile from './UserProfile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Icon1 from 'react-native-vector-icons/MaterialIcons';
-import { BASE_URL } from '../Configuration/Config';
+import { BASE_URL1 } from '../Configuration/Config';
 
 const Ham = () => {
   const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
@@ -37,7 +37,7 @@ const Ham = () => {
    
 
     const handleLogoutfunction = async () => {
-      const ApiLogoutUrl = `${BASE_URL}${'/AccountApi/EndUserLoginSession'}`;
+      const ApiLogoutUrl = `${BASE_URL1}${'/AccountApi/EndUserLoginSession'}`;
       const response = await fetch(ApiLogoutUrl, {
         method: 'POST',
         headers: {

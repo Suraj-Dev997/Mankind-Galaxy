@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal } from 'react-native';
-import { Button, Searchbar, IconButton  } from 'react-native-paper';
+import { View, Text,TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal } from 'react-native';
+import { Button, Searchbar, IconButton   } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import LinearGradient from 'react-native-linear-gradient';
 
 
 // Create separate components for each category's content
@@ -115,22 +117,41 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     <View style={styles.header}>
     
   <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-    
-    <View style={styles.datePickerContainer}>
-    
-      <Text style={styles.datePickerLabel}>From:</Text>
-      <Button style={styles.datePickerButton} onPress={showFromDate}>{fromDate.toDateString()}</Button>
-      {showFromDatePicker && (
+ 
+ 
+    <View >
+    <LinearGradient colors={['#0054a4',  '#00aacf']} style={styles.datePickerContainer}>
+    <Button
+            icon="calendar"
+            mode="contained"
+            style={styles.addbtn1}
+            onPress={showFromDate}
+            // contentStyle={{ flexWrap: 'wrap' }}
+          >
+         From: {fromDate.toLocaleDateString()}
+          </Button>
+          {showFromDatePicker && (
         <DateTimePicker
           value={fromDate}
           mode="date"
           onChange={handleFromDateChange}
+          
         />
       )}
+      </LinearGradient>
     </View>
-    <View style={styles.datePickerContainer}>
-      <Text style={styles.datePickerLabel}>To:</Text>
-      <Button style={styles.datePickerButton} onPress={showToDate}>{toDate.toDateString()}</Button>
+   
+    <LinearGradient colors={['#0054a4',  '#00aacf']} style={styles.datePickerContainer}>
+    <Button
+            icon="calendar"
+            mode="contained"
+          
+            style={styles.addbtn1}
+            onPress={showToDate}
+            // contentStyle={{ flexWrap: 'wrap' }}
+          >
+         To: {toDate.toLocaleDateString()}
+          </Button>
       {showToDatePicker && (
         <DateTimePicker
           value={toDate}
@@ -138,7 +159,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
           onChange={handleToDateChange}
         />
       )}
-    </View>
+    </LinearGradient>
   </View>
 </View>
       </View>
@@ -344,7 +365,8 @@ const styles = StyleSheet.create({
       datePickerContainer: {
         flexDirection: 'column',
         alignItems: 'center',
-        paddingHorizontal:20,
+        borderRadius:10,
+        // paddingHorizontal:1,
       },
       datePickerLabel: {
         fontSize: 16, // You can adjust the font size as needed
@@ -354,7 +376,7 @@ const styles = StyleSheet.create({
       },
       datePickerButton: {
         fontSize: 16, // You can adjust the font size as needed
-        backgroundColor:'#fff',
+        backgroundColor:'#ffffff',
         borderWidth: 1,
         borderColor: '#d4d4d2',
       },
@@ -419,6 +441,22 @@ const styles = StyleSheet.create({
       width:'42%',
 
     },
+    addbtn1:{
+      flexDirection: 'row-reverse',
+      justifyContent: 'space-between',
+      borderRadius:10,
+      backgroundColor: 'transparent', // Set the background color to transparent
+        borderColor: 'transparent',
+      // backgroundColor: '#0054a4',
+      // paddingLeft:1,
+      // paddingRight:1,
+      color:'#fff',
+       // padding:2,
+      //  marginTop:8,
+      //  marginBottom:10,
+       width:'100%',
+ 
+     },
     searchInput: {
       flex: 1,
       height: 20,
