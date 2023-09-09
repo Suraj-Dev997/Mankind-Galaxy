@@ -1,145 +1,133 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  ScrollView,
+  StatusBar,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 
 export const HomeMenu = (props) => {
   const route = useRoute();
   const { category } = route.params;
-
-  const [categoriesPoster, setCategoriesPoster] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
 
   useEffect(() => {
-    const fetchSubcategories = async () => {
-      try {
-        // Make an API call to get subcategories based on the selected category
-        const categoryId = category; // Replace with the appropriate categoryId for 'Camp Poster'
-        const apiUrl = `https://MankindGalexyapi.netcastservice.co.in/cat/getSubCategory/${categoryId}`;
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        console.log("Subcategories id",category)
-
-        if (Array.isArray(data) && data.length > 0) {
-          // Assuming the subcategories are in the first element of the array
-          const subcategories = data[0];
-          setCategoriesPoster(subcategories);
-        }
-      } catch (error) {
+    // Fetch subcategories from the API
+    fetch('https://MankindGalexyapi.netcastservice.co.in/cat/getSubCategory')
+      .then((response) => response.json())
+      .then((data) => {
+        // Extract subcategory names from the API response
+        const subcategoryNames = data[0].map((subcategory) => subcategory.subcategory_name);
+        setSubcategories(subcategoryNames);
+      })
+      .catch((error) => {
         console.error('Error fetching subcategories:', error);
-      }
-    };
+      });
+  }, []);
 
-    fetchSubcategories();
-  }, [category]);
-
-  const renderCategoriesPoster = () => {
-    const rows = [];
-    const itemsPerRow = 2; // Number of items per row
-  
-    for (let i = 0; i < categoriesPoster.length; i += itemsPerRow) {
-      const rowItems = categoriesPoster.slice(i, i + itemsPerRow);
-  
-      const row = (
-        
-        <View key={i} style={styles.row}>
-          {rowItems.map((subcategory) => (
-            <LinearGradient
-              key={subcategory.subcategory_id}
-              colors={['#4b93d8', '#0054a4']}
-              style={[styles.button, styles.elevation]}
-            >
-              <TouchableOpacity
-                onPress={() =>
-                  props.navigation.navigate('PosterList', { category: subcategory.subcategory_name })
-                }
-              >
-                <Text style={styles.buttonText}>{subcategory.subcategory_name}</Text>
-              </TouchableOpacity>
-            </LinearGradient>
-          ))}
-        </View>
-      );
-  
-      rows.push(row);
+  const navigateToCategoryScreen = (subcategory) => {
+    switch (category) {
+      case 1:
+        props.navigation.navigate('PosterList', { category: subcategory });
+        break;
+      case 2:
+        props.navigation.navigate('ReportList', { category: subcategory });
+        break;
+      case 3:
+        props.navigation.navigate('DashboardList', { category: subcategory });
+        break;
+      default:
+        break;
     }
-  
-    return (
-      
-        <View  style={styles.container1}>{rows}</View>
-      
-    );
   };
-  
+
+  const screenWidth = Dimensions.get('window').width;
+  const buttonsPerRow = 2;
+
+  const getContentBasedOnCategory = () => {
+    try {
+      const subcategoryRows = [];
+      for (let i = 0; i < subcategories.length; i += buttonsPerRow) {
+        const rowSubcategories = subcategories.slice(i, i + buttonsPerRow);
+        subcategoryRows.push(rowSubcategories);
+      }
+
+      return (
+        <ScrollView>
+          {subcategoryRows.map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.container1}>
+              {row.map((subcategory, subcategoryIndex) => (
+                <LinearGradient
+                  key={subcategory}
+                  colors={['#4b93d8', '#0054a4']}
+                  style={[
+                    styles.button,
+                    styles.elevation,
+                    {
+                      width: screenWidth / buttonsPerRow,
+                    },
+                  ]}
+                >
+                  <TouchableOpacity onPress={() => navigateToCategoryScreen(subcategory)}>
+                    <Text style={styles.buttonText}>{subcategory}</Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              ))}
+            </View>
+          ))}
+        </ScrollView>
+      );
+    } catch (error) {
+      console.error('Error generating content:', error);
+      return 'An error occurred while generating content.';
+    }
+  };
+
   return (
     <LinearGradient colors={['#dffbfe', '#14bee1']} style={styles.container}>
       <StatusBar backgroundColor="#0054a4" />
-    {renderCategoriesPoster()}
-      
+      <View>{getContentBasedOnCategory()}</View>
     </LinearGradient>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      justifyContent: 'center',  
-    
-    },
-    container1: {
-      padding: 10,
-      
-      justifyContent: 'center',
-      alignItems: 'center', // To center horizontally if needed
-    },
-    row: {
-      flexDirection: 'row',
-      marginBottom: 6,
-    },
-button: {
-  flex: 1,
-  marginHorizontal: 3,
-  height: 100,
-  textAlign:'center',
-  backgroundColor: '#0054a4',
-  justifyContent: 'center',
-  alignItems: 'center',
-  borderRadius:20,
-
-},
-button1: {
-  flex: 1,
-  margin:2,
-  marginHorizontal: 2,
-
-  height: 80,
-  textAlign:'center',
-  backgroundColor: '#fff',
-  justifyContent: 'center',
-  alignItems: 'center',
-  borderRadius:10,
-
-},
-image: {
-  width: '100%',
-  height: 140,
-  // borderRadius:10,
-  marginBottom:6,
-
-},
-buttonText: {
-  textAlign:'center',
-  color: 'white',
-  fontSize: 19,
- 
-},
-buttonText1: {
-  textAlign:'center',
-  color: '#0054a4',
-  fontSize: 20,
-},
-elevation: {
-  elevation: 5 ,
-  shadowColor: '#000',
-},
+    flex: 1,
+    justifyContent: 'center',
+  },
+  container1: {
+    alignItems: 'center',
+    padding: 10,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  button: {
+    flex: 1,
+    marginHorizontal: 3,
+    height: 100,
+    textAlign: 'center',
+    backgroundColor: '#0054a4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    marginBottom: 10,
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 19,
+  },
+  elevation: {
+    elevation: 5,
+    shadowColor: '#000',
+  },
 });
 
 export default HomeMenu;

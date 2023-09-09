@@ -178,23 +178,23 @@ console.log(route.params.category);
           <IconButton
             icon="file-image"
             iconColor="#0054a4"
-            size={25}
+            size={20}
             onPress={()=> navigation.navigate("PosterDownload")}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
-            icon="square-edit-outline"
+            icon="application-edit"
             iconColor="#0054a4"
-            size={25}
+            size={20}
             onPress={() => console.log('Pressed')}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
-            icon="delete-outline"
+            icon="delete"
             iconColor="#0054a4"
-            size={25}
+            size={20}
             onPress={() => console.log('Pressed')}
           />
         </TouchableOpacity>
