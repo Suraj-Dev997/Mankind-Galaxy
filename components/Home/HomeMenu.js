@@ -16,6 +16,7 @@ export const HomeMenu = (props) => {
   const { category } = route.params;
   const [subcategories, setSubcategories] = useState([]);
   const [totalCamps, setTotalCamps] = useState(0);
+  const [totalDoctors, setTotalDoctors] = useState(0);
 
   const fetchTotalCamps = async () => {
     try {
@@ -44,6 +45,35 @@ export const HomeMenu = (props) => {
   };
 useEffect(() => {
   fetchTotalCamps();
+}, []);
+
+const fetchTotalDoctors = async () => {
+  try {
+    const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalDoctors', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: 1, // You can change the user ID as needed
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.length > 0) {
+        const docCount = data[0].doc_count;
+        setTotalDoctors(docCount);
+      }
+    } else {
+      console.error('Failed to fetch Total Doctors data');
+    }
+  } catch (error) {
+    console.error('Error fetching Total Doctors data:', error);
+  }
+};
+useEffect(() => {
+  fetchTotalDoctors();
 }, []);
   useEffect(() => {
     // Fetch subcategories from the API
@@ -120,7 +150,7 @@ useEffect(() => {
             >
               <TouchableOpacity onPress={() => console.log('Button 2 clicked')}>
               <Text style={styles.buttonText}>Total Doctors: </Text>
-                <Text style={styles.buttonText}>10 </Text>
+                <Text style={styles.buttonText}>{totalDoctors} </Text>
               </TouchableOpacity>
             </LinearGradient>
           </View>
