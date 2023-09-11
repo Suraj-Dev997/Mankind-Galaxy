@@ -15,7 +15,36 @@ export const HomeMenu = (props) => {
   const route = useRoute();
   const { category } = route.params;
   const [subcategories, setSubcategories] = useState([]);
+  const [totalCamps, setTotalCamps] = useState(0);
 
+  const fetchTotalCamps = async () => {
+    try {
+      const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalCamps', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: 1, // You can change the user ID as needed
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        if (data.length > 0) {
+          const campCount = data[0].camp_count;
+          setTotalCamps(campCount);
+        }
+      } else {
+        console.error('Failed to fetch Total Camps data');
+      }
+    } catch (error) {
+      console.error('Error fetching Total Camps data:', error);
+    }
+  };
+useEffect(() => {
+  fetchTotalCamps();
+}, []);
   useEffect(() => {
     // Fetch subcategories from the API
     fetch('https://MankindGalexyapi.netcastservice.co.in/cat/getSubCategory')
@@ -49,6 +78,8 @@ export const HomeMenu = (props) => {
   const screenWidth = Dimensions.get('window').width;
   const buttonsPerRow = 2;
 
+
+
   const getContentBasedOnCategory = () => {
     try {
       const subcategoryRows = [];
@@ -59,6 +90,41 @@ export const HomeMenu = (props) => {
 
       return (
         <ScrollView>
+          {/* Static buttons for the DashboardList category */}
+        {category === 3 && (
+          <View style={styles.container1}>
+            <LinearGradient
+              colors={['#FF5733', '#FFA07A']}
+              style={[
+                styles.button,
+                styles.elevation,
+                {
+                  width: screenWidth / buttonsPerRow,
+                },
+              ]}
+            >
+              <TouchableOpacity onPress={() => console.log('Button 1 clicked')}>
+              <Text style={styles.buttonText}>Total Camps: </Text>
+                <Text style={styles.buttonText}>{totalCamps} </Text>
+              </TouchableOpacity>
+            </LinearGradient>
+            <LinearGradient
+              colors={['#33FF57', '#7FFFAD']}
+              style={[
+                styles.button,
+                styles.elevation,
+                {
+                  width: screenWidth / buttonsPerRow,
+                },
+              ]}
+            >
+              <TouchableOpacity onPress={() => console.log('Button 2 clicked')}>
+              <Text style={styles.buttonText}>Total Doctors: </Text>
+                <Text style={styles.buttonText}>10 </Text>
+              </TouchableOpacity>
+            </LinearGradient>
+          </View>
+        )}
           {subcategoryRows.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.container1}>
               {row.map((subcategory, subcategoryIndex) => (
@@ -80,6 +146,8 @@ export const HomeMenu = (props) => {
               ))}
             </View>
           ))}
+
+          
         </ScrollView>
       );
     } catch (error) {

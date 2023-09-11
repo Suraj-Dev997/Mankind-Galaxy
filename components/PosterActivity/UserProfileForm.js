@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState,useEffect } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity,Alert } from 'react-native';
 import { TextInput, Button, Avatar,Menu, Divider } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserProfileForm = () => {
+  const [userId, setUserId] = useState(null);
   const [name, setName] = useState('');
-  const [qualification, setQualification] = useState('');
+  const [venue, setVenue] = useState('');
   const [avatarUri, setAvatarUri] = useState(null); // To store the URI of the selected image
   const [campDate, setCampDate] = useState(new Date());
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
@@ -18,6 +20,61 @@ const UserProfileForm = () => {
 
   const showDropdown = () => setDropdownVisible(true);
   const hideDropdown = () => setDropdownVisible(false);
+
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const jsonData = await AsyncStorage.getItem('userdata');
+        if (jsonData !== null) {
+          const data = JSON.parse(jsonData);
+          const userId = data.responseData.user_id;
+          console.log(userId)
+          setUserId(userId)
+        }
+      } catch (error) {
+        console.log('Error retrieving data:', error);
+      }
+    };
+    getData();
+  }, []);
+
+  const AddDoctor = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('user_id', userId); // Replace with the actual user ID
+      formData.append('subcat_id', '1'); // Replace with the actual subcategory ID
+      formData.append('doctorName', name);
+      formData.append('campDate', '2023-10-10'); // Convert date to ISO format
+      formData.append('campVenue', venue);
+
+      if (avatarUri) {
+        const image = {
+          uri: avatarUri,
+          type: 'image/jpeg', // Adjust the image type as needed
+          name: 'profile.jpg', // Provide a suitable name for the image
+        };
+        formData.append('image', image);
+      }
+
+      const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/doc/addDoctor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Response:', data);
+      } else {
+        console.error('Error uploading data:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   const handleItemSelect = (item) => {
     setSelectedItem(item);
@@ -70,7 +127,7 @@ const UserProfileForm = () => {
             />
           )}
         </View>
-        <Text style={styles.changeAvatarText}>Change Profile Image</Text>
+        <Text style={styles.changeAvatarText}>Upload Profile Image</Text>
       </TouchableOpacity>
 
       <View style={styles.form}>
@@ -85,9 +142,9 @@ const UserProfileForm = () => {
         />
 
         <TextInput
-          label="Qualification"
-          value={qualification}
-          onChangeText={(text) => setQualification(text)}
+          label="Venue"
+          value={venue}
+          onChangeText={(text) => setVenue(text)}
           mode="outlined"
           style={styles.input}
           outlineColor='#0054a4'
@@ -115,9 +172,7 @@ const UserProfileForm = () => {
         <Button
         buttonColor='#0054a4'
           mode="contained"
-          onPress={() => {
-            // Handle form submission here
-          }}
+          onPress={AddDoctor}
           style={styles.button}
         >
           Submit
