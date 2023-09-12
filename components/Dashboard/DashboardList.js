@@ -25,6 +25,109 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
   const [toDate, setToDate] = useState(new Date());
   const [showFromDatePicker, setShowFromDatePicker] = useState(false);
   const [showToDatePicker, setShowToDatePicker] = useState(false);
+  const [totalCamps, setTotalCamps] = useState(0);
+  const [totalScreened, setTotalScreened] = useState(0);
+  const [totalDiagnosed, setTotalDiagnosed] = useState(0);
+
+  const route = useRoute();
+  const { id, name } = route.params;
+
+
+  
+
+  useEffect(() => {
+    const fetchTotalScreened = async () => {
+      try {
+        const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalPaScreened', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: 1, // You can change the user ID as needed
+            subCatId:id
+          }),
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          if (data.length > 0) {
+            const ScreenedCount = data[0].p_screened_count;
+            setTotalScreened(ScreenedCount);
+          }
+        } else {
+          console.error('Failed to fetch Total Doctors data');
+        }
+      } catch (error) {
+        console.error('Error fetching Total Doctors data:', error);
+      }
+    };
+    fetchTotalScreened();
+  }, [id]);
+
+  
+  useEffect(() => {
+    const fetchTotalDiagnosed = async () => {
+      try {
+        const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalPaDiagnosed', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: 1, // You can change the user ID as needed
+            subCatId:id
+          }),
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          if (data.length > 0) {
+            const DiagnosedCount = data[0].p_diagnosed_count;
+            setTotalDiagnosed(DiagnosedCount);
+          }
+        } else {
+          console.error('Failed to fetch Total Doctors data');
+        }
+      } catch (error) {
+        console.error('Error fetching Total Doctors data:', error);
+      }
+    };
+  
+    fetchTotalDiagnosed();
+  }, [id]);
+
+  
+  useEffect(() => {
+    const fetchTotalCamps = async () => {
+      try {
+        const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalCampsWithId', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: 1, // You can change the user ID as needed
+            subCatId:id
+          }),
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          if (data.length > 0) {
+            const CampCount = data[0].camp_count;
+            setTotalCamps(CampCount);
+          }
+        } else {
+          console.error('Failed to fetch Total Doctors data');
+        }
+      } catch (error) {
+        console.error('Error fetching Total Doctors data:', error);
+      }
+    };
+  
+    fetchTotalCamps();
+  }, [id]);
 
   const handleFromDateChange = (event, selectedDate) => {
     setShowFromDatePicker(false);
@@ -54,15 +157,15 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         <View style={[styles.row, styles.container1]}>
               <TouchableOpacity style={[styles.button1, styles.elevation]}>
                 <Text style={styles.buttonText1}>Total Camps: </Text>
-                <Text style={styles.buttonText1}>10 </Text>
+                <Text style={styles.buttonText1}>{totalCamps} </Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.button1, styles.elevation]}>
                 <Text style={styles.buttonText1}>Patient Screened:</Text>
-                <Text style={styles.buttonText1}>15 </Text>
+                <Text style={styles.buttonText1}>{totalScreened} </Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.button1, styles.elevation]}>
                 <Text style={styles.buttonText1}>Patient Diagnosed:</Text>
-                <Text style={styles.buttonText1}>12 </Text>
+                <Text style={styles.buttonText1}>{totalDiagnosed} </Text>
               </TouchableOpacity>
             </View>
         <View style={styles.headertop}>
@@ -91,51 +194,53 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         </View>
     <View style={styles.header}>
     
+    {selectedValue === 'option3' && (
   <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
- 
- 
-    <View >
-    <LinearGradient colors={['#0054a4',  '#00aacf']} style={styles.datePickerContainer}>
-    <Button
-            icon="calendar"
-            mode="contained"
-            style={styles.addbtn1}
-            onPress={showFromDate}
-            // contentStyle={{ flexWrap: 'wrap' }}
-          >
-         From: {fromDate.toLocaleDateString()}
-          </Button>
-          {showFromDatePicker && (
-        <DateTimePicker
-          value={fromDate}
-          mode="date"
-          onChange={handleFromDateChange}
-          
-        />
-      )}
-      </LinearGradient>
-    </View>
-   
-    <LinearGradient colors={['#0054a4',  '#00aacf']} style={styles.datePickerContainer}>
-    <Button
-            icon="calendar"
-            mode="contained"
-          
-            style={styles.addbtn1}
-            onPress={showToDate}
-            // contentStyle={{ flexWrap: 'wrap' }}
-          >
-         To: {toDate.toLocaleDateString()}
-          </Button>
-      {showToDatePicker && (
-        <DateTimePicker
-          value={toDate}
-          mode="date"
-          onChange={handleToDateChange}
-        />
-      )}
+
+  <LinearGradient colors={['#0054a4',  '#00aacf']} style={styles.datePickerContainer}>
+  <Button
+          icon="calendar"
+          mode="contained"
+          style={styles.addbtn1}
+          onPress={showFromDate}
+          // contentStyle={{ flexWrap: 'wrap' }}
+        >
+       From: {fromDate.toLocaleDateString()}
+        </Button>
+        {showFromDatePicker && (
+      <DateTimePicker
+        value={fromDate}
+        mode="date"
+        onChange={handleFromDateChange}
+        
+      />
+    )}
     </LinearGradient>
-  </View>
+  
+ 
+  <LinearGradient colors={['#0054a4',  '#00aacf']} style={styles.datePickerContainer}>
+  <Button
+          icon="calendar"
+          mode="contained"
+        
+          style={styles.addbtn1}
+          onPress={showToDate}
+          // contentStyle={{ flexWrap: 'wrap' }}
+        >
+       To: {toDate.toLocaleDateString()}
+        </Button>
+    {showToDatePicker && (
+      <DateTimePicker
+        value={toDate}
+        mode="date"
+        onChange={handleToDateChange}
+      />
+    )}
+  </LinearGradient>
+</View>
+)}
+  
+
 </View>
       </View>
     );
@@ -181,6 +286,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         .then((response) => response.json())
         .then((responseData) => {
           setData(responseData);
+          console.log(responseData)
           setIsLoading(false);
         })
         .catch((error) => {

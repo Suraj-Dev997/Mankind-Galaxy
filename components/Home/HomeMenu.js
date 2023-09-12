@@ -128,9 +128,9 @@ export const HomeMenu = (props) => {
           {category === 3 && (
             <View style={styles.container1}>
               <LinearGradient
-                colors={['#FF5733', '#FFA07A']}
+                colors={['#EDF5F0', '#D8DEDA']}
                 style={[
-                  styles.button,
+                  styles.button1,
                   styles.elevation,
                   {
                     width: screenWidth / buttonsPerRow,
@@ -138,14 +138,14 @@ export const HomeMenu = (props) => {
                 ]}
               >
                 <TouchableOpacity onPress={() => console.log('Button 1 clicked')}>
-                  <Text style={styles.buttonText}>Total Camps: </Text>
-                  <Text style={styles.buttonText}>{totalCamps} </Text>
+                  <Text style={styles.buttonText1}>Total Camps: </Text>
+                  <Text style={styles.buttonText1}>{totalCamps} </Text>
                 </TouchableOpacity>
               </LinearGradient>
               <LinearGradient
-                colors={['#33FF57', '#7FFFAD']}
+                colors={['#EDF5F0', '#D8DEDA']}
                 style={[
-                  styles.button,
+                  styles.button1,
                   styles.elevation,
                   {
                     width: screenWidth / buttonsPerRow,
@@ -153,8 +153,8 @@ export const HomeMenu = (props) => {
                 ]}
               >
                 <TouchableOpacity onPress={() => console.log('Button 2 clicked')}>
-                  <Text style={styles.buttonText}>Total Doctors: </Text>
-                  <Text style={styles.buttonText}>{totalDoctors} </Text>
+                  <Text style={styles.buttonText1}>Total Doctors: </Text>
+                  <Text style={styles.buttonText1}>{totalDoctors} </Text>
                 </TouchableOpacity>
               </LinearGradient>
             </View>
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 3,
-    height: 100,
+    height: 90,
     textAlign: 'center',
     backgroundColor: '#0054a4',
     justifyContent: 'center',
@@ -223,6 +223,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     fontSize: 19,
+  },
+  button1: {
+    flex: 1,
+    marginHorizontal: 10,
+    height: 80,
+
+    textAlign: 'center',
+    backgroundColor: '#0054a4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    marginBottom: 20,
+  },
+  buttonText1: {
+    textAlign: 'center',
+    color: '#0054a4',
+    fontSize: 15,
   },
   elevation: {
     elevation: 5,

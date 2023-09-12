@@ -201,7 +201,7 @@ export const Home =  () =>{
     button1: {
       flex: 1,
       marginHorizontal: 3,
-      height: 100,
+      height: 90,
       textAlign:'center',
       backgroundColor: 'gray',
       justifyContent: 'center',
