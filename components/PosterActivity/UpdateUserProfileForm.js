@@ -4,10 +4,8 @@ import { TextInput, Button, Avatar,Menu, Divider } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRoute } from '@react-navigation/native';
-import { useNavigation } from '@react-navigation/native';
 
-const UserProfileForm = () => {
+const UpdateUserProfileForm = () => {
   const [userId, setUserId] = useState(null);
   const [name, setName] = useState('');
   const [venue, setVenue] = useState('');
@@ -22,10 +20,6 @@ const UserProfileForm = () => {
 
   const showDropdown = () => setDropdownVisible(true);
   const hideDropdown = () => setDropdownVisible(false);
-  const route = useRoute();
-  const navigation = useNavigation();
-  const { id } = route.params;
-  // console.log("this is sub id",id)
 
 
   useEffect(() => {
@@ -46,15 +40,14 @@ const UserProfileForm = () => {
   }, []);
 
   const AddDoctor = async () => {
-
     try {
       const formData = new FormData();
       formData.append('user_id', userId); // Replace with the actual user ID
-      formData.append('subcat_id', id); // Replace with the actual subcategory ID
+      formData.append('subcat_id', '1'); // Replace with the actual subcategory ID
       formData.append('doctorName', name);
       formData.append('campDate', '2023-10-10'); // Convert date to ISO format
       formData.append('campVenue', venue);
-      console.log(formData)
+
       if (avatarUri) {
         const image = {
           uri: avatarUri,
@@ -75,20 +68,6 @@ const UserProfileForm = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Response:', data);
-        Alert.alert(
-          'Success',
-          'Doctor added successfully',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                // Navigate to the home screen after pressing OK
-                navigation.goBack();
-              },
-            },
-          ],
-          { cancelable: false }
-        );
       } else {
         console.error('Error uploading data:', response.statusText);
       }
@@ -125,13 +104,7 @@ const UserProfileForm = () => {
         console.log(image.path);
       })
       .catch((error) => {
-        if (error.message === 'User cancelled image selection') {
-          // User cancelled image selection, do nothing or show a message
-          console.log('Image selection cancelled by the user');
-        } else {
-          // Handle other errors
-          console.error('Error selecting image:', error);
-        }
+        console.error('Error selecting image:', error);
       });
   };
 
@@ -267,4 +240,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UserProfileForm;
+export default UpdateUserProfileForm;

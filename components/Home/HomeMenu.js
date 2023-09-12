@@ -29,7 +29,7 @@ export const HomeMenu = (props) => {
           userId: 1, // You can change the user ID as needed
         }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         if (data.length > 0) {
@@ -43,62 +43,68 @@ export const HomeMenu = (props) => {
       console.error('Error fetching Total Camps data:', error);
     }
   };
-useEffect(() => {
-  fetchTotalCamps();
-}, []);
 
-const fetchTotalDoctors = async () => {
-  try {
-    const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalDoctors', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: 1, // You can change the user ID as needed
-      }),
-    });
+  useEffect(() => {
+    fetchTotalCamps();
+  }, []);
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data.length > 0) {
-        const docCount = data[0].doc_count;
-        setTotalDoctors(docCount);
+  const fetchTotalDoctors = async () => {
+    try {
+      const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalDoctors', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: 1, // You can change the user ID as needed
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.length > 0) {
+          const docCount = data[0].doc_count;
+          setTotalDoctors(docCount);
+        }
+      } else {
+        console.error('Failed to fetch Total Doctors data');
       }
-    } else {
-      console.error('Failed to fetch Total Doctors data');
+    } catch (error) {
+      console.error('Error fetching Total Doctors data:', error);
     }
-  } catch (error) {
-    console.error('Error fetching Total Doctors data:', error);
-  }
-};
-useEffect(() => {
-  fetchTotalDoctors();
-}, []);
+  };
+
+  useEffect(() => {
+    fetchTotalDoctors();
+  }, []);
+
   useEffect(() => {
     // Fetch subcategories from the API
     fetch('https://MankindGalexyapi.netcastservice.co.in/cat/getSubCategory')
       .then((response) => response.json())
       .then((data) => {
-        // Extract subcategory names from the API response
-        const subcategoryNames = data[0].map((subcategory) => subcategory.subcategory_name);
-        setSubcategories(subcategoryNames);
+        // Extract subcategory names and IDs from the API response
+        const subcategoryData = data[0].map((subcategory) => ({
+          id: subcategory.subcategory_id,
+          name: subcategory.subcategory_name,
+        }));
+        setSubcategories(subcategoryData);
       })
       .catch((error) => {
         console.error('Error fetching subcategories:', error);
       });
   }, []);
 
-  const navigateToCategoryScreen = (subcategory) => {
+  const navigateToCategoryScreen = (id, name) => {
     switch (category) {
       case 1:
-        props.navigation.navigate('PosterList', { category: subcategory });
+        props.navigation.navigate('PosterList', { id, name });
         break;
       case 2:
-        props.navigation.navigate('ReportList', { category: subcategory });
+        props.navigation.navigate('ReportList', { id, name });
         break;
       case 3:
-        props.navigation.navigate('DashboardList', { category: subcategory });
+        props.navigation.navigate('DashboardList', { id, name });
         break;
       default:
         break;
@@ -107,8 +113,6 @@ useEffect(() => {
 
   const screenWidth = Dimensions.get('window').width;
   const buttonsPerRow = 2;
-
-
 
   const getContentBasedOnCategory = () => {
     try {
@@ -121,45 +125,45 @@ useEffect(() => {
       return (
         <ScrollView>
           {/* Static buttons for the DashboardList category */}
-        {category === 3 && (
-          <View style={styles.container1}>
-            <LinearGradient
-              colors={['#FF5733', '#FFA07A']}
-              style={[
-                styles.button,
-                styles.elevation,
-                {
-                  width: screenWidth / buttonsPerRow,
-                },
-              ]}
-            >
-              <TouchableOpacity onPress={() => console.log('Button 1 clicked')}>
-              <Text style={styles.buttonText}>Total Camps: </Text>
-                <Text style={styles.buttonText}>{totalCamps} </Text>
-              </TouchableOpacity>
-            </LinearGradient>
-            <LinearGradient
-              colors={['#33FF57', '#7FFFAD']}
-              style={[
-                styles.button,
-                styles.elevation,
-                {
-                  width: screenWidth / buttonsPerRow,
-                },
-              ]}
-            >
-              <TouchableOpacity onPress={() => console.log('Button 2 clicked')}>
-              <Text style={styles.buttonText}>Total Doctors: </Text>
-                <Text style={styles.buttonText}>{totalDoctors} </Text>
-              </TouchableOpacity>
-            </LinearGradient>
-          </View>
-        )}
+          {category === 3 && (
+            <View style={styles.container1}>
+              <LinearGradient
+                colors={['#FF5733', '#FFA07A']}
+                style={[
+                  styles.button,
+                  styles.elevation,
+                  {
+                    width: screenWidth / buttonsPerRow,
+                  },
+                ]}
+              >
+                <TouchableOpacity onPress={() => console.log('Button 1 clicked')}>
+                  <Text style={styles.buttonText}>Total Camps: </Text>
+                  <Text style={styles.buttonText}>{totalCamps} </Text>
+                </TouchableOpacity>
+              </LinearGradient>
+              <LinearGradient
+                colors={['#33FF57', '#7FFFAD']}
+                style={[
+                  styles.button,
+                  styles.elevation,
+                  {
+                    width: screenWidth / buttonsPerRow,
+                  },
+                ]}
+              >
+                <TouchableOpacity onPress={() => console.log('Button 2 clicked')}>
+                  <Text style={styles.buttonText}>Total Doctors: </Text>
+                  <Text style={styles.buttonText}>{totalDoctors} </Text>
+                </TouchableOpacity>
+              </LinearGradient>
+            </View>
+          )}
           {subcategoryRows.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.container1}>
               {row.map((subcategory, subcategoryIndex) => (
                 <LinearGradient
-                  key={subcategory}
+                  key={subcategory.id}
                   colors={['#4b93d8', '#0054a4']}
                   style={[
                     styles.button,
@@ -169,15 +173,13 @@ useEffect(() => {
                     },
                   ]}
                 >
-                  <TouchableOpacity onPress={() => navigateToCategoryScreen(subcategory)}>
-                    <Text style={styles.buttonText}>{subcategory}</Text>
+                  <TouchableOpacity onPress={() => navigateToCategoryScreen(subcategory.id, subcategory.name)}>
+                    <Text style={styles.buttonText}>{subcategory.name}</Text>
                   </TouchableOpacity>
                 </LinearGradient>
               ))}
             </View>
           ))}
-
-          
         </ScrollView>
       );
     } catch (error) {

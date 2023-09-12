@@ -17,8 +17,9 @@ const CategoryPoster = ({ users, filteredUsers, renderUserItem }) => (
 // Add more components for other categories as needed
 
 const Header = (props) => {
+  const route = useRoute();
   const navigation = useNavigation();
-
+  const { id, name } = route.params;
   return(
     <View style={styles.headerMain}>
     <View style={styles.headertop}>
@@ -26,7 +27,7 @@ const Header = (props) => {
         icon="plus"
         mode="contained"
         style={styles.addbtn}
-        onPress={()=> navigation.navigate("UserProfileForm")}
+        onPress={()=> navigation.navigate("UserProfileForm",{id})}
       >
         Add Doctor
       </Button>
@@ -68,11 +69,11 @@ const PosterList = () => {
   const [searchText, setSearchText] = useState('');
 
   const onChangeSearch = (query) => setSearchQuery(query);
-
+  const { id, name } = route.params;
   let users = [];
-console.log(route.params.category);
-  switch (route.params.category) {
-    case 'Glucometer Poster':
+console.log( id,name);
+  switch ( id) {
+    case 1:
       users = [
         {
           id: 1,
@@ -89,7 +90,7 @@ console.log(route.params.category);
         // Add more users for Glucometer category as needed
       ];
       break;
-    case 'Neuropathy Poster':
+    case 2:
       users = [
         {
           id: 3,
@@ -106,7 +107,7 @@ console.log(route.params.category);
         // Add more users for Neuropathy category as needed
       ];
       break;
-      case 'HbA1c Poster':
+      case 3:
       users = [
         {
           id: 3,
@@ -123,7 +124,7 @@ console.log(route.params.category);
         // Add more users for Neuropathy category as needed
       ];
       break;
-      case 'BMD Poster':
+      case 4:
       users = [
         {
           id: 3,
@@ -140,7 +141,7 @@ console.log(route.params.category);
         // Add more users for Neuropathy category as needed
       ];
       break;
-      case 'Glucometer & Neuropathy Poster':
+      case 5:
       users = [
         {
           id: 3,
@@ -187,7 +188,7 @@ console.log(route.params.category);
             icon="application-edit"
             iconColor="#0054a4"
             size={20}
-            onPress={() => console.log('Pressed')}
+            onPress={()=> navigation.navigate("UpdateUserProfileForm")}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>

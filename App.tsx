@@ -19,10 +19,12 @@ import PosterList from './components/PosterActivity/PosterList';
 import ReportList from './components/CampReport/ReportList';
 import DashboardList from './components/Dashboard/DashboardList';
 import UserProfileForm from './components/PosterActivity/UserProfileForm';
+import UpdateUserProfileForm from './components/PosterActivity/UpdateUserProfileForm';
 import AddCampReport from './components/CampReport/AddCampReport';
 import AddCampData from './components/CampReport/AddCampData';
 import UploadCampImages from './components/CampReport/UploadCampImages';
 import PosterDownload from './components/PosterActivity/PosterDownload';
+
 
 
 
@@ -57,6 +59,7 @@ function App(): JSX.Element {
     <Stack.Screen name='ReportList' component={ReportList} options={{title:"Doctors List" }} />
     <Stack.Screen name='DashboardList' component={DashboardList} options={{title:"Download Report" }} />
     <Stack.Screen name='UserProfileForm' component={UserProfileForm} options={{title:"Add Doctor" }} />
+    <Stack.Screen name='UpdateUserProfileForm' component={UpdateUserProfileForm} options={{title:"Update Doctor" }} />
     <Stack.Screen name='AddCampReport' component={AddCampReport} options={{title:"Add Doctor Detail" }} />
     <Stack.Screen name='AddCampData' component={AddCampData} options={{title:"Add Camp Detail" }} />
     <Stack.Screen name='UploadCampImages' component={UploadCampImages} options={{title:"Add Camp Images" }} />

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text,TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal } from 'react-native';
+import React, { useState,useEffect } from 'react';
+import { View, Text,TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal, ScrollView } from 'react-native';
 import { Button, Searchbar, IconButton   } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -11,8 +11,11 @@ import LinearGradient from 'react-native-linear-gradient';
 // Create separate components for each category's content
 const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     <View style={styles.container}>
-      <Header />
-      <UserList filteredUsers={filteredUsers} renderUserItem={renderUserItem} />
+     <Header />
+    <View style={styles.tableCont}>
+      <TableHeader />
+      
+    </View>
     </View>
   );
   
@@ -86,34 +89,6 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         </View>
           
         </View>
-        {/* <View style={styles.header}>
-        <View style={{ flex:1,flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ marginRight: 8 }}>Select a date range:</Text>
-          <View style={styles.datePickerContainer}>
-            <Text style={styles.datePickerContainertext}>From: </Text>
-            <Button onPress={showFromDate}>{fromDate.toDateString()}</Button>
-            {showFromDatePicker && (
-              <DateTimePicker
-                value={fromDate}
-                mode="date"
-                onChange={handleFromDateChange}
-              />
-            )}
-          </View>
-          <View style={styles.datePickerContainer}>
-            <Text>To: </Text>
-            <Button onPress={showToDate}>{toDate.toDateString()}</Button>
-            {showToDatePicker && (
-              <DateTimePicker
-                value={toDate}
-                mode="date"
-                onChange={handleToDateChange}
-              />
-            )}
-          </View>
-        </View>
-     
-    </View> */}
     <View style={styles.header}>
     
   <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -192,135 +167,90 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     const [selectedUser, setSelectedUser] = useState(null);
   
     const onChangeSearch = (query) => setSearchQuery(query);
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
   
-    const handleInfoButtonClick = (user) => {
-      console.log('Info button clicked for user:', user);
-      setSelectedUser(user);
-    };
+    useEffect(() => {
+      // Fetch data from the API
+      fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getFilterCampReport', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((responseData) => {
+          setData(responseData);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching data: ', error);
+          setIsLoading(false);
+        });
+    }, []);
+  
+    // Render loading indicator if data is still loading
+    if (isLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <Text>Loading...</Text>
+        </View>
+      );
+    }
+    const renderUserItem = ({ item }) => {
+      const campDate = new Date(item.camp_date);
 
-  let users = [];
-  console.log(route.params.category);
-  switch (route.params.category) {
-    case 'Glucometer':
-      users = [
-        {
-          id: 1,
-          name: 'Suraj Report - Glucometer',
-          qualification: 'Doctor',
-          Date:'10-02-2022',
-        },
-        {
-          id: 2,
-          name: 'Suraj Report  - Glucometer',
-          qualification: 'Engineer',
-          Date:'10-02-2022',
-        },
-        // Add more users for Glucometer category as needed
-      ];
-      break;
-    case 'Neuropathy':
-      users = [
-        {
-          id: 3,
-          name: 'Alice - Neuropathy',
-          qualification: 'Doctor',
-          Date:'10-02-2022',
-        },
-        {
-          id: 4,
-          name: 'Bob - Neuropathy',
-          qualification: 'Engineer',
-          Date:'10-02-2022',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-      case 'HbA1c':
-      users = [
-        {
-          id: 3,
-          name: 'Alice - HbA1c',
-          qualification: 'Doctor',
-          Date:'10-02-2022',
-        },
-        {
-          id: 4,
-          name: 'Bob - HbA1c',
-          qualification: 'Engineer',
-          Date:'10-02-2022',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-      case 'BMD':
-      users = [
-        {
-          id: 3,
-          name: 'Alice - BMD',
-          qualification: 'Doctor',
-          Date:'10-02-2022',
-        },
-        {
-          id: 4,
-          name: 'Bob - BMD',
-          qualification: 'Engineer',
-          Date:'10-02-2022',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-      case 'Glucometer & Neuropathy':
-      users = [
-        {
-          id: 3,
-          name: 'Alice - Glucometer & Neuropathy',
-          qualification: 'Doctor',
-          Date:'10-02-2022',
-        },
-        {
-          id: 4,
-          name: 'Bob - Glucometer & Neuropathy',
-          qualification: 'Engineer',
-          Date:'10-02-2022',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-    // Add cases for other categories as needed
-    default:
-      break;
-  }
+      // Define date options for formatting
+  const dateOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  };
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchText.toLowerCase())
-  );
-  const renderUserItem = ({ item }) => (
+  // Format the date using toLocaleDateString
+  const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
+      
+  return(
     <View style={styles.userItem}>
-      <View style={styles.userInfo}>
-        <Text>{item.name}</Text>
-      </View>
-      <View style={styles.userInfo}>
-        <Text>{item.Date}</Text>
-      </View>
-      <View style={styles.actionButtons}>
+        <View style={styles.userInfo}>
+          <Text>{item.doctor_name}</Text>
+    
+        </View>
+        <View style={styles.userInfo}>
+      
+          <Text> {formattedDate}</Text>
+        </View>
+        <View style={styles.actionButtons}>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="arrow-down-bold-box"
             iconColor="#0054a4"
-            size={20}
+            size={30}
             onPress={() => console.log('Pressed')}
           />
         </TouchableOpacity>
+        </View>
       </View>
-    </View>
   );
+      
+  };
+
+  
 
   return (
-    <CategoryDash
-      users={users}
-      filteredUsers={filteredUsers}
-      renderUserItem={renderUserItem}
+    <View style={styles.container}>
+    <Header />
+    <View style={styles.tableCont}>
+      <TableHeader/>
+    <FlatList
+      data={data}
+      keyExtractor={(item) => item.crid.toString()}
+      renderItem={renderUserItem}
     />
+    </View>
+   
+  </View>
+    
   );
 };
 
@@ -493,29 +423,27 @@ const styles = StyleSheet.create({
     },
     userItem: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: 8,
+      justifyContent: 'center', // Center content horizontally
+      alignItems: 'center', // Center content vertically
+      paddingVertical: 3,
       borderBottomWidth: 1,
       borderColor: '#ccc',
     },
-    userImage: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
-      marginRight: 8,
-    },
     userInfo: {
       flex: 1,
+      justifyContent: 'center', // Center text horizontally
+      alignItems: 'start', // Center text vertically
+    },
+    userInfoText: {
+      textAlign: 'center', // Center text horizontally within userInfo
     },
     actionButtons: {
       flexDirection: 'row',
+      alignItems: 'center', // Center content vertically
     },
     actionButton: {
-      // backgroundColor: 'blue',
       paddingHorizontal: 0,
-      paddingVertical: 5,
-      // borderRadius: 4,
+      paddingVertical: 2,
       marginLeft: 0,
     },
     actionButtonText: {
