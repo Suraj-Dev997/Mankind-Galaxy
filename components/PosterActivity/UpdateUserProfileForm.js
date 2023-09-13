@@ -21,7 +21,7 @@ const UpdateUserProfileForm = () => {
 
   const route = useRoute();
   const navigation = useNavigation();
-  // const { id } = route.params;
+  const { doctorId } = route.params;
 
   useEffect(() => {
     const handleMoreInfo = async(doctor) => {
@@ -29,7 +29,7 @@ const UpdateUserProfileForm = () => {
         try {
         
           const payload ={
-            doctorId:22
+            doctorId:doctorId
           }
           const ApiUrl = `${BASE_URL}${'/doc/getDoctorPoster'}`;
           const ProfileUrl = `${BASE_URL}${'/uploads/profile/'}`;
@@ -66,7 +66,7 @@ const UpdateUserProfileForm = () => {
        
       }
     handleMoreInfo();
-  }, []);
+  }, [doctorId]);
   useEffect(()=>{
     // console.log(doctorDetail)
     if(doctorDetail){
@@ -188,7 +188,7 @@ const UpdateUserProfileForm = () => {
             />
           )}
         </View>
-        <Text style={styles.changeAvatarText}>Upload Profile Image</Text>
+        <Text style={styles.changeAvatarText}>Update Profile Image</Text>
       </TouchableOpacity>
 
       <View style={styles.form}>

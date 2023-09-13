@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Image,TouchableOpacity } from 'react-native';
 import { Button, Searchbar, IconButton } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { BASE_URL } from '../Configuration/Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -48,10 +50,10 @@ const UserList = ({ filteredUsers, renderUserItem }) => (
   <View style={styles.tableCont}>
     <TableHeader />
     <FlatList
-      data={filteredUsers}
-      renderItem={renderUserItem}
-      keyExtractor={(item) => item.id.toString()}
-    />
+  data={filteredUsers}
+  renderItem={renderUserItem}
+  keyExtractor={(item) => (item ? item.doctor_id.toString() : '0')} // Updated keyExtractor
+/>
   </View>
 );
 
@@ -67,115 +69,106 @@ const PosterList = () => {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchText, setSearchText] = useState('');
+  const [users, setUsers] = useState([]); // Store fetched data
 
   const onChangeSearch = (query) => setSearchQuery(query);
   const { id, name } = route.params;
-  let users = [];
-console.log( id,name);
-  switch ( id) {
-    case 1:
-      users = [
-        {
-          id: 1,
-          name: 'John Doe - Glucometer',
-          qualification: 'Doctor',
-          image: 'https://zplusconnect.netcastservice.co.in/RDI.png',
-        },
-        {
-          id: 2,
-          name: 'Jane Smith - Glucometer',
-          qualification: 'Engineer',
-          image: 'https://zplusconnect.netcastservice.co.in/RDI.png',
-        },
-        // Add more users for Glucometer category as needed
-      ];
-      break;
-    case 2:
-      users = [
-        {
-          id: 3,
-          name: 'Alice - Neuropathy',
-          qualification: 'Doctor',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
-        },
-        {
-          id: 4,
-          name: 'Bob - Neuropathy',
-          qualification: 'Engineer',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-      case 3:
-      users = [
-        {
-          id: 3,
-          name: 'Alice - HbA1c',
-          qualification: 'Doctor',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
-        },
-        {
-          id: 4,
-          name: 'Bob - HbA1c',
-          qualification: 'Engineer',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-      case 4:
-      users = [
-        {
-          id: 3,
-          name: 'Alice - BMD',
-          qualification: 'Doctor',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
-        },
-        {
-          id: 4,
-          name: 'Bob - BMD',
-          qualification: 'Engineer',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-      case 5:
-      users = [
-        {
-          id: 3,
-          name: 'Alice - Glucometer & Neuropathy',
-          qualification: 'Doctor',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
-        },
-        {
-          id: 4,
-          name: 'Bob - Glucometer & Neuropathy',
-          qualification: 'Engineer',
-          image: 'https://zplusconnect.netcastservice.co.in/img.jpg',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-    // Add cases for other categories as needed
-    default:
-      break;
-  }
 
+  const handleEdit = (doctorId) => {
+    navigation.navigate('UpdateUserProfileForm', { doctorId }); // Pass the doctorId as a parameter
+  };
+
+  const handleDelete = async (doctorId) => {
+    try {
+      const ApiUrl = `${BASE_URL}${'/doc/deleteDoctor'}`;
+      const response = await fetch(ApiUrl, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          doctorId: doctorId,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Remove the deleted doctor from the state
+        const updatedUsers = users.filter((user) => user.doctor_id !== doctorId);
+        setUsers(updatedUsers);
+        console.log(data.message); // Log the success message
+      } else {
+        console.error('Error deleting doctor:', data);
+      }
+    } catch (error) {
+      console.error('Error deleting doctor:', error);
+    }
+  };
+
+
+
+  // Fetch data from the API
+  useEffect(() => {
+    const fetchData = async (userId) => {
+      try {
+        const ApiUrl = `${BASE_URL}${'/doc/getDoctorWithUserId'}`;
+        const response = await fetch(ApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: userId, // Replace with your user ID
+            subCatId: id, // Replace with your subcategory ID
+          }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setUsers(data[0]); // Set the fetched data
+        } else {
+          console.error('Error fetching data:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    AsyncStorage.getItem('userdata')
+    .then((data) => {
+      if (data) {
+        const userData = JSON.parse(data);
+        const userId = userData.responseData.user_id;
+        // Call fetchData with the retrieved userId
+        console.log("Getting user id:",userId)
+        fetchData(userId);
+      } else {
+        console.error('Invalid or missing data in AsyncStorage');
+      }
+    })
+    .catch((error) => {
+      console.error('Error retrieving data:', error);
+    });
+
+    fetchData();
+  }, [id]);
+
+  
+
+  // Filter users based on the search text
   const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchText.toLowerCase())
+    user.doctor_name.toLowerCase().includes(searchText.toLowerCase())
   );
-
+  const ProfileUrl = `${BASE_URL}${'/uploads/profile/'}`;
+  // Render user item
   const renderUserItem = ({ item }) => (
+    
     <View style={styles.userItem}>
-      <Image source={{ uri: item.image }} style={styles.userImage} />
+      <Image source={{ uri: ProfileUrl+item.doctor_img }} style={styles.userImage} />
       <View style={styles.userInfo}>
-        <Text>{item.name}</Text>
-        <Text>{item.qualification}</Text>
+        <Text>{item.doctor_name}</Text>
+        <Text>Date: {item.camp_date}</Text>
       </View>
       <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.actionButton}>
+      <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="file-image"
             iconColor="#0054a4"
@@ -188,7 +181,7 @@ console.log( id,name);
             icon="application-edit"
             iconColor="#0054a4"
             size={20}
-            onPress={()=> navigation.navigate("UpdateUserProfileForm")}
+            onPress={() => handleEdit(item.doctor_id)}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
@@ -196,7 +189,7 @@ console.log( id,name);
             icon="delete"
             iconColor="#0054a4"
             size={20}
-            onPress={() => console.log('Pressed')}
+            onPress={() => handleDelete(item.doctor_id)}
           />
         </TouchableOpacity>
       </View>

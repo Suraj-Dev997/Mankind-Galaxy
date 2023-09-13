@@ -11,6 +11,7 @@ import {
 import { useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BASE_URL } from '../Configuration/Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const HomeMenu = (props) => {
   const route = useRoute();
@@ -19,7 +20,7 @@ export const HomeMenu = (props) => {
   const [totalCamps, setTotalCamps] = useState(0);
   const [totalDoctors, setTotalDoctors] = useState(0);
 
-  const fetchTotalCamps = async () => {
+  const fetchTotalCamps = async (userId) => {
     try {
       const ApiUrl = `${BASE_URL}${'/dashboard/getTotalCamps'}`;
       const response = await fetch(ApiUrl, {
@@ -28,7 +29,7 @@ export const HomeMenu = (props) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 1, // You can change the user ID as needed
+          userId: userId, // You can change the user ID as needed
         }),
       });
 
@@ -46,11 +47,27 @@ export const HomeMenu = (props) => {
     }
   };
 
+  AsyncStorage.getItem('userdata')
+  .then((data) => {
+    if (data) {
+      const userData = JSON.parse(data);
+      const userId = userData.responseData.user_id;
+      // Call fetchData with the retrieved userId
+    
+      fetchTotalCamps(userId);
+    } else {
+      console.error('Invalid or missing data in AsyncStorage');
+    }
+  })
+  .catch((error) => {
+    console.error('Error retrieving data:', error);
+  });
+
   useEffect(() => {
     fetchTotalCamps();
   }, []);
 
-  const fetchTotalDoctors = async () => {
+  const fetchTotalDoctors = async (userId) => {
     try {
       const ApiUrl = `${BASE_URL}${'/dashboard/getTotalDoctors'}`;
       const response = await fetch(ApiUrl, {
@@ -59,7 +76,7 @@ export const HomeMenu = (props) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 1, // You can change the user ID as needed
+          userId: userId, // You can change the user ID as needed
         }),
       });
 
@@ -76,6 +93,21 @@ export const HomeMenu = (props) => {
       console.error('Error fetching Total Doctors data:', error);
     }
   };
+  AsyncStorage.getItem('userdata')
+  .then((data) => {
+    if (data) {
+      const userData = JSON.parse(data);
+      const userId = userData.responseData.user_id;
+      // Call fetchData with the retrieved userId
+     
+      fetchTotalDoctors(userId);
+    } else {
+      console.error('Invalid or missing data in AsyncStorage');
+    }
+  })
+  .catch((error) => {
+    console.error('Error retrieving data:', error);
+  });
 
   useEffect(() => {
     fetchTotalDoctors();
@@ -87,7 +119,8 @@ export const HomeMenu = (props) => {
     fetch(ApiUrl)
       .then((response) => response.json())
       .then((data) => {
-        // Extract subcategory names and IDs from the API response
+   
+        console.log(data)
         const subcategoryData = data[0].map((subcategory) => ({
           id: subcategory.subcategory_id,
           name: subcategory.subcategory_name,
