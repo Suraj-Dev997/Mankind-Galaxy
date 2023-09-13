@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
+import { BASE_URL } from '../Configuration/Config';
 
 export const HomeMenu = (props) => {
   const route = useRoute();
@@ -20,7 +21,8 @@ export const HomeMenu = (props) => {
 
   const fetchTotalCamps = async () => {
     try {
-      const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalCamps', {
+      const ApiUrl = `${BASE_URL}${'/dashboard/getTotalCamps'}`;
+      const response = await fetch(ApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +52,8 @@ export const HomeMenu = (props) => {
 
   const fetchTotalDoctors = async () => {
     try {
-      const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalDoctors', {
+      const ApiUrl = `${BASE_URL}${'/dashboard/getTotalDoctors'}`;
+      const response = await fetch(ApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,7 +83,8 @@ export const HomeMenu = (props) => {
 
   useEffect(() => {
     // Fetch subcategories from the API
-    fetch('https://MankindGalexyapi.netcastservice.co.in/cat/getSubCategory')
+    const ApiUrl = `${BASE_URL}${'/cat/getSubCategory'}`;
+    fetch(ApiUrl)
       .then((response) => response.json())
       .then((data) => {
         // Extract subcategory names and IDs from the API response

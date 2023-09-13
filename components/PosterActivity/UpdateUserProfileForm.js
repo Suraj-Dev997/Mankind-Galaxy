@@ -1,53 +1,94 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity,Alert } from 'react-native';
-import { TextInput, Button, Avatar,Menu, Divider } from 'react-native-paper';
+import { TextInput, Button, Avatar } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { BASE_URL } from '../Configuration/Config';
+
+
 
 const UpdateUserProfileForm = () => {
   const [userId, setUserId] = useState(null);
   const [name, setName] = useState('');
   const [venue, setVenue] = useState('');
-  const [avatarUri, setAvatarUri] = useState(null); // To store the URI of the selected image
+  const [avatarUri, setAvatarUri] = useState(null);
   const [campDate, setCampDate] = useState(new Date());
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
+  const [doctorDetail, setDoctorDetail] = useState(null);
 
-
-  const [textInputValue, setTextInputValue] = useState('');
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState('');
-
-  const showDropdown = () => setDropdownVisible(true);
-  const hideDropdown = () => setDropdownVisible(false);
-
+  const route = useRoute();
+  const navigation = useNavigation();
+  // const { id } = route.params;
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const jsonData = await AsyncStorage.getItem('userdata');
-        if (jsonData !== null) {
-          const data = JSON.parse(jsonData);
-          const userId = data.responseData.user_id;
-          console.log(userId)
-          setUserId(userId)
+    const handleMoreInfo = async(doctor) => {
+       
+        try {
+        
+          const payload ={
+            doctorId:22
+          }
+          const ApiUrl = `${BASE_URL}${'/doc/getDoctorPoster'}`;
+          const ProfileUrl = `${BASE_URL}${'/uploads/profile/'}`;
+          const response = await fetch(ApiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          })
+          if (response.ok) {
+            const data = await response.json();
+            // console.log('API Response:', data);
+            if (Array.isArray(data) && data.length > 0) {
+              const doctorData = data[0][0];
+              setName(doctorData.doctor_name);
+              setVenue(doctorData.camp_venue);
+              setCampDate(new Date(doctorData.camp_date));
+              if (doctorData.doctor_img) {
+                // Assuming that the API provides a valid image URL
+                setAvatarUri(`${ProfileUrl}${doctorData.doctor_img}`);
+                
+              
+              }
+            }
+          } else {
+            console.error('Error fetching doctor data:', response.statusText);
+          }
+        } catch (error) {
+          console.log('Error saving data:', error);
         }
-      } catch (error) {
-        console.log('Error retrieving data:', error);
+       
+     
+       
       }
-    };
-    getData();
+    handleMoreInfo();
   }, []);
+  useEffect(()=>{
+    // console.log(doctorDetail)
+    if(doctorDetail){
+      setName(doctorDetail.doctor_name)
+    //    console.log(doctorDetail)
+      setVenue(doctorDetail.camp_venue)
+     
+    }
 
-  const AddDoctor = async () => {
+  },[doctorDetail])
+
+
+
+  const EditDoctor = async () => {
+
     try {
       const formData = new FormData();
-      formData.append('user_id', userId); // Replace with the actual user ID
-      formData.append('subcat_id', '1'); // Replace with the actual subcategory ID
-      formData.append('doctorName', name);
-      formData.append('campDate', '2023-10-10'); // Convert date to ISO format
-      formData.append('campVenue', venue);
-
+      formData.append('doctor_id', 22); // Replace with the actual user ID
+      formData.append('doctor_name', name);
+      formData.append('camp_date', '2023-10-10'); // Convert date to ISO format
+      formData.append('camp_venue', venue);
+     
       if (avatarUri) {
         const image = {
           uri: avatarUri,
@@ -56,9 +97,10 @@ const UpdateUserProfileForm = () => {
         };
         formData.append('image', image);
       }
-
-      const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/doc/addDoctor', {
-        method: 'POST',
+      console.log(formData)
+      const ApiUrl = `${BASE_URL}${'/doc/updateDoctor'}`;
+      const response = await fetch(ApiUrl, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -68,29 +110,39 @@ const UpdateUserProfileForm = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Response:', data);
+        Alert.alert(
+          'Success',
+          'Doctor updated successfully',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Navigate to the home screen after pressing OK
+                navigation.goBack();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
       } else {
-        console.error('Error uploading data:', response.statusText);
+        console.error('Error uploading data:', response);
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  const handleItemSelect = (item) => {
-    setSelectedItem(item);
-    hideDropdown();
-  };
-  const dropdownItems = ['Option 1', 'Option 2', 'Option 3'];
-  
   const handleCampDateChange = (event, selectedDate) => {
     setShowCampDatePicker(false);
     if (selectedDate) {
       setCampDate(selectedDate);
     }
   };
+
   const showCampDate = () => {
     setShowCampDatePicker(true);
   };
+
   const chooseImage = () => {
     ImagePicker.openPicker({
       width: 200, // Maximum width for the selected image
@@ -104,8 +156,18 @@ const UpdateUserProfileForm = () => {
         console.log(image.path);
       })
       .catch((error) => {
-        console.error('Error selecting image:', error);
+        if (error.message === 'User cancelled image selection') {
+          // User cancelled image selection, do nothing or show a message
+          console.log('Image selection cancelled by the user');
+        } else {
+          // Handle other errors
+          console.error('Error selecting image:', error);
+        }
       });
+  };
+
+  const handleSubmit = async () => {
+    // Implement your submit logic here
   };
 
   return (
@@ -114,14 +176,13 @@ const UpdateUserProfileForm = () => {
         <View style={styles.avatarContainer}>
           {avatarUri ? (
             <Avatar.Image
-      
               source={{ uri: avatarUri }}
               size={100}
               style={styles.profileimg}
             />
           ) : (
             <Avatar.Image
-              source={require('./Images/Profile.jpg')} // Replace with your default avatar image
+              source={require('./Images/Profile.jpg')}
               size={100}
               style={styles.profileimg}
             />
@@ -137,8 +198,8 @@ const UpdateUserProfileForm = () => {
           onChangeText={(text) => setName(text)}
           mode="outlined"
           style={styles.input}
-          outlineColor='#0054a4'
-          activeOutlineColor='#08a5d8'
+          outlineColor="#0054a4"
+          activeOutlineColor="#08a5d8"
         />
 
         <TextInput
@@ -147,68 +208,62 @@ const UpdateUserProfileForm = () => {
           onChangeText={(text) => setVenue(text)}
           mode="outlined"
           style={styles.input}
-          outlineColor='#0054a4'
-          activeOutlineColor='#08a5d8'
+          outlineColor="#0054a4"
+          activeOutlineColor="#08a5d8"
         />
 
-<View style={styles.datePickerContainer} >
-    
-    <Text style={styles.datePickerLabel} onPress={showCampDate}>Select Date:</Text>
-    <Button style={styles.datePickerButton} onPress={showCampDate}>{campDate.toLocaleDateString()}</Button>
-    {showCampDatePicker && (
-      <DateTimePicker
-        value={campDate}
-        mode="date"
-        is24Hour={true}
-        display="default"
-        dateFormat='DD-MM-YYYY'
-        onChange={handleCampDateChange}
-      />
-    )}
-  </View>
-
-  
+        <View style={styles.datePickerContainer}>
+          <Text style={styles.datePickerLabel} onPress={showCampDate}>
+            Select Date:
+          </Text>
+          <Button style={styles.datePickerButton} onPress={showCampDate}>
+            {campDate.toLocaleDateString()}
+          </Button>
+          {showCampDatePicker && (
+            <DateTimePicker
+              value={campDate}
+              mode="date"
+              is24Hour={true}
+              display="default"
+              dateFormat="DD-MM-YYYY"
+              onChange={handleCampDateChange}
+            />
+          )}
+        </View>
 
         <Button
-        buttonColor='#0054a4'
+          buttonColor="#0054a4"
           mode="contained"
-          onPress={AddDoctor}
+          onPress={EditDoctor}
           style={styles.button}
         >
           Submit
         </Button>
       </View>
     </View>
-
-     
-
   );
 };
 
 const styles = StyleSheet.create({
   datePickerContainer: {
     flexDirection: 'column',
-// alignItems:'center'
- 
-  
   },
   datePickerLabel: {
-    fontSize: 14, // You can adjust the font size as needed
-    marginBottom: 3, // Spacing between label and button
-    color:'#0054a4',
-    fontWeight:'600',
-   
+    fontSize: 14,
+    marginBottom: 3,
+    color: '#0054a4',
+    fontWeight: '600',
   },
   datePickerButton: {
-    width:'auto',
-    borderRadius:5,
-    textAlign:'left',
-    alignItems:'flex-start',
-    fontSize: 16, // You can adjust the font size as needed
-    backgroundColor:'#fff',
+    width: 'auto',
+    borderRadius: 5,
+    textAlign: 'left',
+    alignItems: 'flex-start',
+    fontSize: 16,
+    backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#0054a4',
-    padding:5,
+    padding: 5,
     marginBottom: 12,
   },
   container: {
@@ -216,18 +271,15 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   form: {
-    marginTop:40,
+    marginTop: 40,
     flex: 1,
   },
   input: {
     borderColor: 'blue',
     marginBottom: 12,
   },
-  profileimg:{
-
-  },
+  profileimg: {},
   button: {
- 
     marginTop: 16,
   },
   avatarContainer: {

@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import LinearGradient from 'react-native-linear-gradient';
+import { BASE_URL } from '../Configuration/Config';
 
 
 // Create separate components for each category's content
@@ -38,7 +39,8 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
   useEffect(() => {
     const fetchTotalScreened = async () => {
       try {
-        const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalPaScreened', {
+        const ApiUrl = `${BASE_URL}${'/dashboard/getTotalPaScreened'}`;
+        const response = await fetch(ApiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -69,7 +71,8 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
   useEffect(() => {
     const fetchTotalDiagnosed = async () => {
       try {
-        const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalPaDiagnosed', {
+        const ApiUrl = `${BASE_URL}${'/dashboard/getTotalPaDiagnosed'}`;
+        const response = await fetch(ApiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -101,7 +104,8 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
   useEffect(() => {
     const fetchTotalCamps = async () => {
       try {
-        const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getTotalCampsWithId', {
+        const ApiUrl = `${BASE_URL}${'/dashboard/getTotalCampsWithId'}`;
+        const response = await fetch(ApiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -277,7 +281,8 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
   
     useEffect(() => {
       // Fetch data from the API
-      fetch('https://MankindGalexyapi.netcastservice.co.in/dashboard/getFilterCampReport', {
+      const ApiUrl = `${BASE_URL}${'/dashboard/getFilterCampReport'}`;
+      fetch(ApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

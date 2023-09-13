@@ -6,6 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { BASE_URL } from '../Configuration/Config';
 
 const UserProfileForm = () => {
   const [userId, setUserId] = useState(null);
@@ -64,7 +65,8 @@ const UserProfileForm = () => {
         formData.append('image', image);
       }
 
-      const response = await fetch('https://MankindGalexyapi.netcastservice.co.in/doc/addDoctor', {
+      const ApiUrl = `${BASE_URL}${'/doc/addDoctor'}`;
+      const response = await fetch(ApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
