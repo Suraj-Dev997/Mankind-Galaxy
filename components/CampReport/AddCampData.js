@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { TextInput, Button, Avatar } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -13,7 +13,29 @@ const AddCampData = () => {
   const [campDate, setCampDate] = useState(new Date());
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
   const [selectedValue, setSelectedValue] = useState('option1');
+  const [brandOptions, setBrandOptions] = useState([]); // To store brand options from the API
   const navigation = useNavigation();
+
+  useEffect(() => {
+    // Fetch brand options from the API
+    fetch('https://MankindGalexyapi.netcastservice.co.in/report/getBrandName', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        subCatId: 1,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Assuming data is an array of brand objects
+        setBrandOptions(data[0]);
+      })
+      .catch((error) => {
+        console.error('Error fetching brand options:', error);
+      });
+  }, []);
   
   const handleCampDateChange = (event, selectedDate) => {
     setShowCampDatePicker(false);
@@ -77,14 +99,15 @@ const AddCampData = () => {
         />
   </View>
   <View style={styles.pickcontainer}>
-        <Picker
+  <Picker
             selectedValue={selectedValue}
             style={styles.picker}
             onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
           >
             <Picker.Item label="Select Brand" value="option1" />
-            <Picker.Item label="option1" value="option2" />
-            <Picker.Item label="option2" value="option3" />
+            {brandOptions.map((brand) => (
+              <Picker.Item key={brand.basic_id} label={brand.description} value={brand.basic_id.toString()} />
+            ))}
           </Picker>
         </View>
 

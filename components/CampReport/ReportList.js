@@ -1,179 +1,198 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal } from 'react-native';
+import React, { useState,useEffect } from 'react';
+import { View, Text, TextInput, StyleSheet, FlatList, Image,TouchableOpacity } from 'react-native';
 import { Button, Searchbar, IconButton } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { BASE_URL } from '../Configuration/Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { format } from 'date-fns';
+
+
 
 // Create separate components for each category's content
-const CategoryReport = ({ users, filteredUsers, renderUserItem }) => (
-    <View style={styles.container}>
-      <Header />
-      <UserList filteredUsers={filteredUsers} renderUserItem={renderUserItem} />
+const CategoryPoster = ({ users, filteredUsers, renderUserItem }) => (
+  <View style={styles.container}>
+    <Header />
+    <UserList filteredUsers={filteredUsers} renderUserItem={renderUserItem} />
+  </View>
+);
+
+// Add more components for other categories as needed
+
+const Header = (props) => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { id, name } = route.params;
+  return(
+    <View style={styles.headerMain}>
+    <View style={styles.headertop}>
+      <Button
+        icon="plus"
+        mode="contained"
+        style={styles.addbtn}
+        onPress={()=> navigation.navigate("AddCampReport")}
+      >
+        Add Report
+      </Button>
     </View>
-  );
-  
-  const Header = () => {
-    const navigation = useNavigation();
-
-    return(<View style={styles.headerMain}>
-      <View style={styles.headertop}>
-        <Button
-          icon="plus"
-          mode="contained"
-          style={styles.addbtn}
-          onPress={()=> navigation.navigate("AddCampReport")}
-        >
-          Add Report
-        </Button>
-      </View>
-      <View style={styles.header}>
-        <Searchbar
-          placeholder="Search"
-        />
-      </View>
-    </View>)
-  };
-    
-
-  
-  const UserList = ({ filteredUsers, renderUserItem }) => (
-    <View style={styles.tableCont}>
-      <TableHeader />
-      <FlatList
-        data={filteredUsers}
-        renderItem={renderUserItem}
-        keyExtractor={(item) => item.id.toString()}
+    <View style={styles.header}>
+      <Searchbar
+        placeholder="Search"
+       
       />
     </View>
-  );
-  
-  const TableHeader = () => (
-    <View style={styles.tableHeader}>
-      <Text style={styles.columnHeader}>Name</Text>
+  </View>
+  )
+};
+
+
+
+const UserList = ({ filteredUsers, renderUserItem }) => (
+  <View style={styles.tableCont}>
+    <TableHeader />
+    <FlatList
+  data={filteredUsers}
+  renderItem={renderUserItem}
+  keyExtractor={(item) => (item ? item.crid.toString() : '0')} // Updated keyExtractor
+/>
+  </View>
+);
+
+const TableHeader = () => (
+  <View style={styles.tableHeader}>
+    <Text style={styles.columnHeader}>Name</Text>
       <Text style={styles.columnHeader}>Date</Text>
       <Text style={styles.columnHeader}>Actions</Text>
-    </View>
-  );
-  
-  const ReportList = () => {
-    const route = useRoute();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchText, setSearchText] = useState('');
-    const [selectedUser, setSelectedUser] = useState(null);
-  
-    const onChangeSearch = (query) => setSearchQuery(query);
-  
-    const handleInfoButtonClick = (user) => {
-      console.log('Info button clicked for user:', user);
-      setSelectedUser(user);
+  </View>
+);
+
+const ReportList = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [users, setUsers] = useState([]); // Store fetched data
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const onChangeSearch = (query) => setSearchQuery(query);
+  const { id, name } = route.params;
+
+  const handleEdit = (doctorId) => {
+    navigation.navigate('UpdateUserProfileForm', { doctorId }); // Pass the doctorId as a parameter
+  };
+  const handleInfoButtonClick = (user) => {
+    console.log('Info button clicked for user:', user);
+    setSelectedUser(user);
+  };
+
+  const handleDelete = async (doctorId) => {
+    try {
+      const ApiUrl = `${BASE_URL}${'/doc/deleteDoctor'}`;
+      const response = await fetch(ApiUrl, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          doctorId: doctorId,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Remove the deleted doctor from the state
+        const updatedUsers = users.filter((user) => user.doctor_id !== doctorId);
+        setUsers(updatedUsers);
+        console.log(data.message); // Log the success message
+      } else {
+        console.error('Error deleting doctor:', data);
+      }
+    } catch (error) {
+      console.error('Error deleting doctor:', error);
+    }
+  };
+
+
+
+  // Fetch data from the API
+  useEffect(() => {
+    const fetchData = async (userId) => {
+      try {
+        const ApiUrl = `${BASE_URL}${'/report/getAllCampReport'}`;
+        const response = await fetch(ApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: userId, // Replace with your user ID
+            subCatId: id, // Replace with your subcategory ID
+          }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setUsers(data[0]); // Set the fetched data
+        } else {
+          console.error('Error fetching data:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
 
-  let users = [];
-  console.log(route.params.category);
-  switch (route.params.category) {
-    case 'Glucometer Report':
-      users = [
-        {
-          id: 1,
-          name: 'Suraj Report - Glucometer',
-          qualification: 'Doctor',
-          Date:'10-02-2022',
-        },
-        {
-          id: 2,
-          name: 'Suraj Report  - Glucometer',
-          qualification: 'Engineer',
-          Date:'10-02-2022',
-        },
-        // Add more users for Glucometer category as needed
-      ];
-      break;
-    case 'Neuropathy Report':
-      users = [
-        {
-          id: 3,
-          name: 'Alice - Neuropathy',
-          qualification: 'Doctor',
-          Date:'10-02-2022',
-        },
-        {
-          id: 4,
-          name: 'Bob - Neuropathy',
-          qualification: 'Engineer',
-          Date:'10-02-2022',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-      case 'HbA1c Report':
-      users = [
-        {
-          id: 3,
-          name: 'Alice - HbA1c',
-          qualification: 'Doctor',
-          Date:'10-02-2022',
-        },
-        {
-          id: 4,
-          name: 'Bob - HbA1c',
-          qualification: 'Engineer',
-          Date:'10-02-2022',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-      case 'BMD Report':
-      users = [
-        {
-          id: 3,
-          name: 'Alice - BMD',
-          qualification: 'Doctor',
-          Date:'10-02-2022',
-        },
-        {
-          id: 4,
-          name: 'Bob - BMD',
-          qualification: 'Engineer',
-          Date:'10-02-2022',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-      case 'Glucometer & Neuropathy Report':
-      users = [
-        {
-          id: 3,
-          name: 'Alice - Glucometer & Neuropathy',
-          qualification: 'Doctor',
-          Date:'10-02-2022',
-        },
-        {
-          id: 4,
-          name: 'Bob - Glucometer & Neuropathy',
-          qualification: 'Engineer',
-          Date:'10-02-2022',
-        },
-        // Add more users for Neuropathy category as needed
-      ];
-      break;
-    // Add cases for other categories as needed
-    default:
-      break;
-  }
+    AsyncStorage.getItem('userdata')
+    .then((data) => {
+      if (data) {
+        const userData = JSON.parse(data);
+        const userId = userData.responseData.user_id;
+        // Call fetchData with the retrieved userId
+        console.log("Getting user id:",userId)
+        fetchData(userId);
+      } else {
+        console.error('Invalid or missing data in AsyncStorage');
+      }
+    })
+    .catch((error) => {
+      console.error('Error retrieving data:', error);
+    });
 
+    fetchData();
+  }, [id]);
+
+  
+
+  // Filter users based on the search text
   const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchText.toLowerCase())
+    user.doctor_name.toLowerCase().includes(searchText.toLowerCase())
   );
-  const renderUserItem = ({ item }) => (
-    <View style={styles.userItem}>
+  const ProfileUrl = `${BASE_URL}${'/uploads/profile/'}`;
+  // Render user item
+  const renderUserItem = ({ item }) => {
+    const campDate = new Date(item.camp_date);
+
+    // Define date options for formatting
+const dateOptions = {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+};
+
+// Format the date using toLocaleDateString
+const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
+
+    return(
+      <View style={styles.userItem}>
+      
       <View style={styles.userInfo}>
-        <Text>{item.name}</Text>
+        <Text>{item.doctor_name}</Text>
+        
       </View>
       <View style={styles.userInfo}>
-        <Text>{item.Date}</Text>
+      <Text> {formattedDate}</Text>
+        
       </View>
+   
       <View style={styles.actionButtons}>
-        <TouchableOpacity
+      <TouchableOpacity
           style={styles.actionButton}
           onPress={() => handleInfoButtonClick(item)}
         >
@@ -197,29 +216,16 @@ const CategoryReport = ({ users, filteredUsers, renderUserItem }) => (
         </TouchableOpacity>
       </View>
     </View>
-  );
+    )
+    
+};
 
   return (
-    <CategoryReport
-      users={users}
-      filteredUsers={filteredUsers}
-      renderUserItem={renderUserItem}
-    />
+    <CategoryPoster users={users} filteredUsers={filteredUsers} renderUserItem={renderUserItem} />
   );
 };
 
 const styles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      },
-      modalContent: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        elevation: 5,
-      },
   container: {
       flex: 1,
       
@@ -308,10 +314,10 @@ const styles = StyleSheet.create({
     },
     actionButton: {
       // backgroundColor: 'blue',
-      paddingHorizontal: 0,
-      paddingVertical: 5,
+      // paddingHorizontal: 2,
+      paddingVertical: 6,
       // borderRadius: 4,
-      marginLeft: 0,
+      marginLeft: 1,
     },
     actionButtonText: {
       color: 'white',
