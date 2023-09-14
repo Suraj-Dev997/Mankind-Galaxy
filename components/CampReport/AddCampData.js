@@ -1,30 +1,91 @@
 import React, { useState,useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { TextInput, Button, Avatar } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+import { BASE_URL } from '../Configuration/Config';
 
 const AddCampData = () => {
-  const [name, setName] = useState('');
+  
   const [qualification, setQualification] = useState('');
   const [avatarUri, setAvatarUri] = useState(null); // To store the URI of the selected image
   const [campDate, setCampDate] = useState(new Date());
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+
   const [selectedValue, setSelectedValue] = useState('option1');
   const [brandOptions, setBrandOptions] = useState([]); // To store brand options from the API
   const navigation = useNavigation();
+  const route = useRoute();
+  const { id } = route.params;
 
   useEffect(() => {
-    // Fetch brand options from the API
-    fetch('https://MankindGalexyapi.netcastservice.co.in/report/getBrandName', {
+    // Fetch questions from the API
+    const ApiUrl = `${BASE_URL}${'/report/getQuestionWithSubCatId'}`;
+    fetch(ApiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        subCatId: 1,
+        subCatId: id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // console.log('API Response:', data);
+        setQuestions(data[0]);
+      })
+      .catch((error) => {
+        console.error('Error fetching questions:', error);
+      });
+
+//       console.log('questions:', questions);
+// console.log('selectedAnswers:', selectedAnswers);
+  }, [questions, selectedAnswers,id]);
+
+  const handleAnswerChange = (rqid, answer) => {
+    setSelectedAnswers({ ...selectedAnswers, [rqid]: answer });
+  };
+
+  const renderQuestions = () => {
+    if (!questions || questions.length === 0) {
+      return (
+        <Text style={styles.errorText}>
+          Error loading questions. Please check your internet connection and try again.
+        </Text>
+      );
+    }
+  
+    return questions.map((question) => (
+      <View key={question.rqid}>
+        <Text style={styles.datePickerLabel}>{question.question}</Text>
+        <TextInput
+          label={`Answer for ${question.question}`}
+          value={selectedAnswers[question.rqid] || ''}
+          onChangeText={(text) => handleAnswerChange(question.rqid, text)}
+          mode="outlined"
+          style={styles.input}
+          outlineColor='#0054a4'
+          activeOutlineColor='#08a5d8'
+        />
+      </View>
+    ));
+  };
+  useEffect(() => {
+    const ApiUrl = `${BASE_URL}${'/report/getBrandName'}`;
+    // Fetch brand options from the API
+    fetch(ApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        subCatId: id,
       }),
     })
       .then((response) => response.json())
@@ -35,7 +96,7 @@ const AddCampData = () => {
       .catch((error) => {
         console.error('Error fetching brand options:', error);
       });
-  }, []);
+  }, [id]);
   
   const handleCampDateChange = (event, selectedDate) => {
     setShowCampDatePicker(false);
@@ -48,56 +109,9 @@ const AddCampData = () => {
   };
  
   return (
-    <View style={styles.container}>
-      
-
+    <ScrollView>
+        <View style={styles.container}>
       <View style={styles.form}>
-      
-        
-
-<View style={styles.datePickerContainer} >
-    
-    <Text style={styles.datePickerLabel} onPress={showCampDate}>Number of Patients Screened during Glucometer Camp:</Text>
-    <TextInput
-    
-         label='Example. (1 to 100)'
-          value={qualification}
-          onChangeText={(text) => setQualification(text)}
-          mode="outlined"
-          style={styles.input}
-          outlineColor='#0054a4'
-          activeOutlineColor='#08a5d8'
-          keyboardType='numeric'
-        />
-  </View>
-  <View style={styles.datePickerContainer} >
-    
-    <Text style={styles.datePickerLabel} onPress={showCampDate}>Number of Patients Diagnosed with diabetes:</Text>
-    <TextInput
-         label='Example. (1 to 100)'
-          value={qualification}
-          onChangeText={(text) => setQualification(text)}
-          mode="outlined"
-          style={styles.input}
-          outlineColor='#0054a4'
-          activeOutlineColor='#08a5d8'
-          keyboardType='numeric'
-        />
-  </View>
-  <View style={styles.datePickerContainer} >
-    
-    <Text style={styles.datePickerLabel} onPress={showCampDate}>Number of Prescription generated:</Text>
-    <TextInput
-        label='Example. (1 to 100)'
-          value={qualification}
-          onChangeText={(text) => setQualification(text)}
-          mode="outlined"
-          style={styles.input}
-          outlineColor='#0054a4'
-          activeOutlineColor='#08a5d8'
-          keyboardType='numeric'
-        />
-  </View>
   <View style={styles.pickcontainer}>
   <Picker
             selectedValue={selectedValue}
@@ -111,6 +125,8 @@ const AddCampData = () => {
           </Picker>
         </View>
 
+        {renderQuestions()}
+
         <Button
         buttonColor='#0054a4'
           mode="contained"
@@ -121,6 +137,8 @@ const AddCampData = () => {
         </Button>
       </View>
     </View>
+    </ScrollView>
+  
   );
 };
 

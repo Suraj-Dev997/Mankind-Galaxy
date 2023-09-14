@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { TextInput, Button, Avatar,DefaultTheme  } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import { BASE_URL } from '../Configuration/Config';
+import { useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddCampReport = () => {
-  const [name, setName] = useState('');
+  const [doctorNames, setDoctorNames] = useState([]);
+  const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [filteredDoctorNames, setFilteredDoctorNames] = useState([]);
   const [qualification, setQualification] = useState('');
   const [avatarUri, setAvatarUri] = useState(null); // To store the URI of the selected image
   const [campDate, setCampDate] = useState(new Date());
@@ -19,6 +24,58 @@ const AddCampReport = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [dropdownItems] = useState(['Option 1', 'node', 'React']);
+  const route = useRoute();
+  const { id } = route.params;
+
+
+  useEffect(() => {
+    // Fetch doctor names from the API
+    const ApiUrl = `${BASE_URL}${'/doc/getDoctorWithUserId'}`;
+    
+    // Fetch the userId from AsyncStorage
+    AsyncStorage.getItem('userdata')
+      .then((data) => {
+        if (data) {
+          const userData = JSON.parse(data);
+          const userId = userData.responseData.user_id;
+          
+          // Call fetchData with the retrieved userId
+          console.log("Getting user id:", userId);
+          
+          // Fetch data using the retrieved userId
+          return fetch(ApiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: userId, // Use the retrieved userId here
+              subCatId: id,
+            }),
+          });
+        } else {
+          console.error('Invalid or missing data in AsyncStorage');
+        }
+      })
+      .then((response) => {
+        if (!response) {
+          return; // Return early if there was an issue with AsyncStorage
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          // Extract doctor names from the response
+          const names = data[0].map((doctor) => doctor.doctor_name);
+          setDoctorNames(names);
+          console.log(names);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching doctor names:', error);
+      });
+  }, [id]);
+  
 
   const toggleDropdown = () => {
     setIsDropdownVisible(!isDropdownVisible);
@@ -41,13 +98,20 @@ const AddCampReport = () => {
       <Text>{item}</Text>
     </TouchableOpacity>
   );
-   const handleTextInputChange = (text) => {
+  const handleTextInputChange = (text) => {
     setTextInputValue(text);
-    if (text.trim() === '') {
-      setIsDropdownVisible(false);
-    } else {
-      setIsDropdownVisible(true);
-    }
+    // Filter the doctor names based on user input
+    const filteredNames = doctorNames.filter((name) =>
+      name.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredDoctorNames(filteredNames);
+    setIsDropdownVisible(!!text); // Hide the dropdown if text is empty
+  };
+
+  const handleDoctorSelect = (name) => {
+    setSelectedDoctor(name);
+    setTextInputValue(name);
+    setIsDropdownVisible(false);
   };
   
   const handleCampDateChange = (event, selectedDate) => {
@@ -59,6 +123,60 @@ const AddCampReport = () => {
   const showCampDate = () => {
     setShowCampDatePicker(true);
   };
+
+  const submitData = () => {
+    // Fetch the userId from AsyncStorage
+    AsyncStorage.getItem('userdata')
+      .then((data) => {
+        if (data) {
+          const userData = JSON.parse(data);
+          const userId = userData.responseData.user_id;
+  
+          // Define the payload using the retrieved userId
+          const payload = {
+            userId: userId, // Use the retrieved userId here
+            subCatId: id,
+            doctorName: textInputValue,
+            campDate: "18-04-2023",
+          };
+  
+          const ApiUrl = `${BASE_URL}${'/report/addReportWithInfo'}`;
+  
+          // Make the POST request
+          return fetch(ApiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          });
+        } else {
+          console.error('Invalid or missing data in AsyncStorage');
+          return Promise.reject('Invalid or missing data in AsyncStorage');
+        }
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        // Handle the response from the API
+        console.log('API Response:', data);
+  
+        // Check if the API request was successful
+        if (data.errorCode === "1") {
+          // Navigate to the "AddCampData" screen on success
+          navigation.navigate("AddCampData", { crid: data.crid, id });
+          console.log("navigation values", id);
+        } else {
+          // Handle any other logic or display an error message
+          console.error('API Request was not successful');
+          // You can also display an error message to the user
+        }
+      })
+      .catch((error) => {
+        console.error('Error submitting data:', error);
+        // Handle the error, e.g., display an error message to the user
+      });
+  };
+  
  
 
   return (
@@ -67,27 +185,39 @@ const AddCampReport = () => {
 
       <View style={styles.form}>
         
-      <View style={styles.pickcontainer}>
-        <Picker
-            selectedValue={selectedValue}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-          >
-            <Picker.Item label="Name of MR" value="option1" />
-            <Picker.Item label="option1" value="option2" />
-            <Picker.Item label="option2" value="option3" />
-          </Picker>
-        </View>
-        <View style={styles.pickcontainer}>
-        <Picker
-            selectedValue={selectedValue}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-          >
-            <Picker.Item label="HQ" value="option1" />
-            <Picker.Item label="option1" value="option2" />
-            <Picker.Item label="option2" value="option3" />
-          </Picker>
+      <View style={styles.inputContainer}>
+          <TextInput
+            backgroundColor='#fff'
+            underlineColor='#fff'
+            style={styles.inputField}
+            outlineColor='#0054a4'
+            theme={{
+              ...DefaultTheme,
+              colors: {
+                ...DefaultTheme.colors,
+                primary: '#0054a4', // Change the label color to blue
+              },
+            }}
+            activeOutlineColor='#08a5d8'
+            value={textInputValue}
+            onChangeText={handleTextInputChange}
+            label="Name of Doctor"
+          />
+          {isDropdownVisible && (
+            <FlatList
+              data={filteredDoctorNames}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => handleDoctorSelect(item)}
+                >
+                  <Text>{item}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              style={styles.dropdownList}
+            />
+          )}
         </View>
         
 
@@ -117,41 +247,35 @@ const AddCampReport = () => {
         /> */}
 
 
-      <View style={styles.inputContainer}>
-        <TextInput
-        //  mode="outlined"
-        backgroundColor='#fff'
-        underlineColor='#fff'
-         style={styles.inputField}
-         outlineColor='#0054a4'
-         theme={{
-          ...DefaultTheme,
-          colors: {
-            ...DefaultTheme.colors,
-            primary: '#0054a4', // Change the label color to blue
-          },
-        }}
-         activeOutlineColor='#08a5d8'
-          // style={styles.inputField}
-          value={textInputValue}
-          onChangeText={handleTextInputChange}
-          label="Name of Doctor"
-        />
-        {isDropdownVisible && (
-          <FlatList
-            data={filteredDropdownItems}
-            renderItem={renderDropdownItem}
-            keyExtractor={(item, index) => index.toString()}
-            style={styles.dropdownList}
-          />
-        )}
-      </View>
-
+     
+      <View style={styles.pickcontainer}>
+        <Picker
+            selectedValue={selectedValue}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+          >
+            <Picker.Item label="Name of MR" value="option1" />
+            <Picker.Item label="option1" value="option2" />
+            <Picker.Item label="option2" value="option3" />
+          </Picker>
+        </View>
+        <View style={styles.pickcontainer}>
+        <Picker
+            selectedValue={selectedValue}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+          >
+            <Picker.Item label="HQ" value="option1" />
+            <Picker.Item label="option1" value="option2" />
+            <Picker.Item label="option2" value="option3" />
+          </Picker>
+        </View>
 
         <Button
         buttonColor='#0054a4'
           mode="contained"
-          onPress={()=> navigation.navigate("AddCampData")}
+          onPress={submitData}
+          
           style={styles.button}
         >
           Next
@@ -166,6 +290,7 @@ const styles = StyleSheet.create({
     borderColor: '#0054a4',
     borderWidth: 1,
     borderRadius: 5,
+    marginBottom:15,
     overflow: 'hidden',
     backgroundColor:'#fff',
   },

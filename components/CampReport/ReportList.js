@@ -23,6 +23,7 @@ const Header = (props) => {
   const route = useRoute();
   const navigation = useNavigation();
   const { id, name } = route.params;
+  console.log(id)
   return(
     <View style={styles.headerMain}>
     <View style={styles.headertop}>
@@ -30,7 +31,7 @@ const Header = (props) => {
         icon="plus"
         mode="contained"
         style={styles.addbtn}
-        onPress={()=> navigation.navigate("AddCampReport")}
+        onPress={()=> navigation.navigate("AddCampReport",{id})}
       >
         Add Report
       </Button>
