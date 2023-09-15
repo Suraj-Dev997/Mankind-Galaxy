@@ -12,11 +12,16 @@ import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
 const UploadCampImages = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   const [imagePreviews, setImagePreviews] = useState([]);
   const [pdfPreviews, setPdfPreviews] = useState([]);
+  const [feedback, setFeedback] = useState(''); // Feedback text
+  const [imageUris, setImageUris] = useState([]);
+  const { crid, id } = route.params;
 
   const handleImageUpload = async () => {
     try {
@@ -25,25 +30,27 @@ const UploadCampImages = () => {
         multiple: true, // Allow multiple image selection
       });
   
-      const previews = images.map((image,index) => (
-        <TouchableOpacity
-          key={index}
-          onPress={() => handleDeleteImage(index)}
-        >
-          <Image
-            source={{ uri: image.path }}
-            style={styles.previewImage}
-          />
+      const previews = images.map((image, index) => (
+        <TouchableOpacity key={index} onPress={() => handleDeleteImage(index)}>
+          <Image source={{ uri: image.path }} style={styles.previewImage} />
           <Text style={styles.deleteButton}>Delete</Text>
         </TouchableOpacity>
       ));
   
+      // Store image URIs directly in an array
+      const imageUris = images.map((image) => image.path);
+  
       setImagePreviews((prevPreviews) => [...prevPreviews, ...previews]);
+      
+      // Store the image URIs in another state variable
+      setImageUris((prevImageUris) => [...prevImageUris, ...imageUris]);
     } catch (error) {
       // Handle the error, e.g., if the user cancels the selection
       console.error('Image picker error:', error);
     }
   };
+  
+  
   const handleDeleteImage = (indexToDelete) => {
     setImagePreviews((prevPreviews) =>
       prevPreviews.filter((_, index) => index !== indexToDelete)
@@ -60,6 +67,55 @@ const UploadCampImages = () => {
     setPdfPreviews([...pdfPreviews, pdfPreview]);
   };
 
+  const submitData = async () => {
+    try {
+      const apiUrl = 'https://MankindGalexyapi.netcastservice.co.in/report/uploadImages';
+  
+      // Create a FormData object
+      const formData = new FormData();
+  
+      // Append data to the FormData object
+      formData.append('crId', crid); // Replace with the correct crId
+      formData.append('userId', '1'); // Replace with the correct userId
+      formData.append('feedback', feedback);
+  
+      // Append images to the FormData object
+      imageUris.forEach((imageUri, index) => {
+        const imageName = `image_${index + 1}.jpg`;
+        formData.append('images', {
+          uri: imageUri,
+          name: imageName,
+          type: 'image/jpeg',
+        });
+      });
+  
+      // Send a POST request with the FormData
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      // Handle the response from the API
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Upload successful Response:', data);
+        navigation.navigate('ReportList',id);
+        console.log('Forworded Crid',id)
+      } else {
+        // Handle success response from the API
+        const error = await response.json();
+        console.log('Error',error);
+         // Navigate to the next screen
+      }
+    } catch (error) {
+      // Handle any errors that occur during the upload process
+      console.error('Error uploading data:', error);
+    }
+  };
+  
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -91,13 +147,21 @@ const UploadCampImages = () => {
               <View key={index}>{preview}</View>
             ))}
           </View>
+          <TextInput
+            label="Feedback"
+            value={feedback}
+            onChangeText={(text) => setFeedback(text)}
+            mode="outlined"
+            style={styles.input}
+          />
           <TouchableOpacity
-            onPress={() => navigation.navigate('UserProfileForm')}
+            
           >
             <Button
               buttonColor="#0054a4"
               mode="contained"
               style={styles.button}
+              onPress={submitData}
             >
               Submit
             </Button>

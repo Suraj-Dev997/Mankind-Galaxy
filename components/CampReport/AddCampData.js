@@ -7,6 +7,7 @@ import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import { BASE_URL } from '../Configuration/Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddCampData = () => {
   
@@ -21,7 +22,74 @@ const AddCampData = () => {
   const [brandOptions, setBrandOptions] = useState([]); // To store brand options from the API
   const navigation = useNavigation();
   const route = useRoute();
-  const { id } = route.params;
+  const { crid, id } = route.params;
+// console.log('route',id)
+
+const submitData = () => {
+  // Retrieve the userId from AsyncStorage
+  AsyncStorage.getItem('userdata')
+    .then((data) => {
+      if (data) {
+        const userData = JSON.parse(data);
+        const userId = userData.responseData.user_id;
+
+        // Create an array to store the payload data dynamically
+        const dataArray = [];
+
+        // Loop through selectedAnswers to create the payload
+        for (const rqid in selectedAnswers) {
+          if (selectedAnswers.hasOwnProperty(rqid)) {
+            const answer = selectedAnswers[rqid];
+            const dataItem = {
+              rqid: rqid,
+              crid: crid,
+              subCatId: id, // You can set the correct value for crid
+              brand_id: selectedValue, // Use the selected brand value
+              value: answer,
+              user_id: userId, // Use the retrieved userId dynamically
+            };
+            dataArray.push(dataItem);
+          }
+        }
+        const ApiUrl = `${BASE_URL}${'/report/addAnswer'}`;
+        // Send a POST request to the API
+        fetch(ApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ dataArray }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Handle the response from the API as needed
+            console.log('API Response:', data);
+
+            // Check if the API request was successful
+            if (data.errorCode === "1") {
+              // Navigate to the "UploadCampImages" screen on success
+              navigation.navigate("UploadCampImages", { crid, id });
+              console.log('forworded crid', crid);
+
+            } else {
+              // Handle any other logic or display an error message
+              console.error('API Request was not successful');
+              // You can also display an error message to the user
+            }
+            // After successfully submitting data, you can navigate to the next screen
+          })
+          .catch((error) => {
+            console.error('Error submitting data:', error);
+          });
+      } else {
+        console.error('Invalid or missing data in AsyncStorage');
+      }
+    })
+    .catch((error) => {
+      console.error('Error retrieving data:', error);
+    });
+};
+
 
   useEffect(() => {
     // Fetch questions from the API
@@ -72,6 +140,7 @@ const AddCampData = () => {
           style={styles.input}
           outlineColor='#0054a4'
           activeOutlineColor='#08a5d8'
+          keyboardType="numeric"
         />
       </View>
     ));
@@ -130,7 +199,8 @@ const AddCampData = () => {
         <Button
         buttonColor='#0054a4'
           mode="contained"
-          onPress={()=> navigation.navigate("UploadCampImages")}
+          // onPress={()=> navigation.navigate("UploadCampImages")}
+          onPress={submitData}
           style={styles.button}
         >
           Next

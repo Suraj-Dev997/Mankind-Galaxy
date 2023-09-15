@@ -7,6 +7,7 @@ import { useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import LinearGradient from 'react-native-linear-gradient';
 import { BASE_URL } from '../Configuration/Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 // Create separate components for each category's content
@@ -37,7 +38,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
   
 
   useEffect(() => {
-    const fetchTotalScreened = async () => {
+    const fetchTotalScreened = async (userId) => {
       try {
         const ApiUrl = `${BASE_URL}${'/dashboard/getTotalPaScreened'}`;
         const response = await fetch(ApiUrl, {
@@ -46,7 +47,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            userId: 1, // You can change the user ID as needed
+            userId: userId, // You can change the user ID as needed
             subCatId:id
           }),
         });
@@ -64,12 +65,28 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         console.error('Error fetching Total Doctors data:', error);
       }
     };
+
+    AsyncStorage.getItem('userdata')
+  .then((data) => {
+    if (data) {
+      const userData = JSON.parse(data);
+      const userId = userData.responseData.user_id;
+      // Call fetchData with the retrieved userId
+    
+      fetchTotalScreened(userId);
+    } else {
+      console.error('Invalid or missing data in AsyncStorage');
+    }
+  })
+  .catch((error) => {
+    console.error('Error retrieving data:', error);
+  });
     fetchTotalScreened();
   }, [id]);
 
   
   useEffect(() => {
-    const fetchTotalDiagnosed = async () => {
+    const fetchTotalDiagnosed = async (userId) => {
       try {
         const ApiUrl = `${BASE_URL}${'/dashboard/getTotalPaDiagnosed'}`;
         const response = await fetch(ApiUrl, {
@@ -78,7 +95,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            userId: 1, // You can change the user ID as needed
+            userId: userId, // You can change the user ID as needed
             subCatId:id
           }),
         });
@@ -96,13 +113,28 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         console.error('Error fetching Total Doctors data:', error);
       }
     };
+    AsyncStorage.getItem('userdata')
+    .then((data) => {
+      if (data) {
+        const userData = JSON.parse(data);
+        const userId = userData.responseData.user_id;
+        // Call fetchData with the retrieved userId
+      
+        fetchTotalDiagnosed(userId);
+      } else {
+        console.error('Invalid or missing data in AsyncStorage');
+      }
+    })
+    .catch((error) => {
+      console.error('Error retrieving data:', error);
+    });
   
     fetchTotalDiagnosed();
   }, [id]);
 
   
   useEffect(() => {
-    const fetchTotalCamps = async () => {
+    const fetchTotalCamps = async (userId) => {
       try {
         const ApiUrl = `${BASE_URL}${'/dashboard/getTotalCampsWithId'}`;
         const response = await fetch(ApiUrl, {
@@ -111,7 +143,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            userId: 1, // You can change the user ID as needed
+            userId: userId, // You can change the user ID as needed
             subCatId:id
           }),
         });
@@ -129,6 +161,21 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         console.error('Error fetching Total Doctors data:', error);
       }
     };
+    AsyncStorage.getItem('userdata')
+    .then((data) => {
+      if (data) {
+        const userData = JSON.parse(data);
+        const userId = userData.responseData.user_id;
+        // Call fetchData with the retrieved userId
+      
+        fetchTotalCamps(userId);
+      } else {
+        console.error('Invalid or missing data in AsyncStorage');
+      }
+    })
+    .catch((error) => {
+      console.error('Error retrieving data:', error);
+    });
   
     fetchTotalCamps();
   }, [id]);
