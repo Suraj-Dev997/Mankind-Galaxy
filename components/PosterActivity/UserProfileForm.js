@@ -26,7 +26,7 @@ const UserProfileForm = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { id } = route.params;
-  // console.log("this is sub id",id)
+  console.log("this is sub id",id)
 
 
   useEffect(() => {
@@ -64,6 +64,7 @@ const UserProfileForm = () => {
         };
         formData.append('image', image);
       }
+      console.log(formData)
 
       const ApiUrl = `${BASE_URL}${'/doc/addDoctor'}`;
       const response = await fetch(ApiUrl, {

@@ -82,8 +82,6 @@ const handleLogin = async () => {
       source={require('./Images/Splash.jpg')}
       style={styles.backgroundImage}
     >
-     
-        
         {isLoading ? (
         <ActivityIndicator size="large" color="#0054a4" />
       ) : (
@@ -108,15 +106,14 @@ const handleLogin = async () => {
         onChangeText={(text) => setPassword(text)}
         value={Password}
       />
-      <TouchableOpacity style={[styles.buttonContainer,styles.elevation]}>
-        <Text style={styles.buttonText}  onPress={handleLogin}>Login</Text>
+      <TouchableOpacity style={[styles.buttonContainer,styles.elevation]} onPress={handleLogin}>
+        <Text style={styles.buttonText}  >Login</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.forgotPasswordContainer}>
         {/* <Text style={styles.forgotPasswordText}>Forgot Password?</Text> */}
       </TouchableOpacity>
       </>
        )}
-
     </ImageBackground>
     );
   };

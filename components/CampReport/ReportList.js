@@ -78,30 +78,32 @@ const ReportList = () => {
   const onChangeSearch = (query) => setSearchQuery(query);
   const { id, name } = route.params;
 
-  const handleEdit = (doctorId) => {
-    navigation.navigate('UpdateUserProfileForm', { doctorId }); // Pass the doctorId as a parameter
+  const handleEdit = (crid) => {
+    console.log('crid id',crid)
+    navigation.navigate('UpdateCampReport', { crId: crid,id }); // Pass the doctorId as a parameter
   };
   const handleInfoButtonClick = (user) => {
     console.log('Info button clicked for user:', user);
     setSelectedUser(user);
   };
 
-  const handleDelete = async (doctorId) => {
+  const handleDelete = async (crid) => {
+    console.log("This g",crid)
     try {
-      const ApiUrl = `${BASE_URL}${'/doc/deleteDoctor'}`;
+      const ApiUrl = `${BASE_URL}${'/report/deleteReportWithId'}`;
       const response = await fetch(ApiUrl, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          doctorId: doctorId,
+          crid: crid,
         }),
       });
       const data = await response.json();
       if (response.ok) {
         // Remove the deleted doctor from the state
-        const updatedUsers = users.filter((user) => user.doctor_id !== doctorId);
+        const updatedUsers = users.filter((user) => user.crid !== crid);
         setUsers(updatedUsers);
         console.log(data.message); // Log the success message
       } else {
@@ -131,6 +133,7 @@ const ReportList = () => {
         });
         const data = await response.json();
         if (response.ok) {
+          console.log(data[0])
           setUsers(data[0]); // Set the fetched data
         } else {
           console.error('Error fetching data:', data);
@@ -204,7 +207,7 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
             icon="square-edit-outline"
             iconColor="#0054a4"
             size={25}
-            onPress={() => console.log('Pressed')}
+            onPress={() => handleEdit(item.crid)}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
@@ -212,7 +215,7 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
             icon="delete-outline"
             iconColor="#0054a4"
             size={25}
-            onPress={() => console.log('Pressed')}
+            onPress={() => handleDelete(item.crid)}
           />
         </TouchableOpacity>
       </View>

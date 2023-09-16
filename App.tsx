@@ -24,6 +24,10 @@ import AddCampReport from './components/CampReport/AddCampReport';
 import AddCampData from './components/CampReport/AddCampData';
 import UploadCampImages from './components/CampReport/UploadCampImages';
 import PosterDownload from './components/PosterActivity/PosterDownload';
+import UpdateCampData from './components/CampReport/UpdateCampData';
+import UpdateCampReport from './components/CampReport/UpdateCampReport';
+import UpdateCampImages from './components/CampReport/UpdateCampImages';
+
 
 
 
@@ -63,6 +67,9 @@ function App(): JSX.Element {
     <Stack.Screen name='AddCampReport' component={AddCampReport} options={{title:"Add Doctor Detail" }} />
     <Stack.Screen name='AddCampData' component={AddCampData} options={{title:"Add Camp Detail" }} />
     <Stack.Screen name='UploadCampImages' component={UploadCampImages} options={{title:"Add Camp Images" }} />
+    <Stack.Screen name='UpdateCampReport' component={UpdateCampReport} options={{title:"Update Doctor Detail" }} />
+    <Stack.Screen name='UpdateCampData' component={UpdateCampData} options={{title:"Update Camp Detail" }} />
+    <Stack.Screen name='UpdateCampImages' component={UpdateCampImages} options={{title:"Update Camp Images" }} />
     <Stack.Screen name='PosterDownload' component={PosterDownload} options={{title:"Download Poster" }} />
     
     </Stack.Navigator>

@@ -67,6 +67,7 @@ const UpdateUserProfileForm = () => {
       }
     handleMoreInfo();
   }, [doctorId]);
+  
   useEffect(()=>{
     // console.log(doctorDetail)
     if(doctorDetail){
@@ -84,7 +85,7 @@ const UpdateUserProfileForm = () => {
 
     try {
       const formData = new FormData();
-      formData.append('doctor_id', 22); // Replace with the actual user ID
+      formData.append('doctor_id', doctorId); // Replace with the actual user ID
       formData.append('doctor_name', name);
       formData.append('camp_date', '2023-10-10'); // Convert date to ISO format
       formData.append('camp_venue', venue);
