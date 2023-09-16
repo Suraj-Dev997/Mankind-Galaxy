@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { View, Text,TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal, ScrollView } from 'react-native';
+import { View, Text,TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal, ScrollView,ActivityIndicator} from 'react-native';
 import { Button, Searchbar, IconButton   } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -350,9 +350,9 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     // Render loading indicator if data is still loading
     if (isLoading) {
       return (
-        <View style={styles.loadingContainer}>
-          <Text>Loading...</Text>
-        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0054a4"/>
+      </View>
       );
     }
     const renderUserItem = ({ item }) => {

@@ -13,6 +13,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
+import { BASE_URL } from '../Configuration/Config';
 
 const UploadCampImages = () => {
   const navigation = useNavigation();
@@ -69,7 +70,8 @@ const UploadCampImages = () => {
 
   const submitData = async () => {
     try {
-      const apiUrl = 'https://MankindGalexyapi.netcastservice.co.in/report/uploadImages';
+      const ApiUrl = `${BASE_URL}${'/report/uploadImages'}`;
+      
   
       // Create a FormData object
       const formData = new FormData();
@@ -90,7 +92,7 @@ const UploadCampImages = () => {
       });
   
       // Send a POST request with the FormData
-      const response = await fetch(apiUrl, {
+      const response = await fetch(ApiUrl, {
         method: 'POST',
         body: formData,
         headers: {

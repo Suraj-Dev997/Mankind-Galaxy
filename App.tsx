@@ -60,7 +60,7 @@ function App(): JSX.Element {
     <Stack.Screen name='Ham' component={Ham} />
     <Stack.Screen name='HomeMenu' component={HomeMenu} options={{title:"Menu" }} /> 
     <Stack.Screen name='PosterList' component={PosterList} options={{title:"Doctors List" }} />
-    <Stack.Screen name='ReportList' component={ReportList} options={{title:"Doctors List" }} />
+    <Stack.Screen name='ReportList' component={ReportList} options={{title:"Camp Report List" }} />
     <Stack.Screen name='DashboardList' component={DashboardList} options={{title:"Download Report" }} />
     <Stack.Screen name='UserProfileForm' component={UserProfileForm} options={{title:"Add Doctor" }} />
     <Stack.Screen name='UpdateUserProfileForm' component={UpdateUserProfileForm} options={{title:"Update Doctor" }} />

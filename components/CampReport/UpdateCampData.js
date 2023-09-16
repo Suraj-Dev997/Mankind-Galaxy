@@ -35,7 +35,7 @@ useEffect(() => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      crId: 29, // Update with the correct crId
+      crId: crid, // Update with the correct crId
     }),
   })
     .then((response) => response.json())
@@ -79,7 +79,6 @@ const submitData = () => {
             const dataItem = {
               rqid: rqid,
               crid: crid,
-              subCatId: id, // You can set the correct value for crid
               brand_id: selectedValue, // Use the selected brand value
               value: answer,
               user_id: userId, // Use the retrieved userId dynamically
@@ -87,10 +86,10 @@ const submitData = () => {
             dataArray.push(dataItem);
           }
         }
-        const ApiUrl = `${BASE_URL}${'/report/addAnswer'}`;
+        const ApiUrl = `${BASE_URL}${'/report/updateAnswer'}`;
         // Send a POST request to the API
         fetch(ApiUrl, {
-          method: 'POST',
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -104,9 +103,8 @@ const submitData = () => {
             // Check if the API request was successful
             if (data.errorCode === "1") {
               // Navigate to the "UploadCampImages" screen on success
-              navigation.navigate("UploadCampImages", { crid, id });
+              navigation.navigate("UpdateCampImages", { crid, id });
               console.log('forworded crid', crid);
-
             } else {
               // Handle any other logic or display an error message
               console.error('API Request was not successful');
@@ -217,7 +215,10 @@ const submitData = () => {
     <ScrollView>
         <View style={styles.container}>
       <View style={styles.form}>
-  <View style={styles.pickcontainer}>
+  
+
+        {renderQuestions()}
+        <View style={styles.pickcontainer}>
   <Picker
             selectedValue={selectedValue}
             style={styles.picker}
@@ -229,9 +230,6 @@ const submitData = () => {
             ))}
           </Picker>
         </View>
-
-        {renderQuestions()}
-
         <Button
         buttonColor='#0054a4'
           mode="contained"

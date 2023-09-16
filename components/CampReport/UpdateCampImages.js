@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '../Configuration/Config';
 
 const UpdateCampImages = () => {
   const navigation = useNavigation();
@@ -22,6 +24,50 @@ const UpdateCampImages = () => {
   const [feedback, setFeedback] = useState(''); // Feedback text
   const [imageUris, setImageUris] = useState([]);
   const { crid, id } = route.params;
+  // console.log('ImagePage crid',crid)
+
+
+  useEffect(() => {
+    // Function to fetch data from the API
+    const fetchData = async () => {
+      try {
+        const ApiUrl = `${BASE_URL}/report/getImages`;
+        const response = await fetch(ApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            crId: crid, // Replace with the correct crId
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const ReportUrl = `${BASE_URL}${'/uploads/report/'}`;
+          // Extract image paths and feedback from the response
+          const imagePaths = data.map((item) =>ReportUrl + item.imgpath);
+          const feedbackText = data[0].feedback || ''; // Assuming feedback is the same for all images
+          console.log(imagePaths)
+          // Set the imagePreviews and feedback states
+          setImagePreviews(imagePaths.map((path, index) => (
+            <TouchableOpacity key={index} onPress={() => handleDeleteImage(index)}>
+              <Image source={{ uri: path }} style={styles.previewImage} />
+              <Text style={styles.deleteButton}>Delete</Text>
+            </TouchableOpacity>
+          )));
+          setFeedback(feedbackText);
+        } else {
+          console.error('Failed to fetch data from the API');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    // Call the fetchData function when the component is mounted
+    fetchData();
+  }, [crid]);
 
   const handleImageUpload = async () => {
     try {
@@ -39,8 +85,9 @@ const UpdateCampImages = () => {
   
       // Store image URIs directly in an array
       const imageUris = images.map((image) => image.path);
-  
+      
       setImagePreviews((prevPreviews) => [...prevPreviews, ...previews]);
+      
       
       // Store the image URIs in another state variable
       setImageUris((prevImageUris) => [...prevImageUris, ...imageUris]);
@@ -66,17 +113,38 @@ const UpdateCampImages = () => {
     );
     setPdfPreviews([...pdfPreviews, pdfPreview]);
   };
-
+  const getUserIdFromStorage = async () => {
+    try {
+      const data = await AsyncStorage.getItem('userdata');
+      if (data) {
+        const userData = JSON.parse(data);
+        return userData.responseData.user_id;
+      } else {
+        console.error('Invalid or missing data in AsyncStorage');
+        return null; // Return null if user_id is not available
+      }
+    } catch (error) {
+      console.error('Error retrieving data:', error);
+      return null; // Return null in case of an error
+    }
+  };
   const submitData = async () => {
     try {
-      const apiUrl = 'https://MankindGalexyapi.netcastservice.co.in/report/uploadImages';
+      const userId = await getUserIdFromStorage();
+    
+    if (userId === null) {
+      // Handle the case where userId is not available
+      return;
+    }
+    const ApiUrl = `${BASE_URL}${'/report/UpdateImages'}`;
+      
   
       // Create a FormData object
       const formData = new FormData();
   
       // Append data to the FormData object
       formData.append('crId', crid); // Replace with the correct crId
-      formData.append('userId', '1'); // Replace with the correct userId
+      formData.append('userId', userId); // Replace with the correct userId
       formData.append('feedback', feedback);
   
       // Append images to the FormData object
@@ -88,9 +156,10 @@ const UpdateCampImages = () => {
           type: 'image/jpeg',
         });
       });
+      console.log(formData)
   
       // Send a POST request with the FormData
-      const response = await fetch(apiUrl, {
+      const response = await fetch(ApiUrl, {
         method: 'POST',
         body: formData,
         headers: {

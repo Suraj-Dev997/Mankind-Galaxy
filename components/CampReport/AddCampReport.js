@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BASE_URL } from '../Configuration/Config';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { format } from 'date-fns';
 
 const AddCampReport = () => {
   const [doctorNames, setDoctorNames] = useState([]);
@@ -26,6 +27,7 @@ const AddCampReport = () => {
   const [dropdownItems] = useState(['Option 1', 'node', 'React']);
   const route = useRoute();
   const { id } = route.params;
+  const formattedCampDate = format(campDate, 'dd-MM-yyyy');
 
 
   useEffect(() => {
@@ -117,7 +119,13 @@ const AddCampReport = () => {
   const handleCampDateChange = (event, selectedDate) => {
     setShowCampDatePicker(false);
     if (selectedDate) {
-      setCampDate(selectedDate);
+      // Parse the date string in "dd-mm-yyyy" format to create a new Date object
+      const day = selectedDate.getDate();
+      const month = selectedDate.getMonth() + 1;
+      const year = selectedDate.getFullYear();
+      const newDate = new Date(year, month - 1, day); // Month is 0-indexed
+  
+      setCampDate(newDate);
     }
   };
   const showCampDate = () => {
@@ -137,7 +145,7 @@ const AddCampReport = () => {
             userId: userId, // Use the retrieved userId here
             subCatId: id,
             doctorName: textInputValue,
-            campDate: "18-04-2023",
+            campDate: formattedCampDate,
           };
   
           const ApiUrl = `${BASE_URL}${'/report/addReportWithInfo'}`;
@@ -184,7 +192,17 @@ const AddCampReport = () => {
       
 
       <View style={styles.form}>
-        
+      <View style={styles.pickcontainer}>
+        <Picker
+            selectedValue={selectedValue}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+          >
+            <Picker.Item label="Name of MR" value="option1" />
+            <Picker.Item label="option1" value="option2" />
+            <Picker.Item label="option2" value="option3" />
+          </Picker>
+        </View>
       <View style={styles.inputContainer}>
           <TextInput
             backgroundColor='#fff'
@@ -224,7 +242,11 @@ const AddCampReport = () => {
 <View style={styles.datePickerContainer} >
     
     <Text style={styles.datePickerLabel} onPress={showCampDate}>Select Date of Camp:</Text>
-    <Button style={styles.datePickerButton} onPress={showCampDate}>{campDate.toLocaleDateString()}</Button>
+    <Button style={styles.datePickerButton} onPress={showCampDate}>
+  {campDate.getDate().toString().padStart(2, '0')}-
+  {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
+  {campDate.getFullYear()}
+</Button>
     {showCampDatePicker && (
       <DateTimePicker
         value={campDate}
@@ -248,17 +270,7 @@ const AddCampReport = () => {
 
 
      
-      <View style={styles.pickcontainer}>
-        <Picker
-            selectedValue={selectedValue}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-          >
-            <Picker.Item label="Name of MR" value="option1" />
-            <Picker.Item label="option1" value="option2" />
-            <Picker.Item label="option2" value="option3" />
-          </Picker>
-        </View>
+      
         <View style={styles.pickcontainer}>
         <Picker
             selectedValue={selectedValue}

@@ -19,6 +19,7 @@ export const HomeMenu = (props) => {
   const [subcategories, setSubcategories] = useState([]);
   const [totalCamps, setTotalCamps] = useState(0);
   const [totalDoctors, setTotalDoctors] = useState(0);
+  
 
   const fetchTotalCamps = async (userId) => {
     try {

@@ -1,90 +1,27 @@
-import React, { useState,useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Image,TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, StyleSheet, FlatList, Image, TouchableOpacity,ActivityIndicator } from 'react-native';
 import { Button, Searchbar, IconButton } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { BASE_URL } from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { format } from 'date-fns';
-
-
-
-// Create separate components for each category's content
-const CategoryPoster = ({ users, filteredUsers, renderUserItem }) => (
-  <View style={styles.container}>
-    <Header />
-    <UserList filteredUsers={filteredUsers} renderUserItem={renderUserItem} />
-  </View>
-);
-
-// Add more components for other categories as needed
-
-const Header = (props) => {
-  const route = useRoute();
-  const navigation = useNavigation();
-  const { id, name } = route.params;
-  console.log(id)
-  return(
-    <View style={styles.headerMain}>
-    <View style={styles.headertop}>
-      <Button
-        icon="plus"
-        mode="contained"
-        style={styles.addbtn}
-        onPress={()=> navigation.navigate("AddCampReport",{id})}
-      >
-        Add Report
-      </Button>
-    </View>
-    <View style={styles.header}>
-      <Searchbar
-        placeholder="Search"
-       
-      />
-    </View>
-  </View>
-  )
-};
-
-
-
-const UserList = ({ filteredUsers, renderUserItem }) => (
-  <View style={styles.tableCont}>
-    <TableHeader />
-    <FlatList
-  data={filteredUsers}
-  renderItem={renderUserItem}
-  keyExtractor={(item) => (item ? item.crid.toString() : '0')} // Updated keyExtractor
-/>
-  </View>
-);
-
-const TableHeader = () => (
-  <View style={styles.tableHeader}>
-    <Text style={styles.columnHeader}>Name</Text>
-      <Text style={styles.columnHeader}>Date</Text>
-      <Text style={styles.columnHeader}>Actions</Text>
-  </View>
-);
 
 const ReportList = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const [searchQuery, setSearchQuery] = useState('');
   const [searchText, setSearchText] = useState('');
   const [users, setUsers] = useState([]); // Store fetched data
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const onChangeSearch = (query) => setSearchQuery(query);
-  const { id, name } = route.params;
+  const handleSearchTextChange = (query) => {
+    setSearchText(query);
+  };
+
+  const { id } = route.params;
 
   const handleEdit = (crid) => {
     console.log('crid id',crid)
     navigation.navigate('UpdateCampReport', { crId: crid,id }); // Pass the doctorId as a parameter
-  };
-  const handleInfoButtonClick = (user) => {
-    console.log('Info button clicked for user:', user);
-    setSelectedUser(user);
   };
 
   const handleDelete = async (crid) => {
@@ -115,11 +52,11 @@ const ReportList = () => {
   };
 
 
-
   // Fetch data from the API
   useEffect(() => {
     const fetchData = async (userId) => {
       try {
+        setIsLoading(true);
         const ApiUrl = `${BASE_URL}${'/report/getAllCampReport'}`;
         const response = await fetch(ApiUrl, {
           method: 'POST',
@@ -133,8 +70,8 @@ const ReportList = () => {
         });
         const data = await response.json();
         if (response.ok) {
-          console.log(data[0])
-          setUsers(data[0]); // Set the fetched data
+          setUsers(data[0]); 
+          setIsLoading(false); // Set the fetched data
         } else {
           console.error('Error fetching data:', data);
         }
@@ -144,31 +81,40 @@ const ReportList = () => {
     };
 
     AsyncStorage.getItem('userdata')
-    .then((data) => {
-      if (data) {
-        const userData = JSON.parse(data);
-        const userId = userData.responseData.user_id;
-        // Call fetchData with the retrieved userId
-        console.log("Getting user id:",userId)
-        fetchData(userId);
-      } else {
-        console.error('Invalid or missing data in AsyncStorage');
-      }
-    })
-    .catch((error) => {
-      console.error('Error retrieving data:', error);
-    });
+      .then((data) => {
+        if (data) {
+          const userData = JSON.parse(data);
+          const userId = userData.responseData.user_id;
+          // Call fetchData with the retrieved userId
+          console.log("Getting user id:", userId)
+          fetchData(userId);
+        } else {
+          console.error('Invalid or missing data in AsyncStorage');
+        }
+      })
+      .catch((error) => {
+        console.error('Error retrieving data:', error);
+      });
 
     fetchData();
   }, [id]);
 
-  
+  const TableHeader = () => (
+    <View style={styles.tableHeader}>
+    <Text style={styles.columnHeader}>Name</Text>
+      <Text style={styles.columnHeader}>Date</Text>
+      <Text style={styles.columnHeader}>Actions</Text>
+    </View>
+  );
 
   // Filter users based on the search text
   const filteredUsers = users.filter((user) =>
-    user.doctor_name.toLowerCase().includes(searchText.toLowerCase())
+    searchText.length >= 3
+      ? user.doctor_name?.toLowerCase().includes(searchText.toLowerCase())
+      : true
   );
   const ProfileUrl = `${BASE_URL}${'/uploads/profile/'}`;
+
   // Render user item
   const renderUserItem = ({ item }) => {
     const campDate = new Date(item.camp_date);
@@ -182,7 +128,6 @@ const dateOptions = {
 
 // Format the date using toLocaleDateString
 const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
-
     return(
       <View style={styles.userItem}>
       
@@ -194,14 +139,13 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
       <Text> {formattedDate}</Text>
         
       </View>
-   
       <View style={styles.actionButtons}>
-      <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.actionButton}
           onPress={() => handleInfoButtonClick(item)}
         >
           <IconButton icon="information-outline" iconColor="#0054a4" size={25} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="square-edit-outline"
@@ -225,107 +169,121 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
 };
 
   return (
-    <CategoryPoster users={users} filteredUsers={filteredUsers} renderUserItem={renderUserItem} />
+    <View style={styles.container}>
+      <View style={styles.headerMain}>
+        <View style={styles.headertop}>
+          <Button
+            icon="plus"
+            mode="contained"
+            style={styles.addbtn}
+            onPress={() => navigation.navigate("AddCampReport",{id})}
+          >
+              Add Report
+          </Button>
+        </View>
+        <View style={styles.header}>
+          <Searchbar
+            placeholder="Search"
+            onChangeText={handleSearchTextChange}
+            value={searchText}
+          />
+        </View>
+      </View>
+      <View style={styles.tableCont}>
+        <TableHeader />
+        {isLoading ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#0054a4"/>
+        </View>
+          ) : (
+        <FlatList
+          data={filteredUsers}
+          renderItem={renderUserItem}
+          keyExtractor={(item) => (item ? item.crid.toString() : '0')} // Updated keyExtractor
+        />
+        )}
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      
-      // backgroundColor:'#e6e6e7',
-    },
-    headerMain: {
-     
-      padding:16
-    },
-    headertop: {
-     
-      flexDirection: 'row',
-      justifyContent:'flex-end',
-      alignItems: 'flex-end',
-    },
-    header: {
-     
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    addbtn:{
-     backgroundColor: '#0054a4',
-     paddingLeft:1,
-     paddingRight:1,
-     color:'white',
-      // padding:2,
-      marginTop:8,
-      marginBottom:10,
-      width:'42%',
-
-    },
-    searchInput: {
-      flex: 1,
-      height: 20,
-      borderWidth: 1,
-      borderColor: '#ccc',
-      marginRight: 8,
-      paddingHorizontal: 5,
-    },
-    tableCont:{
-      margin:5,
-      padding: 16,
-      marginTop:5,
-      flex: 1,
-      backgroundColor:'#ffffff',
-    },
-    tableHeader: {
-   borderRadius:5,
-      marginTop:10,
-      backgroundColor:'#0054a4',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: 10,
-      color:'#fff',
-      textAlign: 'center',
-    
-    },
-    columnHeader: {
-      textAlign: 'center',
-      // backgroundColor:'#000',
-      color:'#fff',
-      fontWeight: 'bold',
-      flex: 1,
-    },
-    userItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: 8,
-      borderBottomWidth: 1,
-      borderColor: '#ccc',
-    },
-    userImage: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
-      marginRight: 8,
-    },
-    userInfo: {
-      flex: 1,
-    },
-    actionButtons: {
-      flexDirection: 'row',
-    },
-    actionButton: {
-      // backgroundColor: 'blue',
-      // paddingHorizontal: 2,
-      paddingVertical: 6,
-      // borderRadius: 4,
-      marginLeft: 1,
-    },
-    actionButtonText: {
-      color: 'white',
-    },
+    flex: 1,
+  },
+  headerMain: {
+    padding: 16,
+  },
+  headertop: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  addbtn: {
+    backgroundColor: '#0054a4',
+    paddingLeft: 1,
+    paddingRight: 1,
+    color: 'white',
+    marginTop: 8,
+    marginBottom: 10,
+    width: '42%',
+  },
+  tableCont: {
+    margin: 5,
+    padding: 16,
+    marginTop: 5,
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  tableHeader: {
+    borderRadius: 5,
+    marginTop: 10,
+    backgroundColor: '#0054a4',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    color: '#fff',
+    textAlign: 'center',
+  },
+  columnHeader: {
+    textAlign: 'center',
+    color: '#fff',
+    fontWeight: 'bold',
+    flex: 1,
+  },
+  userItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+  },
+  userImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 8,
+  },
+  userInfo: {
+    flex: 1,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+  },
+  actionButton: {
+    paddingVertical: 6,
+    marginLeft: 1,
+  },
+  actionButtonText: {
+    color: 'white',
+  },
 });
 
 export default ReportList;

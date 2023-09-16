@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BASE_URL } from '../Configuration/Config';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { format, parseISO } from 'date-fns';
 
 const UpdateCampReport = () => {
   const [doctorNames, setDoctorNames] = useState([]);
@@ -19,14 +20,14 @@ const UpdateCampReport = () => {
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
   const [selectedValue, setSelectedValue] = useState('option1');
   const navigation = useNavigation();
-
+  const formattedCampDate = format(campDate, 'dd-MM-yyyy');
   const [textInputValue, setTextInputValue] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [dropdownItems] = useState(['Option 1', 'node', 'React']);
   const route = useRoute();
   const {crId, id } = route.params;
-  console.log('geting cid',crId)
+  // console.log('geting cid',crId)
 
   
   useEffect(() => {
@@ -51,7 +52,12 @@ const UpdateCampReport = () => {
             if (Array.isArray(data) && data.length > 0) {
               const doctorData = data[0];
               setTextInputValue(doctorData.doctor_name);
-              setCampDate(new Date(doctorData.camp_date));
+              const dateParts = doctorData.camp_date.split('-');
+              const year = parseInt(dateParts[0]);
+              const month = parseInt(dateParts[1]) - 1; // Month is zero-based
+              const day = parseInt(dateParts[2]);
+              setCampDate(new Date(year, month, day));
+              // console.log(campDate)
             }
           } else {
             console.error('Error fetching doctor data:', response.statusText);
@@ -105,9 +111,10 @@ const UpdateCampReport = () => {
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
           // Extract doctor names from the response
+          // const campData = data[0];
           const names = data[0].map((doctor) => doctor.doctor_name);
           setDoctorNames(names);
-          console.log(names);
+       
         }
       })
       .catch((error) => {
@@ -156,7 +163,13 @@ const UpdateCampReport = () => {
   const handleCampDateChange = (event, selectedDate) => {
     setShowCampDatePicker(false);
     if (selectedDate) {
-      setCampDate(selectedDate);
+      // Parse the date string in "dd-mm-yyyy" format to create a new Date object
+      const day = selectedDate.getDate();
+      const month = selectedDate.getMonth() + 1;
+      const year = selectedDate.getFullYear();
+      const newDate = new Date(year, month - 1, day); // Month is 0-indexed
+  
+      setCampDate(newDate);
     }
   };
   const showCampDate = () => {
@@ -177,7 +190,7 @@ const UpdateCampReport = () => {
             userId: userId, // Use the retrieved userId here
             crId: crId,
             doctorName: textInputValue,
-            campDate: "18-04-2023",
+            campDate: formattedCampDate,
           };
   
           const ApiUrl = `${BASE_URL}${'/report/updateReportWithInfo'}`;
@@ -203,7 +216,7 @@ const UpdateCampReport = () => {
         // Check if the API request was successful
         if (data.errorCode === "1") {
           // Navigate to the "AddCampData" screen on success
-          navigation.navigate("UpdateCampData", {crId:crId,  id });
+          navigation.navigate("UpdateCampData", {crid:crId,  id });
           console.log("navigation values",crId);
         } else {
           // Handle any other logic or display an error message
@@ -224,6 +237,17 @@ const UpdateCampReport = () => {
       
 
       <View style={styles.form}>
+      <View style={styles.pickcontainer}>
+        <Picker
+            selectedValue={selectedValue}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+          >
+            <Picker.Item label="Name of MR" value="option1" />
+            <Picker.Item label="option1" value="option2" />
+            <Picker.Item label="option2" value="option3" />
+          </Picker>
+        </View>
         
       <View style={styles.inputContainer}>
           <TextInput
@@ -264,7 +288,11 @@ const UpdateCampReport = () => {
 <View style={styles.datePickerContainer} >
     
     <Text style={styles.datePickerLabel} onPress={showCampDate}>Select Date of Camp:</Text>
-    <Button style={styles.datePickerButton} onPress={showCampDate}>{campDate.toLocaleDateString()}</Button>
+    <Button style={styles.datePickerButton} onPress={showCampDate}>
+  {campDate.getDate().toString().padStart(2, '0')}-
+  {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
+  {campDate.getFullYear()}
+</Button>
     {showCampDatePicker && (
       <DateTimePicker
         value={campDate}
@@ -288,17 +316,7 @@ const UpdateCampReport = () => {
 
 
      
-      <View style={styles.pickcontainer}>
-        <Picker
-            selectedValue={selectedValue}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-          >
-            <Picker.Item label="Name of MR" value="option1" />
-            <Picker.Item label="option1" value="option2" />
-            <Picker.Item label="option2" value="option3" />
-          </Picker>
-        </View>
+      
         <View style={styles.pickcontainer}>
         <Picker
             selectedValue={selectedValue}

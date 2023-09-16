@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { BASE_URL } from '../Configuration/Config';
+import { format } from 'date-fns';
 
 const UserProfileForm = () => {
   const [userId, setUserId] = useState(null);
@@ -26,7 +27,7 @@ const UserProfileForm = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { id } = route.params;
-  console.log("this is sub id",id)
+  // console.log("this is sub id",id)
 
 
   useEffect(() => {
@@ -47,13 +48,14 @@ const UserProfileForm = () => {
   }, []);
 
   const AddDoctor = async () => {
-
+    const { id } = route.params;
     try {
       const formData = new FormData();
       formData.append('user_id', userId); // Replace with the actual user ID
       formData.append('subcat_id', id); // Replace with the actual subcategory ID
       formData.append('doctorName', name);
-      formData.append('campDate', '2023-10-10'); // Convert date to ISO format
+      const formattedCampDate = format(campDate, 'yyyy-MM-dd');
+      formData.append('campDate', formattedCampDate); // Convert date to ISO format
       formData.append('campVenue', venue);
       console.log(formData)
       if (avatarUri) {
@@ -86,6 +88,7 @@ const UserProfileForm = () => {
               text: 'OK',
               onPress: () => {
                 // Navigate to the home screen after pressing OK
+                // navigation.navigate('PosterList',id);
                 navigation.goBack();
               },
             },
@@ -109,7 +112,13 @@ const UserProfileForm = () => {
   const handleCampDateChange = (event, selectedDate) => {
     setShowCampDatePicker(false);
     if (selectedDate) {
-      setCampDate(selectedDate);
+      // Parse the date string in "dd-mm-yyyy" format to create a new Date object
+      const day = selectedDate.getDate();
+      const month = selectedDate.getMonth() + 1;
+      const year = selectedDate.getFullYear();
+      const newDate = new Date(year, month - 1, day); // Month is 0-indexed
+  
+      setCampDate(newDate);
     }
   };
   const showCampDate = () => {
@@ -184,7 +193,11 @@ const UserProfileForm = () => {
 <View style={styles.datePickerContainer} >
     
     <Text style={styles.datePickerLabel} onPress={showCampDate}>Select Date:</Text>
-    <Button style={styles.datePickerButton} onPress={showCampDate}>{campDate.toLocaleDateString()}</Button>
+    <Button style={styles.datePickerButton} onPress={showCampDate}>
+  {campDate.getDate().toString().padStart(2, '0')}-
+  {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
+  {campDate.getFullYear()}
+</Button>
     {showCampDatePicker && (
       <DateTimePicker
         value={campDate}

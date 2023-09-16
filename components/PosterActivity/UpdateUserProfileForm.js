@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { BASE_URL } from '../Configuration/Config';
+import { format } from 'date-fns';
 
 
 
@@ -21,7 +22,7 @@ const UpdateUserProfileForm = () => {
 
   const route = useRoute();
   const navigation = useNavigation();
-  const { doctorId } = route.params;
+  const { doctorId,id } = route.params;
 
   useEffect(() => {
     const handleMoreInfo = async(doctor) => {
@@ -82,12 +83,13 @@ const UpdateUserProfileForm = () => {
 
 
   const EditDoctor = async () => {
-
+    const { id } = route.params;
     try {
       const formData = new FormData();
       formData.append('doctor_id', doctorId); // Replace with the actual user ID
       formData.append('doctor_name', name);
-      formData.append('camp_date', '2023-10-10'); // Convert date to ISO format
+      const formattedCampDate = format(campDate, 'yyyy-MM-dd');
+      formData.append('camp_date', formattedCampDate); // Convert date to ISO format
       formData.append('camp_venue', venue);
      
       if (avatarUri) {
@@ -119,7 +121,7 @@ const UpdateUserProfileForm = () => {
               text: 'OK',
               onPress: () => {
                 // Navigate to the home screen after pressing OK
-                navigation.goBack();
+                navigation.navigate('PosterList',id);
               },
             },
           ],
@@ -136,7 +138,13 @@ const UpdateUserProfileForm = () => {
   const handleCampDateChange = (event, selectedDate) => {
     setShowCampDatePicker(false);
     if (selectedDate) {
-      setCampDate(selectedDate);
+      // Parse the date string in "dd-mm-yyyy" format to create a new Date object
+      const day = selectedDate.getDate();
+      const month = selectedDate.getMonth() + 1;
+      const year = selectedDate.getFullYear();
+      const newDate = new Date(year, month - 1, day); // Month is 0-indexed
+  
+      setCampDate(newDate);
     }
   };
 
@@ -218,8 +226,10 @@ const UpdateUserProfileForm = () => {
             Select Date:
           </Text>
           <Button style={styles.datePickerButton} onPress={showCampDate}>
-            {campDate.toLocaleDateString()}
-          </Button>
+  {campDate.getDate().toString().padStart(2, '0')}-
+  {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
+  {campDate.getFullYear()}
+</Button>
           {showCampDatePicker && (
             <DateTimePicker
               value={campDate}

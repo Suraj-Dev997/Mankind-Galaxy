@@ -181,7 +181,10 @@ const submitData = () => {
     <ScrollView>
         <View style={styles.container}>
       <View style={styles.form}>
-  <View style={styles.pickcontainer}>
+ 
+
+        {renderQuestions()}
+        <View style={styles.pickcontainer}>
   <Picker
             selectedValue={selectedValue}
             style={styles.picker}
@@ -193,8 +196,6 @@ const submitData = () => {
             ))}
           </Picker>
         </View>
-
-        {renderQuestions()}
 
         <Button
         buttonColor='#0054a4'
