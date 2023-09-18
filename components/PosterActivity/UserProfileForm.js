@@ -54,7 +54,7 @@ const UserProfileForm = () => {
       formData.append('user_id', userId); // Replace with the actual user ID
       formData.append('subcat_id', id); // Replace with the actual subcategory ID
       formData.append('doctorName', name);
-      const formattedCampDate = format(campDate, 'yyyy-MM-dd');
+      const formattedCampDate = format(campDate, 'dd-MM-yyyy');
       formData.append('campDate', formattedCampDate); // Convert date to ISO format
       formData.append('campVenue', venue);
       console.log(formData)

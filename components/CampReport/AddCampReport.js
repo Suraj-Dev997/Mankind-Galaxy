@@ -68,7 +68,8 @@ const AddCampReport = () => {
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
           // Extract doctor names from the response
-          const names = data[0].map((doctor) => doctor.doctor_name);
+          console.log(data)
+          const names = data.map((doctor) => doctor.doctor_name);
           setDoctorNames(names);
           console.log(names);
         }

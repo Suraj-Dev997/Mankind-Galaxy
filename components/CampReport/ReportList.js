@@ -34,11 +34,12 @@ const ReportList = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          crid: crid,
+          crId: crid,
         }),
       });
       const data = await response.json();
       if (response.ok) {
+        console.log("Delete Response",response)
         // Remove the deleted doctor from the state
         const updatedUsers = users.filter((user) => user.crid !== crid);
         setUsers(updatedUsers);

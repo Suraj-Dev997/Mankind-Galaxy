@@ -41,7 +41,7 @@ function App(): JSX.Element {
     <NavigationContainer>
     <Stack.Navigator initialRouteName='Splash' screenOptions={{
      headerRight:()=><Ham/>,
-      headerTintColor:"#ffffff", headerStyle:{
+      headerTintColor:"#fff", headerStyle:{
       backgroundColor:"#0054a4",  
     },
     }}>

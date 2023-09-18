@@ -16,7 +16,7 @@ const UpdateUserProfileForm = () => {
   const [name, setName] = useState('');
   const [venue, setVenue] = useState('');
   const [avatarUri, setAvatarUri] = useState(null);
-  const [campDate, setCampDate] = useState(new Date());
+  const [campDate, setCampDate] = useState();
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
   const [doctorDetail, setDoctorDetail] = useState(null);
 
@@ -45,10 +45,10 @@ const UpdateUserProfileForm = () => {
             const data = await response.json();
             // console.log('API Response:', data);
             if (Array.isArray(data) && data.length > 0) {
-              const doctorData = data[0][0];
+              const doctorData = data[0];
               setName(doctorData.doctor_name);
               setVenue(doctorData.camp_venue);
-              setCampDate(new Date(doctorData.camp_date));
+              setCampDate(doctorData.camp_date);
               if (doctorData.doctor_img) {
                 // Assuming that the API provides a valid image URL
                 setAvatarUri(`${ProfileUrl}${doctorData.doctor_img}`);
@@ -84,57 +84,71 @@ const UpdateUserProfileForm = () => {
 
   const EditDoctor = async () => {
     const { id } = route.params;
+  
+    // Retrieve userId from AsyncStorage
     try {
-      const formData = new FormData();
-      formData.append('doctor_id', doctorId); // Replace with the actual user ID
-      formData.append('doctor_name', name);
-      const formattedCampDate = format(campDate, 'yyyy-MM-dd');
-      formData.append('camp_date', formattedCampDate); // Convert date to ISO format
-      formData.append('camp_venue', venue);
-     
-      if (avatarUri) {
-        const image = {
-          uri: avatarUri,
-          type: 'image/jpeg', // Adjust the image type as needed
-          name: 'profile.jpg', // Provide a suitable name for the image
-        };
-        formData.append('image', image);
-      }
-      console.log(formData)
-      const ApiUrl = `${BASE_URL}${'/doc/updateDoctor'}`;
-      const response = await fetch(ApiUrl, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Response:', data);
-        Alert.alert(
-          'Success',
-          'Doctor updated successfully',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                // Navigate to the home screen after pressing OK
-                navigation.navigate('PosterList',id);
-              },
+      const data = await AsyncStorage.getItem('userdata');
+      if (data) {
+        const userData = JSON.parse(data);
+        const userId = userData.responseData.user_id;
+  
+        // Continue with your FormData and API request
+        try {
+          const formData = new FormData();
+          formData.append('doctor_id', doctorId);
+          formData.append('doctor_name', name);
+          formData.append('user_id', userId); // Use the retrieved userId
+          formData.append('camp_date', campDate);
+          formData.append('camp_venue', venue);
+  
+          if (avatarUri) {
+            const image = {
+              uri: avatarUri,
+              type: 'image/jpeg',
+              name: 'profile.jpg',
+            };
+            formData.append('image', image);
+          }
+          console.log(formData);
+          const ApiUrl = `${BASE_URL}${'/doc/updateDoctor'}`;
+          const response = await fetch(ApiUrl, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'multipart/form-data',
             },
-          ],
-          { cancelable: false }
-        );
+            body: formData,
+          });
+  
+          if (response.ok) {
+            const responseData = await response.json();
+            console.log('Response:', responseData);
+            Alert.alert(
+              'Success',
+              'Doctor updated successfully',
+              [
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    navigation.navigate('PosterList', { id }); // Navigate to PosterList with the id
+                  },
+                },
+              ],
+              { cancelable: false }
+            );
+          } else {
+            console.error('Error uploading data:', response);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
       } else {
-        console.error('Error uploading data:', response);
+        console.error('Invalid or missing data in AsyncStorage');
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error retrieving data:', error);
     }
   };
-
+  
   const handleCampDateChange = (event, selectedDate) => {
     setShowCampDatePicker(false);
     if (selectedDate) {
@@ -226,9 +240,7 @@ const UpdateUserProfileForm = () => {
             Select Date:
           </Text>
           <Button style={styles.datePickerButton} onPress={showCampDate}>
-  {campDate.getDate().toString().padStart(2, '0')}-
-  {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
-  {campDate.getFullYear()}
+  {campDate}
 </Button>
           {showCampDatePicker && (
             <DateTimePicker

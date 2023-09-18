@@ -109,7 +109,7 @@ const UpdateCampReport = () => {
         if (Array.isArray(data) && data.length > 0) {
           // Extract doctor names from the response
           // const campData = data[0];
-          const names = data[0].map((doctor) => doctor.doctor_name);
+          const names = data.map((doctor) => doctor.doctor_name);
           setDoctorNames(names);
        
         }

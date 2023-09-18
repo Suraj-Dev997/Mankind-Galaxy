@@ -37,6 +37,7 @@ const PosterList = () => {
       });
       const data = await response.json();
       if (response.ok) {
+        console.log("Delete Response",response)
         // Remove the deleted doctor from the state
         const updatedUsers = users.filter((user) => user.doctor_id !== doctorId);
         setUsers(updatedUsers);
@@ -114,23 +115,16 @@ const PosterList = () => {
 
   // Render user item
   const renderUserItem = ({ item }) => {
-    const campDate = new Date(item.camp_date);
-
-    // Define date options for formatting
-const dateOptions = {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-};
+   
 
 // Format the date using toLocaleDateString
-const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
+
     return(
       <View style={styles.userItem}>
        <Image source={{ uri: ProfileUrl + item.doctor_img }} style={styles.userImage} />
       <View style={styles.userInfo}>
         <Text>{item.doctor_name}</Text>
-        <Text>Date: {formattedDate}</Text>
+        <Text>Date: {item.camp_date}</Text>
       </View>
       <View style={styles.actionButtons}>
       <TouchableOpacity style={styles.actionButton}>

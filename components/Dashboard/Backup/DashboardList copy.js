@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { View, Text,TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal, ScrollView,ActivityIndicator,Linking,Alert } from 'react-native';
+import { View, Text,TextInput, StyleSheet, FlatList, Image,TouchableOpacity,Modal, ScrollView,ActivityIndicator,Linking } from 'react-native';
 import { Button, Searchbar, IconButton   } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -313,55 +313,33 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
       </View>
       );
     }
-    const generateRandomNumber = () => {
-      // Generate a random number between 1 and 9999 (you can adjust the range)
-      return Math.floor(Math.random() * 9999) + 1;
-    };
+    
 
     const downloadCsv = async () => {
       setIsLoading(true);
   
       try {
-        const storedData = await AsyncStorage.getItem('userdata');
-      if (!storedData) {
-        throw new Error('Invalid or missing data in AsyncStorage');
-      }
-
-      const userData = JSON.parse(storedData);
-      const userId = userData.responseData.user_id;
-      console.log('Getting user id:', userId);// Replace with your user ID
-        const subCatId = id; // Replace with your subcategory ID
-        const randomFileName = `Report_${generateRandomNumber()}.csv`;
+        const userId = 1; // Replace with your user ID
+        const subCatId = 1; // Replace with your subcategory ID
         const apiUrl = `${BASE_URL}/dashboard/getFilterCampReportCsv/?userId=${userId}&subCatId=${subCatId}`;
   
         const response = await RNFetchBlob.config({
           fileCache: true,
-          path: `${RNFetchBlob.fs.dirs.DownloadDir}/${randomFileName}`, // Save in the download folder
+          path: `${RNFetchBlob.fs.dirs.DownloadDir}/downloaded.csv`, // Save in the download folder
         }).fetch('GET', apiUrl);
   
         if (response.respInfo.status === 200) {
-          // Show success alert
-          console.log("CSV file downloaded successfully")
-          Alert.alert('Success', `CSV file downloaded as ${randomFileName} successfully`, [{ text: 'OK', onPress: () => {} }]);
+          console.log('CSV file downloaded successfully');
         } else {
-          // Show error alert
-          console.log("Failed to download CSV")
-          Alert.alert('Error', 'Failed to download CSV', [
-            { text: 'OK', onPress: () => {} },
-          ]);
           console.error('Failed to download CSV');
         }
       } catch (error) {
-        // Show error alert
-        console.log("Error downloading CSV")
-        Alert.alert('Error', `Error downloading CSV: ${error.message}`, [
-          { text: 'OK', onPress: () => {} },
-        ]);
         console.error('Error downloading CSV:', error);
       } finally {
         setIsLoading(false);
       }
     };
+
 
     const renderUserItem = ({ item }) => {
       const campDate = new Date(item.camp_date);
