@@ -64,10 +64,7 @@ const UpdateCampReport = () => {
           }
         } catch (error) {
           console.log('Error saving data:', error);
-        }
-       
-     
-       
+        } 
       }
     handleMoreInfo();
   }, [crId]);

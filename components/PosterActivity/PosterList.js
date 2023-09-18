@@ -23,7 +23,6 @@ const PosterList = () => {
     const { id } = route.params;
     navigation.navigate('UpdateUserProfileForm', { doctorId, id }); // Pass the doctorId as a parameter
   };
-
   const handleDelete = async (doctorId) => {
     try {
       const ApiUrl = `${BASE_URL}${'/doc/deleteDoctor'}`;
@@ -50,6 +49,7 @@ const PosterList = () => {
     }
   };
 
+
   // Fetch data from the API
   useEffect(() => {
     const fetchData = async (userId) => {
@@ -68,7 +68,7 @@ const PosterList = () => {
         });
         const data = await response.json();
         if (response.ok) {
-          setUsers(data[0]);
+          setUsers(data); 
           setIsLoading(false); // Set the fetched data
         } else {
           console.error('Error fetching data:', data);
@@ -112,17 +112,28 @@ const PosterList = () => {
   );
   const ProfileUrl = `${BASE_URL}${'/uploads/profile/'}`;
 
-  
   // Render user item
-  const renderUserItem = ({ item }) => (
-    <View style={styles.userItem}>
-      <Image source={{ uri: ProfileUrl + item.doctor_img }} style={styles.userImage} />
+  const renderUserItem = ({ item }) => {
+    const campDate = new Date(item.camp_date);
+
+    // Define date options for formatting
+const dateOptions = {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+};
+
+// Format the date using toLocaleDateString
+const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
+    return(
+      <View style={styles.userItem}>
+       <Image source={{ uri: ProfileUrl + item.doctor_img }} style={styles.userImage} />
       <View style={styles.userInfo}>
         <Text>{item.doctor_name}</Text>
-        <Text>Date: {item.camp_date}</Text>
+        <Text>Date: {formattedDate}</Text>
       </View>
       <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.actionButton}>
+      <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="file-image"
             iconColor="#0054a4"
@@ -148,13 +159,15 @@ const PosterList = () => {
         </TouchableOpacity>
       </View>
     </View>
-  );
+    )
+    
+};
 
   return (
     <View style={styles.container}>
       <View style={styles.headerMain}>
         <View style={styles.headertop}>
-          <Button
+        <Button
             icon="plus"
             mode="contained"
             style={styles.addbtn}
