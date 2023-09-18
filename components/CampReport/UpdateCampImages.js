@@ -47,7 +47,7 @@ const UpdateCampImages = () => {
           const ReportUrl = `${BASE_URL}${'/uploads/report/'}`;
           // Extract image paths and feedback from the response
           const imagePaths = data.map((item) =>ReportUrl + item.imgpath);
-          const feedbackText = data.feedback || ''; // Assuming feedback is the same for all images
+          const feedbackText = data[0].feedback || ''; // Assuming feedback is the same for all images
           console.log(imagePaths)
           // Set the imagePreviews and feedback states
           setImagePreviews(imagePaths.map((path, index) => (

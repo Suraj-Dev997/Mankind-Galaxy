@@ -5,7 +5,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  ScrollView,Alert
 } from 'react-native';
 import { TextInput, Button, Avatar } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -110,7 +110,9 @@ const UploadCampImages = () => {
         if (response.ok) {
           const data = await response.json();
           console.log('Upload successful Response:', data);
-          navigation.navigate('ReportList', { id });
+          Alert.alert('Success', 'Camp Report uploaded successfully', [
+            { text: 'OK', onPress: () => navigation.navigate('ReportList', { id }) },
+          ]);
           console.log('Forwarded Crid', id);
         } else {
           // Handle success response from the API

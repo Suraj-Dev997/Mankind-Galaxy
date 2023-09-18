@@ -27,6 +27,8 @@ import PosterDownload from './components/PosterActivity/PosterDownload';
 import UpdateCampData from './components/CampReport/UpdateCampData';
 import UpdateCampReport from './components/CampReport/UpdateCampReport';
 import UpdateCampImages from './components/CampReport/UpdateCampImages';
+import CampInfo from './components/CampReport/CampInfo';
+
 
 
 
@@ -71,6 +73,7 @@ function App(): JSX.Element {
     <Stack.Screen name='UpdateCampData' component={UpdateCampData} options={{title:"Update Camp Detail" }} />
     <Stack.Screen name='UpdateCampImages' component={UpdateCampImages} options={{title:"Update Camp Images" }} />
     <Stack.Screen name='PosterDownload' component={PosterDownload} options={{title:"Download Poster" }} />
+    <Stack.Screen name='CampInfo' component={CampInfo} options={{title:"Camp Info" }} />
     
     </Stack.Navigator>
       </NavigationContainer>

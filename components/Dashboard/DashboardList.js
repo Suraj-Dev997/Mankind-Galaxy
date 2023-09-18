@@ -278,8 +278,8 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
               body: JSON.stringify({
                 userId: userId, // Use the retrieved userId
                 subCatId: id, // Replace with your subcategory ID
-                filterBy:selectedValue ,
-                // startDate:"2023-09-17",
+                filterBy:selectedValue,
+                // startDate:"2023-09-15",
                 // endDate:"2023-09-18"
               }),
             })
@@ -287,7 +287,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
               .then((responseData) => {
                 setData(responseData);
                 console.log(responseData);
-                console.log(selectedValue)
+                console.log(selectedValue);
                 setIsLoading(false);
               })
               .catch((error) => {
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
       
         height: 80,
         textAlign:'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#ffffff',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius:10,

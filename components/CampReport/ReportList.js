@@ -18,6 +18,10 @@ const ReportList = () => {
   };
 
   const { id } = route.params;
+  const handleInfo = (crid) => {
+    console.log('crid id',crid)
+    navigation.navigate('CampInfo', { crId: crid,id }); // Pass the doctorId as a parameter
+  };
 
   const handleEdit = (crid) => {
     console.log('crid id',crid)
@@ -141,12 +145,12 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
         
       </View>
       <View style={styles.actionButtons}>
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => handleInfoButtonClick(item)}
+          onPress={() => handleInfo(item.crid)}
         >
           <IconButton icon="information-outline" iconColor="#0054a4" size={25} />
-        </TouchableOpacity> */}
+        </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="square-edit-outline"
