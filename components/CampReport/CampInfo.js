@@ -271,6 +271,20 @@ useEffect(() => {
           />
         
         {renderQuestions()}
+        <Text style={styles.datePickerLabel}>Brand Name:</Text>
+        <View style={styles.pickcontainer} disabled>
+  <Picker
+  disabled
+            selectedValue={selectedValue}
+            style={styles.picker}
+           
+          >
+            <Picker.Item label="Select Brand" value="option1" disabled />
+            {brandOptions.map((brand) => (
+              <Picker.Item key={brand.basic_id} label={brand.description} value={brand.basic_id.toString()} disabled />
+            ))}
+          </Picker>
+        </View>
         <Text style={styles.datePickerLabel}>Camp Images:</Text>
           <View style={styles.previewContainer}>
           

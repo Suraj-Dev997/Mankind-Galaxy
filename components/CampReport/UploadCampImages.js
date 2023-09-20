@@ -134,7 +134,7 @@ const UploadCampImages = () => {
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.form}>
-          
+        <Text style={styles.datePickerLabel}>Upload only 3 Images</Text>
           <TouchableOpacity onPress={handleImageUpload}>
             <Button
               // buttonColor="#0054a4"

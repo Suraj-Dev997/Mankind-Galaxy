@@ -22,6 +22,7 @@ const UpdateCampImages = () => {
   const [imagePreviews, setImagePreviews] = useState([]);
   const [pdfPreviews, setPdfPreviews] = useState([]);
   const [feedback, setFeedback] = useState(''); // Feedback text
+  const [crimgId, setCrimgId] = useState([]);
   const [imageUris, setImageUris] = useState([]);
   const { crid, id } = route.params;
   // console.log('ImagePage crid',crid)
@@ -44,9 +45,13 @@ const UpdateCampImages = () => {
 
         if (response.ok) {
           const data = await response.json();
+          console.log(data)
           const ReportUrl = `${BASE_URL}${'/uploads/report/'}`;
           // Extract image paths and feedback from the response
           const imagePaths = data.map((item) =>ReportUrl + item.imgpath);
+          const CriImID = data.map((item) => item.crimgid);
+          setCrimgId(CriImID)
+          console.log(CriImID)
           const feedbackText = data[0].feedback || ''; // Assuming feedback is the same for all images
           console.log(imagePaths)
           // Set the imagePreviews and feedback states
@@ -146,21 +151,24 @@ const UpdateCampImages = () => {
       formData.append('crId', crid); // Replace with the correct crId
       formData.append('userId', userId); // Replace with the correct userId
       formData.append('feedback', feedback);
-  
+
       // Append images to the FormData object
       imageUris.forEach((imageUri, index) => {
         const imageName = `image_${index + 1}.jpg`;
         formData.append('images', {
+        
           uri: imageUri,
           name: imageName,
           type: 'image/jpeg',
         });
+        formData.append('crimgid', crimgId[index]);
       });
+      
       console.log(formData)
   
       // Send a POST request with the FormData
       const response = await fetch(ApiUrl, {
-        method: 'POST',
+        method: 'PATCH',
         body: formData,
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -171,13 +179,15 @@ const UpdateCampImages = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Upload successful Response:', data);
-        navigation.navigate('ReportList',id);
-        console.log('Forworded Crid',id)
+        navigation.navigate('ReportList', id);
+        console.log('Forworded Crid', id);
       } else {
-        // Handle success response from the API
-        const error = await response.json();
-        console.log('Error',error);
-         // Navigate to the next screen
+        // Handle error scenarios
+        console.log('HTTP Error:', response.status);
+        const errorText = await response.text();
+        console.log('Error Response:', errorText);
+      
+        // You can implement specific error handling based on the response status code or content here.
       }
     } catch (error) {
       // Handle any errors that occur during the upload process

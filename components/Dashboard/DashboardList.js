@@ -242,6 +242,8 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
       setShowFromDatePicker(false);
       if (selectedDate) {
         setFromDate(selectedDate);
+      } else {
+        setFromDate(null); // Set fromDate to null if selectedDate is null
       }
     };
   
@@ -249,6 +251,8 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
       setShowToDatePicker(false);
       if (selectedDate) {
         setToDate(selectedDate);
+      } else {
+        setToDate(null); // Set toDate to null if selectedDate is null
       }
     };
   
@@ -279,8 +283,8 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
                 userId: userId, // Use the retrieved userId
                 subCatId: id, // Replace with your subcategory ID
                 filterBy:selectedValue,
-                // startDate:"2023-09-15",
-                // endDate:"2023-09-18"
+                // startDate:fromDate,
+                // endDate:toDate
               }),
             })
               .then((response) => response.json())
@@ -303,7 +307,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
           console.error('Error retrieving data: ', error);
           setIsLoading(false);
         });
-    }, [id,selectedValue]);
+    }, [id,selectedValue,fromDate,toDate]);
   
     // Render loading indicator if data is still loading
     if (isLoading) {
@@ -341,8 +345,8 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
   
         if (response.respInfo.status === 200) {
           // Show success alert
-          console.log("CSV file downloaded successfully")
-          Alert.alert('Success', `CSV file downloaded as ${randomFileName} successfully`, [{ text: 'OK', onPress: () => {} }]);
+          console.log("Report CSV file downloaded successfully")
+          Alert.alert('Success', `Report CSV file downloaded as ${randomFileName} successfully`, [{ text: 'OK', onPress: () => {} }]);
         } else {
           // Show error alert
           console.log("Failed to download CSV")
@@ -362,7 +366,50 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         setIsLoading(false);
       }
     };
+    const downloadUserCsv = async (crid) => {
+      setIsLoading(true);
+  
+      try {
+        const storedData = await AsyncStorage.getItem('userdata');
+      if (!storedData) {
+        throw new Error('Invalid or missing data in AsyncStorage');
+      }
 
+      const userData = JSON.parse(storedData);
+      const userId = userData.responseData.user_id;
+      console.log('Getting user id:', userId);// Replace with your user ID
+        const subCatId = id; // Replace with your subcategory ID
+        const randomFileName = `UserReport_${generateRandomNumber()}.csv`;
+        const apiUrl = `${BASE_URL}/dashboard/getFilterCampReportCsvWithId/?crid=${crid}`;
+  
+        const response = await RNFetchBlob.config({
+          fileCache: true,
+          path: `${RNFetchBlob.fs.dirs.DownloadDir}/${randomFileName}`, // Save in the download folder
+        }).fetch('GET', apiUrl);
+  
+        if (response.respInfo.status === 200) {
+          // Show success alert
+          console.log("User Report CSV file downloaded successfully")
+          Alert.alert('Success', `User Report CSV file downloaded as ${randomFileName} successfully`, [{ text: 'OK', onPress: () => {} }]);
+        } else {
+          // Show error alert
+          console.log("Failed to download CSV")
+          Alert.alert('Error', 'Failed to download CSV', [
+            { text: 'OK', onPress: () => {} },
+          ]);
+          console.error('Failed to download CSV');
+        }
+      } catch (error) {
+        // Show error alert
+        console.log("Error downloading CSV")
+        Alert.alert('Error', `Error downloading CSV: ${error.message}`, [
+          { text: 'OK', onPress: () => {} },
+        ]);
+        console.error('Error downloading CSV:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     const renderUserItem = ({ item }) => {
       const campDate = new Date(item.camp_date);
 
@@ -392,7 +439,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
             icon="arrow-down-bold-box"
             iconColor="#0054a4"
             size={30}
-            onPress={() => console.log('Pressed')}
+            onPress={() => downloadUserCsv(item.crid)}
           />
         </TouchableOpacity>
         </View>

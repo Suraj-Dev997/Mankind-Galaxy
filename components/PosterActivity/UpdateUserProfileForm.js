@@ -22,7 +22,8 @@ const UpdateUserProfileForm = () => {
 
   const route = useRoute();
   const navigation = useNavigation();
-  const { doctorId,id } = route.params;
+  const { doctorId,dc_id,id } = route.params;
+
 
   useEffect(() => {
     const handleMoreInfo = async(doctor) => {
@@ -30,7 +31,8 @@ const UpdateUserProfileForm = () => {
         try {
         
           const payload ={
-            doctorId:doctorId
+            doctorId:doctorId,
+            dcId:dc_id
           }
           const ApiUrl = `${BASE_URL}${'/doc/getDoctorPoster'}`;
           const ProfileUrl = `${BASE_URL}${'/uploads/profile/'}`;
@@ -67,7 +69,7 @@ const UpdateUserProfileForm = () => {
        
       }
     handleMoreInfo();
-  }, [doctorId]);
+  }, [doctorId,dc_id]);
   
   useEffect(()=>{
     // console.log(doctorDetail)
@@ -83,7 +85,7 @@ const UpdateUserProfileForm = () => {
 
 
   const EditDoctor = async () => {
-    const { id } = route.params;
+    const { dc_id,id } = route.params;
   
     // Retrieve userId from AsyncStorage
     try {
@@ -96,6 +98,7 @@ const UpdateUserProfileForm = () => {
         try {
           const formData = new FormData();
           formData.append('doctor_id', doctorId);
+          formData.append('dc_id', dc_id);
           formData.append('doctor_name', name);
           formData.append('user_id', userId); // Use the retrieved userId
           formData.append('camp_date', campDate);
@@ -129,7 +132,7 @@ const UpdateUserProfileForm = () => {
                 {
                   text: 'OK',
                   onPress: () => {
-                    navigation.navigate('PosterList', { id }); // Navigate to PosterList with the id
+                    navigation.goBack(); // Navigate to PosterList with the id
                   },
                 },
               ],

@@ -60,48 +60,63 @@ const ReportList = () => {
   // Fetch data from the API
   useEffect(() => {
     const fetchData = async (userId) => {
-      try {
-        setIsLoading(true);
-        const ApiUrl = `${BASE_URL}${'/report/getAllCampReport'}`;
-        const response = await fetch(ApiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: userId, // Replace with your user ID
-            subCatId: id, // Replace with your subcategory ID
-          }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setUsers(data[0]); 
-          setIsLoading(false); // Set the fetched data
-        } else {
-          console.error('Error fetching data:', data);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    AsyncStorage.getItem('userdata')
+      AsyncStorage.getItem('userdata')
       .then((data) => {
         if (data) {
           const userData = JSON.parse(data);
           const userId = userData.responseData.user_id;
-          // Call fetchData with the retrieved userId
-          console.log("Getting user id:", userId)
-          fetchData(userId);
+  
+          // Fetch data from the API using the retrieved userId
+          const ApiUrl = `${BASE_URL}${'/report/getAllCampReport'}`;
+          return fetch(ApiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: userId, // Use the retrieved userId
+              subCatId: id, // Replace with your subcategory ID
+            }),
+          })
+            .then((response) => response.json())
+            .then((responseData) => {
+              setUsers(responseData[0]);
+              setIsLoading(false);
+            })
+            .catch((error) => {
+              console.error('Error fetching data: ', error);
+              setIsLoading(false);
+            });
         } else {
           console.error('Invalid or missing data in AsyncStorage');
+          setIsLoading(false);
         }
       })
       .catch((error) => {
-        console.error('Error retrieving data:', error);
+        console.error('Error retrieving data: ', error);
+        setIsLoading(false);
       });
+    };
 
-    fetchData();
+    // AsyncStorage.getItem('userdata')
+    //   .then((data) => {
+    //     if (data) {
+    //       const userData = JSON.parse(data);
+    //       const userId = userData.responseData.user_id;
+    //       // Call fetchData with the retrieved userId
+    //       console.log("Getting user id:", userId)
+    //       fetchData(userId);
+    //     } else {
+    //       console.error('Invalid or missing data in AsyncStorage');
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error retrieving data:', error);
+    //   });
+
+    const interval = setInterval(fetchData, 500); // Run the fetchData function every 1 second
+  
+    return () => clearInterval(interval); // Cleanup the interval on component unmount
   }, [id]);
 
   const TableHeader = () => (

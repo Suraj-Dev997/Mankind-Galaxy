@@ -54,7 +54,7 @@ const Ham = () => {
      
       if (response.ok) {
         // await AsyncStorage.setItem('user', "Suraj");
-       
+
         console.log("Resopnse recived");
         try {
           await AsyncStorage.removeItem('userdata');

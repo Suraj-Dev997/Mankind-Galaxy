@@ -19,9 +19,9 @@ const PosterList = () => {
 
   const { id } = route.params;
 
-  const handleEdit = (doctorId) => {
+  const handleEdit = (doctorId,dc_id) => {
     const { id } = route.params;
-    navigation.navigate('UpdateUserProfileForm', { doctorId, id }); // Pass the doctorId as a parameter
+    navigation.navigate('UpdateUserProfileForm', { doctorId,dc_id, id }); // Pass the doctorId as a parameter
   };
   const handleDelete = async (doctorId) => {
     try {
@@ -54,48 +54,63 @@ const PosterList = () => {
   // Fetch data from the API
   useEffect(() => {
     const fetchData = async (userId) => {
-      try {
-        setIsLoading(true);
+      AsyncStorage.getItem('userdata')
+    .then((data) => {
+      if (data) {
+        const userData = JSON.parse(data);
+        const userId = userData.responseData.user_id;
+
+        // Fetch data from the API using the retrieved userId
         const ApiUrl = `${BASE_URL}${'/doc/getDoctorWithUserId'}`;
-        const response = await fetch(ApiUrl, {
+        return fetch(ApiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            userId: userId, // Replace with your user ID
+            userId: userId, // Use the retrieved userId
             subCatId: id, // Replace with your subcategory ID
           }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setUsers(data); 
-          setIsLoading(false); // Set the fetched data
-        } else {
-          console.error('Error fetching data:', data);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+        })
+          .then((response) => response.json())
+          .then((responseData) => {
+            setUsers(responseData);
+            setIsLoading(false);
+          })
+          .catch((error) => {
+            console.error('Error fetching data: ', error);
+            setIsLoading(false);
+          });
+      } else {
+        console.error('Invalid or missing data in AsyncStorage');
+        setIsLoading(false);
       }
+    })
+    .catch((error) => {
+      console.error('Error retrieving data: ', error);
+      setIsLoading(false);
+    });
     };
+   
 
-    AsyncStorage.getItem('userdata')
-      .then((data) => {
-        if (data) {
-          const userData = JSON.parse(data);
-          const userId = userData.responseData.user_id;
-          // Call fetchData with the retrieved userId
-          console.log("Getting user id:", userId)
-          fetchData(userId);
-        } else {
-          console.error('Invalid or missing data in AsyncStorage');
-        }
-      })
-      .catch((error) => {
-        console.error('Error retrieving data:', error);
-      });
-
-    fetchData();
+    // AsyncStorage.getItem('userdata')
+    //   .then((data) => {
+    //     if (data) {
+    //       const userData = JSON.parse(data);
+    //       const userId = userData.responseData.user_id;
+    //       // Call fetchData with the retrieved userId
+    //       console.log("Getting user id:", userId)
+    //       fetchData(userId);
+    //     } else {
+    //       console.error('Invalid or missing data in AsyncStorage');
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error retrieving data:', error);
+    //   });
+    const interval = setInterval(fetchData, 500); // Run the fetchData function every 1 second
+  
+    return () => clearInterval(interval); // Cleanup the interval on component unmount
   }, [id]);
 
   const TableHeader = () => (
@@ -140,7 +155,7 @@ const PosterList = () => {
             icon="application-edit"
             iconColor="#0054a4"
             size={20}
-            onPress={() => handleEdit(item.doctor_id)}
+            onPress={() => handleEdit(item.doctor_id,item.dc_id)}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>

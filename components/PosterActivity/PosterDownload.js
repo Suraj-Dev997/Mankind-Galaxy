@@ -1,12 +1,14 @@
-import React, { useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useRef,useEffect,useState } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions,PermissionsAndroid  } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import ViewShot from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import {  Button } from 'react-native-paper';
+import { BASE_URL } from '../Configuration/Config';
 
 const DoctorPoster = ({ doctorInfo, doctorImage }) => {
+  
   return (
     // <View>
     //   <Image source={require('./Melasma.jpg')} style={{ width: 300, height: 400 }} />
@@ -28,77 +30,160 @@ const DoctorPoster = ({ doctorInfo, doctorImage }) => {
 };
 
 const PosterDownload = () => {
+
+  const [avatarUri, setAvatarUri] = useState(null);
   const doctorInfo = {
     name: 'Dr. John Doe',
     // Add other static data here
   };
+
+  useEffect(() => {
+    const handleMoreInfo = async(doctor) => {
+       
+        try {
+        
+          const payload ={
+          
+            dcId:24
+          }
+          const ApiUrl = `${BASE_URL}${'/doc/getPoster'}`;
+          const ProfileUrl = `${BASE_URL}${'/'}`;
+          const response = await fetch(ApiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          })
+          if (response.ok) {
+            const data = await response.json();
+            console.log('API Response:', data);
+            if (Array.isArray(data) && data.length > 0) {
+              const doctorData = data[0];
+              if (doctorData.poster_name) {
+                // Assuming that the API provides a valid image URL
+                setAvatarUri(`${ProfileUrl}${doctorData.poster_name}`);
+                console.log(avatarUri)
+                
+              
+              }
+            }
+          } else {
+            console.error('Error fetching doctor data:', response.statusText);
+          }
+        } catch (error) {
+          console.log('Error saving data:', error);
+        }
+       
+     
+       
+      }
+    handleMoreInfo();
+  }, [avatarUri]);
   
   const doctorImage = 'https://zplusconnect.netcastservice.co.in/doctor.png'; // Replace with a valid image URL
   const viewShotRef = useRef(null);
 
   const generateAndDownloadPoster = async () => {
-    if (viewShotRef.current) {
-      const uri = await viewShotRef.current.capture();
+    if (avatarUri) {
       const dirs = RNFetchBlob.fs.dirs;
       const imagePath = `${dirs.DownloadDir}/doctor_poster.jpg`;
-
-      RNFetchBlob.fs.cp(uri, imagePath)
-        .then(() => {
-          // Display a message or perform other actions
-          console.log('Poster downloaded successfully');
+  
+      RNFetchBlob.config({
+        fileCache: true,
+        appendExt: 'jpg',
+      })
+        .fetch('GET', avatarUri)
+        .then(res => {
+          if (res.respInfo.status === 200) {
+            // Check if the source file exists before moving it
+            RNFetchBlob.fs.exists(res.path())
+              .then(exists => {
+                if (exists) {
+                  RNFetchBlob.fs.mv(res.path(), imagePath)
+                    .then(() => {
+                      console.log('Poster downloaded successfully');
+                    })
+                    .catch(error => {
+                      console.error('Error moving the downloaded file:', error);
+                    });
+                } else {
+                  console.error('Source file does not exist at:', res.path());
+                }
+              })
+              .catch(error => {
+                console.error('Error checking if source file exists:', error);
+              });
+          } else {
+            console.error('Failed to download image. Status code:', res.respInfo.status);
+          }
         })
         .catch(error => {
-          console.error(error);
+          console.error('Error fetching image:', error);
         });
+    } else {
+      console.error('avatarUri is empty or invalid');
     }
   };
+  
 
   const generateAndDownloadPdf = async () => {
     if (viewShotRef.current) {
-      const uri = await viewShotRef.current.capture();
-      const dirs = RNFetchBlob.fs.dirs;
-      const imagePath = `${dirs.DownloadDir}/doctor_poster.jpg`;
+      try {
+        // Request permission to write to external storage (Download directory)
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission',
+            message: 'App needs access to your storage to save the PDF.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          }
+        );
   
-      // Create a PDF document with the image
-      const pdfOptions = {
-        html: `<html><body><img src="file://${uri}" /></body></html>`,
-        fileName: 'doctor_poster',
-        directory: dirs.DownloadDir,
-      };
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          const uri = await viewShotRef.current.capture();
+          const dirs = RNFetchBlob.fs.dirs;
+          const imagePath = `${dirs.DownloadDir}/doctor_poster.jpg`;
   
-      RNHTMLtoPDF.convert(pdfOptions)
-        .then(pdfFilePath => {
+          // Create a PDF document with the image
+          const pdfOptions = {
+            html: `<html><body><img src="file://${uri}" /></body></html>`,
+            fileName: 'doctor_poster',
+            directory: dirs.DownloadDir,
+          };
+  
+          const pdfFilePath = await RNHTMLtoPDF.convert(pdfOptions);
+  
           // Display a message or perform other actions
           console.log('PDF downloaded successfully', pdfFilePath);
-        })
-        .catch(error => {
-          console.error(error);
-        });
+        } else {
+          console.log('Permission denied.');
+        }
+      } catch (error) {
+        console.error('Error while generating or downloading PDF:', error);
+      }
     }
   };
 
 
   return (
-    // <View>
-    //   <TouchableOpacity onPress={() => {}}>
-    //     <Text>Static Doctor Image</Text>
-    //   </TouchableOpacity>
-    //   {doctorImage && (
-    //     <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 1 }}>
-    //       <DoctorPoster doctorInfo={doctorInfo} doctorImage={doctorImage} />
-    //     </ViewShot>
-    //   )}
-    //   <Button title="Generate Poster and Download" onPress={generateAndDownloadPoster} />
-    // </View>
+  
     <View style={styles.container}>
       <TouchableOpacity onPress={() => {}}>
         <Text style={styles.postertitle}>Download Doctor Posters</Text>
       </TouchableOpacity>
-      {doctorImage && (
-        <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 1 }}>
-          <DoctorPoster doctorInfo={doctorInfo} doctorImage={doctorImage} />
-        </ViewShot>
+    
+       {avatarUri ? (
+        <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 0.9 }}>
+        {/* Your content that you want to capture */}
+        <Image source={{ uri: avatarUri }} style={{ width: 300, height: 400 }} />
+      </ViewShot>
+      ) : (
+        <Text style={styles.noPosterText}>Poster not available</Text>
       )}
+  
       <View style={styles.btncont}>
   <View style={styles.buttonContainer}>
     <Button
@@ -151,11 +236,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   posterContainer: {
-    marginTop:20,
-    marginBottom:20,
+    
     position: 'relative',
-    width: 300, // Set to your poster width
-    height: 400, // Set to your poster height
+    width: 400, // Set to your poster width
+    height: 580, // Set to your poster height
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden', // Clip overflowing content
@@ -164,15 +248,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  imageContainer: {
-    position: 'absolute',
-    bottom: '5.5%',
-    left:'9%', // Adjust the position as needed
-    width: '27%', // Adjust the size as needed
-    height: '20%', // Maintain a square aspect ratio for the doctor's image
-    borderRadius: 50, // To make it circular
-    overflow: 'hidden', // Clip overflowing content
-  },
+ 
   doctorImage: {
     
     width: '100%',
