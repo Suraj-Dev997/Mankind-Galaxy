@@ -130,10 +130,7 @@ export const Home =  () =>{
   }, []);
 
     return(
-      <ImageBackground
-      source={require('./Images/Splash.jpg')}
-      style={styles.backgroundImage}
-    >
+      <LinearGradient  colors={[  '#daf5ff','#72c5f8']} style={styles.container}>
         <View style={styles.container}>
        
            <StatusBar backgroundColor="#0047b9"/>
@@ -170,27 +167,22 @@ export const Home =  () =>{
           </View>
           
       </View>
-      </ImageBackground>
+   </LinearGradient>
      
     );
   }
 
   const styles = StyleSheet.create({
-    backgroundImage: {
-      justifyContent: 'center',
-      alignItems: 'center',
    
-      resizeMode: 'cover', // or 'stretch' if you want the image to stretch to cover the entire screen
-    },
     container: {
       // backgroundColor:'#fff',
-      // flexGrow: 1,
-      // justifyContent: 'center',
+      flexGrow: 1,
+      justifyContent: 'center',
       
     },
     container1: {
  width:'100%',
-      padding: 0,
+ padding: 10,
       flexGrow: 1,
       justifyContent: 'center',
       alignItems: 'center',
