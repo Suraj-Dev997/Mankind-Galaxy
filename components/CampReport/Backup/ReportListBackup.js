@@ -177,12 +177,12 @@ const CategoryReport = ({ users, filteredUsers, renderUserItem }) => (
           style={styles.actionButton}
           onPress={() => handleInfoButtonClick(item)}
         >
-          <IconButton icon="information-outline" iconColor="#0054a4" size={25} />
+          <IconButton icon="information-outline" iconColor="#0047b9" size={25} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="square-edit-outline"
-            iconColor="#0054a4"
+            iconColor="#0047b9"
             size={25}
             onPress={() => console.log('Pressed')}
           />
@@ -190,7 +190,7 @@ const CategoryReport = ({ users, filteredUsers, renderUserItem }) => (
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="delete-outline"
-            iconColor="#0054a4"
+            iconColor="#0047b9"
             size={25}
             onPress={() => console.log('Pressed')}
           />
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
     },
     addbtn:{
-     backgroundColor: '#0054a4',
+     backgroundColor: '#0047b9',
      paddingLeft:1,
      paddingRight:1,
      color:'white',
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     tableHeader: {
    borderRadius:5,
       marginTop:10,
-      backgroundColor:'#0054a4',
+      backgroundColor:'#0047b9',
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',

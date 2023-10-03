@@ -3,6 +3,7 @@ import { View, TextInput, StyleSheet, TouchableOpacity, Text,Alert, ActivityIndi
 import { BASE_URL } from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {axios} from 'axios';
+import LinearGradient from 'react-native-linear-gradient';
 
 export const Login = ({navigation }) =>{
    const [EmpCode, setEmpCode] = useState('');
@@ -21,18 +22,7 @@ const handleLogin = async () => {
     body: JSON.stringify({ 
       empcode: EmpCode,
         password: Password
-      // EmailId: null,
-      // EmpCode: EmpCode,
-      // Password: Password,
-      // IpAddress: "::1",
-      // UserDevice: null,
-      // UserBrowser: null,
-      // BrowserDetail: {},
-      // LoginTypeField: "EMPCODE",
-      // ClientId: "10001",
-      // DeptId: "1",
-      // UserId: null,
-      // CusQuizid: null
+    
     }),
   });
   console.log(EmpCode)
@@ -72,7 +62,7 @@ const handleLogin = async () => {
    
   } else {
     // errorMessage(responseData.error);
-    Alert.alert('Error',responseData.error)
+    Alert.alert('Error','Error while Login')
     console.log("F")
   }
   setIsLoading(false);
@@ -83,7 +73,7 @@ const handleLogin = async () => {
       style={styles.backgroundImage}
     >
         {isLoading ? (
-        <ActivityIndicator size="large" color="#0054a4" />
+        <ActivityIndicator size="large" color="#0047b9" />
       ) : (
         <>
          <Image
@@ -106,11 +96,13 @@ const handleLogin = async () => {
         onChangeText={(text) => setPassword(text)}
         value={Password}
       />
-      <TouchableOpacity style={[styles.buttonContainer,styles.elevation]} onPress={handleLogin}>
-        <Text style={styles.buttonText}  >Login</Text>
+       <LinearGradient colors={['#0047b9',  '#0c93d7']} style={[styles.buttonContainer,styles.elevation]} >
+       <TouchableOpacity  onPress={handleLogin}>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+       </LinearGradient>
+     
       <TouchableOpacity style={styles.forgotPasswordContainer}>
-        {/* <Text style={styles.forgotPasswordText}>Forgot Password?</Text> */}
       </TouchableOpacity>
       </>
        )}
@@ -136,8 +128,8 @@ const styles = StyleSheet.create({
   input: {
     width: '80%',
     height: 50,
-    backgroundColor: '#eefaff',
-    color:'#0054a4',
+    backgroundColor: '#fff',
+    color:'#0047b9',
     borderColor: '#e6e6e6',
     borderWidth: 1,
     borderRadius: 30,
@@ -150,7 +142,7 @@ const styles = StyleSheet.create({
     paddingBottom:10,
     padding:20,
     // height: 50,
-    backgroundColor: '#0054a4',
+    backgroundColor: '#0047b9',
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -167,11 +159,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   forgotPasswordText: {
-    color: '#0054a4',
+    color: '#0047b9',
     fontSize: 14,
   },
   logo:{
-    width:"100%",
+    width:"80%",
     height:100,
     marginBottom:50,
     borderRadius:50,

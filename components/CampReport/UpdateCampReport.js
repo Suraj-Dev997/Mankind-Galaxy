@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList,ActivityIndicator  } from 'react-native';
 import { TextInput, Button, Avatar,DefaultTheme  } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -9,8 +9,10 @@ import { BASE_URL } from '../Configuration/Config';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format, parseISO } from 'date-fns';
+import LinearGradient from 'react-native-linear-gradient';
 
 const UpdateCampReport = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [doctorNames, setDoctorNames] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [filteredDoctorNames, setFilteredDoctorNames] = useState([]);
@@ -24,50 +26,155 @@ const UpdateCampReport = () => {
   const [textInputValue, setTextInputValue] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [userEmpcode, setUserEmpcode] = useState();
+  const [hq, setHq] = useState();
+  const [mrNames, setMrNames] = useState([]); // State to store MR names
+  const [mrData, setMrData] = useState([]); // Define mrData state
+  const initialSelectedMr = 'Name of MR';
+  const [selectedMr, setSelectedMr] = useState(initialSelectedMr);
+  const [mrHQs, setMrHQs] = useState({}); // Store MR HQs
   const [dropdownItems] = useState(['Option 1', 'node', 'React']);
   const route = useRoute();
+  const [selectedEmpcode, setSelectedEmpcode] = useState('');
+  
+  
   const {crId, id } = route.params;
   // console.log('geting cid',crId)
 
-  
   useEffect(() => {
-    const handleMoreInfo = async(doctor) => {
+    const fetchData = async (empcode) => {
+      setIsLoading(true);
+      try {
        
-        try {
-        
-          const payload ={
-            crId:crId
-          }
-          const ApiUrl = `${BASE_URL}${'/report/getReportInfoWithId'}`;
-          const response = await fetch(ApiUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-          })
-          if (response.ok) {
-            const data = await response.json();
-            // console.log('API Response:', data);
-            if (Array.isArray(data) && data.length > 0) {
-              const doctorData = data[0];
-              setTextInputValue(doctorData.doctor_name);
-              const dateParts = doctorData.camp_date.split('-');
-              const year = parseInt(dateParts[0]);
-              const month = parseInt(dateParts[1]) - 1; // Month is zero-based
-              const day = parseInt(dateParts[2]);
-              setCampDate(new Date(year, month, day));
-              // console.log(campDate)
+        // Fetch doctor data
+        const payload = {
+          crId: crId
+        }
+        const ApiUrl = `${BASE_URL}${'/report/getReportInfoWithId'}`;
+        const response = await fetch(ApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const doctorData = data[0];
+            console.log("Data camp:", doctorData);
+            setTextInputValue(doctorData.doctor_name);
+            const campDateParts = doctorData.camp_date.split('-');
+            if (campDateParts.length === 3) {
+              const day = parseInt(campDateParts[0], 10);
+              const month = parseInt(campDateParts[1], 10) - 1; // Month is 0-based
+              const year = parseInt(campDateParts[2], 10);
+              const campDate = new Date(year, month, day);
+              setCampDate(campDate);
+            } else {
+              console.error('Invalid camp date format:', doctorData.camp_date);
             }
-          } else {
-            console.error('Error fetching doctor data:', response.statusText);
+  
+            // Store doctorData.empcode in a separate state variable
+            const doctorEmpcode = doctorData.empcode;
+            setUserEmpcode(doctorEmpcode);
+            
+  
+            // Fetch MR names and HQs using doctorEmpcode
+            const mrApiUrl = `${BASE_URL}${'/report/getEmpData'}`;
+            const mrResponse = await fetch(mrApiUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                empcode: empcode,
+              }),
+            });
+  
+            if (mrResponse.ok) {
+              const mrData = await mrResponse.json();
+              if (mrData && mrData.length > 0) {
+                setMrData(mrData);
+                const mrInfo = mrData[0];
+                setMrNames(mrData.map((mr) => mr.name));
+                const mrHQs = {};
+                const mrEmpcodes = {}; // Add this map for empcode
+                mrData.forEach((mr) => {
+                  mrHQs[mr.name] = mr.hq;
+                  mrEmpcodes[mr.name] = mr.empcode; // Map MR names to empcodes
+                });
+                setMrHQs(mrHQs);
+                
+                
+  
+                // Find the matching MR using doctorEmpcode
+                const matchingMr = mrData.find((mr) => mr.empcode === doctorEmpcode);
+                if (matchingMr) {
+                  // console.log("Match", matchingMr.name);
+                  setSelectedMr(matchingMr.name);
+                  setHq(matchingMr.hq);
+                  setSelectedEmpcode(matchingMr.empcode)
+                  // console.log("Emp code:",matchingMr.empcode);
+                } else {
+                  console.error('No matching MR found');
+                }
+              } else {
+                console.log('No MR data found');
+              }
+            } else {
+              console.log('Error fetching MR data:', mrResponse.statusText);
+            }
           }
-        } catch (error) {
-          console.log('Error saving data:', error);
-        } 
+        } else {
+          console.log('Error fetching doctor data:', response.statusText);
+        }
+        setIsLoading(false);
+      } catch (error) {
+     
+        console.log('Error fetching data:', error);
+        setIsLoading(false); 
       }
-    handleMoreInfo();
+      
+    };
+   AsyncStorage.getItem('userdata')
+      .then((data) => {
+        if (data) {
+          const userData = JSON.parse(data);
+          const empcode = userData.responseData.empID;
+          // Call fetchData with the retrieved userId
+       
+          fetchData(empcode)
+        } else {
+          console.error('Invalid or missing data in AsyncStorage');
+        }
+      })
+      .catch((error) => {
+        console.error('Error retrieving data:', error);
+      });
+  
+    fetchData();
   }, [crId]);
+
+
+
+
+  const handleMrChange = (itemValue) => {
+    setSelectedMr(itemValue);
+
+    // Find the matching MR using the selectedMr value
+    const matchingMr = mrData.find((mr) => mr.name === itemValue);
+    if (matchingMr) {
+      setSelectedEmpcode(matchingMr.empcode);
+      console.log("Emp code After:",selectedEmpcode);
+      setHq(matchingMr.hq);
+    } else {
+      console.error('No matching MR found');
+    }
+  };
+  
+
 
 
   useEffect(() => {
@@ -186,10 +293,11 @@ const UpdateCampReport = () => {
           const payload = {
             userId: userId, // Use the retrieved userId here
             crId: crId,
+           empcode:selectedEmpcode,
             doctorName: textInputValue,
             campDate: formattedCampDate,
           };
-  
+  console.log("payload after:",payload)
           const ApiUrl = `${BASE_URL}${'/report/updateReportWithInfo'}`;
   
           // Make the POST request
@@ -230,33 +338,42 @@ const UpdateCampReport = () => {
  
 
   return (
-    <View style={styles.container}>
-      
+    <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
+       <View style={styles.container}>
+       {/* Loading indicator */}
+       {isLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0047b9" />
+        </View>
+      )}
 
       <View style={styles.form}>
+      <Text style={styles.datePickerLabel}>Select Name of MR:</Text>
       <View style={styles.pickcontainer}>
+     
         <Picker
-            selectedValue={selectedValue}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-          >
-            <Picker.Item label="Name of MR" value="option1" />
-            <Picker.Item label="option1" value="option2" />
-            <Picker.Item label="option2" value="option3" />
-          </Picker>
-        </View>
+          selectedValue={selectedMr}
+          style={styles.picker}
+          onValueChange={handleMrChange}
+        >
+         
+          {mrNames.map((name, index) => (
+            <Picker.Item key={index} label={name} value={name} />
+          ))}
+        </Picker>
+      </View>
         
       <View style={styles.inputContainer}>
           <TextInput
             backgroundColor='#fff'
             underlineColor='#fff'
             style={styles.inputField}
-            outlineColor='#0054a4'
+            outlineColor='#0047b9'
             theme={{
               ...DefaultTheme,
               colors: {
                 ...DefaultTheme.colors,
-                primary: '#0054a4', // Change the label color to blue
+                primary: '#0047b9', // Change the label color to blue
               },
             }}
             activeOutlineColor='#08a5d8'
@@ -286,9 +403,7 @@ const UpdateCampReport = () => {
     
     <Text style={styles.datePickerLabel} onPress={showCampDate}>Select Date of Camp:</Text>
     <Button style={styles.datePickerButton} onPress={showCampDate}>
-  {campDate.getDate().toString().padStart(2, '0')}-
-  {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
-  {campDate.getFullYear()}
+    {formattedCampDate}
 </Button>
     {showCampDatePicker && (
       <DateTimePicker
@@ -301,48 +416,71 @@ const UpdateCampReport = () => {
       />
     )}
   </View>
-  {/* <TextInput
-          label="Name of Doctor"
-          value={qualification}
-          onChangeText={(text) => setQualification(text)}
+  <TextInput
+          label="HQ"
+          value={hq}
+          onChangeText={(text) => setHq(text)}
           mode="outlined"
           style={styles.input}
-          outlineColor='#0054a4'
+          outlineColor='#0047b9'
           activeOutlineColor='#08a5d8'
-        /> */}
-
+          editable={false}
+        />
 
      
       
-        <View style={styles.pickcontainer}>
-        <Picker
-            selectedValue={selectedValue}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-          >
-            <Picker.Item label="HQ" value="option1" />
-            <Picker.Item label="option1" value="option2" />
-            <Picker.Item label="option2" value="option3" />
-          </Picker>
-        </View>
+        
 
-        <Button
-        buttonColor='#0054a4'
-          mode="contained"
+<LinearGradient colors={['#0047b9',  '#0c93d7']} style={styles.addbtn} >
+ <Button
+       
           onPress={submitData}
           
-          style={styles.button}
+          labelStyle={styles.addbtnText}
         >
           Next
         </Button>
+ </LinearGradient>
       </View>
     </View>
+    </LinearGradient>
+   
   );
 };
 
 const styles = StyleSheet.create({
+  addbtn: {
+    backgroundColor: '#0047b9',
+    paddingLeft: 1,
+    paddingRight: 1,
+    color: 'white',
+    marginTop: 8,
+    marginBottom: 10,
+    borderRadius:50,
+   
+  },
+  addbtn1: {
+    
+    color: '#fff',
+    
+  },
+  addbtnText: {
+    color: '#fff', // Set the text color here
+  },
+   loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1, // Place it above other UI components
+  },
   inputContainer: {
-    borderColor: '#0054a4',
+    borderColor: '#0047b9',
     borderWidth: 1,
     borderRadius: 5,
     marginBottom:15,
@@ -371,7 +509,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   additionalInput: {
-    borderColor: '#0054a4',
+    borderColor: '#0047b9',
     borderWidth: 1,
     padding: 10,
     borderRadius: 5,
@@ -386,7 +524,7 @@ const styles = StyleSheet.create({
   pickcontainer:{
     backgroundColor:'white',
     borderWidth: 1,
-    borderColor: '#0054a4',
+    borderColor: '#0047b9',
    borderRadius: 5,
     marginBottom: 15,
    
@@ -395,14 +533,14 @@ const styles = StyleSheet.create({
     // backgroundColor:'#fff',
     width:'100%',
     borderWidth: 1,
-    borderColor: '#0054a4',
+    borderColor: '#0047b9',
     borderRadius: 5,
     padding: 0,
   },
   datePickerLabel: {
     fontSize: 14, // You can adjust the font size as needed
     marginBottom: 3, // Spacing between label and button
-    color:'#0054a4',
+    color:'#0047b9',
     fontWeight:'600',
    
   },
@@ -414,11 +552,12 @@ const styles = StyleSheet.create({
     fontSize: 16, // You can adjust the font size as needed
     backgroundColor:'#fff',
     borderWidth: 1,
-    borderColor: '#0054a4',
+    borderColor: '#0047b9',
     padding:5,
     marginBottom: 12,
   },
   container: {
+     //  backgroundColor:'#B9D9EB',
     flex: 1,
     padding: 16,
   },
@@ -442,7 +581,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   changeAvatarText: {
-    color: '#0054a4',
+    color: '#0047b9',
     textAlign: 'center',
   },
 });

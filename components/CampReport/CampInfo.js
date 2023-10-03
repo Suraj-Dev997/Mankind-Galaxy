@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator
 } from 'react-native';
 import { TextInput, Button, Avatar } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -17,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../Configuration/Config';
 
 const CampInfo = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const navigation = useNavigation();
   const route = useRoute();
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -27,15 +29,18 @@ const CampInfo = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [selectedValue, setSelectedValue] = useState('option1');
   const [brandOptions, setBrandOptions] = useState([]);
+  const [brand, setBrand] = useState();
   const [textInputValue, setTextInputValue] = useState('');
+  const [userEmpCode, setUserEmpCode] = useState('');
   const [campDate, setCampDate] = useState();
+  const [hq, setHq] = useState();
   const {crId, id } = route.params;
 //   console.log('Camp info crid',crId)
 
 
 useEffect(() => {
     const handleMoreInfo = async(doctor) => {
-       
+      setIsLoading(true);
         try {
         
           const payload ={
@@ -51,19 +56,23 @@ useEffect(() => {
           })
           if (response.ok) {
             const data = await response.json();
-            // console.log('API Response:', data);
+            console.log('API Response:', data);
             if (Array.isArray(data) && data.length > 0) {
               const doctorData = data[0];
+              console.log("doc data",doctorData)
               setTextInputValue(doctorData.doctor_name);
-              
+              setUserEmpCode(doctorData.name)
+              setHq(doctorData.hq)
               setCampDate(doctorData.camp_date);
-              // console.log(campDate)
+              console.log(doctorData.user_empcode)
             }
           } else {
             console.error('Error fetching doctor data:', response.statusText);
           }
+          setIsLoading(false);
         } catch (error) {
           console.log('Error saving data:', error);
+          setIsLoading(false);
         } 
       }
     handleMoreInfo();
@@ -73,6 +82,7 @@ useEffect(() => {
   useEffect(() => {
     // Function to fetch data from the API
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const ApiUrl = `${BASE_URL}/report/getImages`;
         const response = await fetch(ApiUrl, {
@@ -103,8 +113,10 @@ useEffect(() => {
         } else {
           console.error('Failed to fetch data from the API');
         }
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setIsLoading(false);
       }
     };
 
@@ -114,6 +126,7 @@ useEffect(() => {
 
   useEffect(() => {
     // Fetch questions from the API
+    setIsLoading(true);
     const ApiUrl = `${BASE_URL}${'/report/getQuestionWithSubCatId'}`;
     fetch(ApiUrl, {
       method: 'POST',
@@ -132,13 +145,14 @@ useEffect(() => {
       .catch((error) => {
         console.error('Error fetching questions:', error);
       });
-
+      setIsLoading(false);
 //       console.log('questions:', questions);
 // console.log('selectedAnswers:', selectedAnswers);
   }, [questions, selectedAnswers,id]);
 
   useEffect(() => {
     // Fetch data from the API
+    setIsLoading(true);
     const ApiUrl = `${BASE_URL}/report/getAnswerWithId`;
     fetch(ApiUrl, {
       method: 'POST',
@@ -154,9 +168,10 @@ useEffect(() => {
         // Extract answers and brand_id from the API response
         const answers = {};
         let selectedBrandId = 'option1'; // Default value for brand if no data is available
-  
+        let selectedBrandName = 'Brand Name'; 
         if (data.length > 0) {
-          selectedBrandId = data[0].brand_id.toString(); // Use the brand_id from the first item in the response
+          selectedBrandId = data[0].brand_id.toString();
+          selectedBrandName = data[0].description.toString(); // Use the brand_id from the first item in the response
           data.forEach((item) => {
             answers[item.rqid] = item.answer.toString(); // Store answers in an object
           });
@@ -165,10 +180,12 @@ useEffect(() => {
         // Update state variables with the fetched data
         setSelectedAnswers(answers);
         setSelectedValue(selectedBrandId);
+        setBrand(selectedBrandName);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
       });
+      setIsLoading(false);
   }, [crId]);
   const renderQuestions = () => {
     if (!questions || questions.length === 0) {
@@ -188,7 +205,7 @@ useEffect(() => {
           disabled
           mode="outlined"
           style={styles.input}
-          outlineColor='#0054a4'
+          outlineColor='#0047b9'
           activeOutlineColor='#08a5d8'
           keyboardType="numeric"
         />
@@ -196,6 +213,7 @@ useEffect(() => {
     ));
   };
   useEffect(() => {
+    setIsLoading(true);
     const ApiUrl = `${BASE_URL}${'/report/getBrandName'}`;
     // Fetch brand options from the API
     fetch(ApiUrl, {
@@ -215,6 +233,7 @@ useEffect(() => {
       .catch((error) => {
         console.error('Error fetching brand options:', error);
       });
+      setIsLoading(false);
   }, [id]);
 
   const getUserIdFromStorage = async () => {
@@ -235,12 +254,19 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
+        {/* Loading indicator */}
+        {isLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0047b9" />
+        </View>
+      )}
       <ScrollView>
+      
         <View style={styles.form}>
         <Text style={styles.datePickerLabel}>Name of MR:</Text>
           <TextInput
             
-            value={"MR"}
+            value={userEmpCode}
            disabled
             mode="outlined"
             style={styles.input}
@@ -264,14 +290,14 @@ useEffect(() => {
           <Text style={styles.datePickerLabel}>HQ:</Text>
           <TextInput
             
-            value={"Mumbai"}
+            value={hq}
            disabled
             mode="outlined"
             style={styles.input}
           />
         
         {renderQuestions()}
-        <Text style={styles.datePickerLabel}>Brand Name:</Text>
+        {/* <Text style={styles.datePickerLabel}>Brand Name:</Text>
         <View style={styles.pickcontainer} disabled>
   <Picker
   disabled
@@ -281,10 +307,18 @@ useEffect(() => {
           >
             <Picker.Item label="Select Brand" value="option1" disabled />
             {brandOptions.map((brand) => (
-              <Picker.Item key={brand.basic_id} label={brand.description} value={brand.basic_id.toString()} disabled />
+              <Picker.Item key={brand.basic_id} label={brand.description} value={brand.basic_id.toString()}  />
             ))}
           </Picker>
-        </View>
+        </View> */}
+        <Text style={styles.datePickerLabel}>Brand Name:</Text>
+          <TextInput
+            
+            value={brand}
+           disabled
+            mode="outlined"
+            style={styles.input}
+          />
         <Text style={styles.datePickerLabel}>Camp Images:</Text>
           <View style={styles.previewContainer}>
           
@@ -311,6 +345,18 @@ useEffect(() => {
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1, // Place it above other UI components
+  },
   deleteButton: {
     color: 'red',
     textAlign: 'center',
@@ -324,7 +370,7 @@ const styles = StyleSheet.create({
       pickcontainer:{
         backgroundColor:'white',
         borderWidth: 1,
-        borderColor: '#0054a4',
+        borderColor: '#0047b9',
        borderRadius: 5,
        marginTop:10,
         marginBottom: 15,
@@ -334,14 +380,14 @@ const styles = StyleSheet.create({
         // backgroundColor:'#fff',
         width:'100%',
         borderWidth: 1,
-        borderColor: '#0054a4',
+        borderColor: '#0047b9',
         borderRadius: 5,
         padding: 0,
       },
       datePickerLabel: {
         fontSize: 14, // You can adjust the font size as needed
         marginBottom: 3, // Spacing between label and button
-        color:'#0054a4',
+        color:'#0047b9',
         fontWeight:'600',
        
       },
@@ -353,7 +399,7 @@ const styles = StyleSheet.create({
         fontSize: 16, // You can adjust the font size as needed
         backgroundColor:'#ffffff',
         borderWidth: 1,
-        borderColor: '#0054a4',
+        borderColor: '#0047b9',
         padding:5,
         marginBottom: 12,
       },
@@ -381,13 +427,13 @@ const styles = StyleSheet.create({
         marginBottom: 16,
       },
       changeAvatarText: {
-        color: '#0054a4',
+        color: '#0047b9',
         textAlign: 'center',
       },
   uploadButton: {
     backgroundColor: '#08a5d8',
-    borderColor:'#0054a4',
-    color:'#0054a4',
+    borderColor:'#0047b9',
+    color:'#0047b9',
     // borderStyle: 'dotted',
     borderWidth:2,
     marginTop: 16,

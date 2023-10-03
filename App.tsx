@@ -44,10 +44,10 @@ function App(): JSX.Element {
     <Stack.Navigator initialRouteName='Splash' screenOptions={{
      headerRight:()=><Ham/>,
       headerTintColor:"#fff", headerStyle:{
-      backgroundColor:"#0054a4",  
+      backgroundColor:"#0047b9",  
     },
     }}>
-       <Stack.Screen name='Home' component={Home} options={{title:"Mankind",headerLeft:()=>
+       <Stack.Screen name='Home' component={Home} options={{title:"Mankind Galaxy",headerLeft:()=>
     <View><Text style={styles.dot}>.</Text></View>
     ,
     }} />
@@ -82,7 +82,7 @@ function App(): JSX.Element {
 
 const styles = StyleSheet.create({
   dot:{
-    color:'#0054a4'
+    color:'#0047b9'
   },
   sectionContainer: {
     marginTop: 32,

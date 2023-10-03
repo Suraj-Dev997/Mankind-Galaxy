@@ -228,7 +228,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     const [searchText, setSearchText] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
     const [selectedValue, setSelectedValue] = useState('');
-    const [fromDate, setFromDate] = useState(new Date());
+    const [fromDate, setFromDate] = useState(new Date('2023-07-01'));
     const [toDate, setToDate] = useState(new Date());
     const [showFromDatePicker, setShowFromDatePicker] = useState(false);
     const [showToDatePicker, setShowToDatePicker] = useState(false);
@@ -283,8 +283,8 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
                 userId: userId, // Use the retrieved userId
                 subCatId: id, // Replace with your subcategory ID
                 filterBy:selectedValue,
-                // startDate:fromDate,
-                // endDate:toDate
+                startDate:fromDate,
+                endDate:toDate
               }),
             })
               .then((response) => response.json())
@@ -313,7 +313,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     if (isLoading) {
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#0054a4"/>
+        <ActivityIndicator size="large" color="#0047b9"/>
       </View>
       );
     }
@@ -426,18 +426,16 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
   return(
     <View style={styles.userItem}>
         <View style={styles.userInfo}>
-          <Text>{item.doctor_name}</Text>
-    
+          <Text style>{item.doctor_name}</Text>
         </View>
         <View style={styles.userInfo}>
-      
           <Text> {formattedDate}</Text>
         </View>
         <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} >
           <IconButton
             icon="arrow-down-bold-box"
-            iconColor="#0054a4"
+            iconColor="#0047b9"
             size={30}
             onPress={() => downloadUserCsv(item.crid)}
           />
@@ -463,13 +461,16 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
           >
             Download
           </Button> */}
+          <LinearGradient colors={['#0047b9',  '#0c93d7']} style={styles.addbtn} >
           {isLoading ? (
-        <ActivityIndicator size="large" color="#0054a4" />
+        <ActivityIndicator size="large" color="#0047b9" />
       ) : (
         <Button  icon="download"
-        mode="contained"
-        style={styles.addbtn} title="Download CSV" onPress={downloadCsv} >Download</Button>
+        labelStyle={styles.addbtnText}
+         title="Download CSV" onPress={downloadCsv} >Download</Button>
       )}
+          </LinearGradient>
+          
         </View>
         <View style={styles.header}>
         <View style={styles.pickcontainer}>
@@ -491,13 +492,14 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     {selectedValue === 'date' && (
   <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
 
-  <LinearGradient colors={['#0054a4',  '#00aacf']} style={styles.datePickerContainer}>
+  <LinearGradient colors={['#0047b9',  '#00aacf']} style={styles.datePickerContainer}>
   <Button
           icon="calendar"
-          mode="contained"
+          mode="outlined"
           style={styles.addbtn1}
           onPress={showFromDate}
           // contentStyle={{ flexWrap: 'wrap' }}
+          labelStyle={{ color: '#0047b9' }}
         >
        From: {fromDate.toLocaleDateString()}
         </Button>
@@ -512,13 +514,14 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     </LinearGradient>
   
  
-  <LinearGradient colors={['#0054a4',  '#00aacf']} style={styles.datePickerContainer}>
+  <View style={styles.datePickerContainer}>
   <Button
           icon="calendar"
-          mode="contained"
+          mode="outlined"
         
           style={styles.addbtn1}
           onPress={showToDate}
+          labelStyle={{ color: '#0047b9' }}
           // contentStyle={{ flexWrap: 'wrap' }}
         >
        To: {toDate.toLocaleDateString()}
@@ -530,7 +533,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         onChange={handleToDateChange}
       />
     )}
-  </LinearGradient>
+  </View>
 </View>
 )}
   
@@ -581,7 +584,7 @@ const styles = StyleSheet.create({
       },
       buttonText1: {
         textAlign:'center',
-        color: '#0054a4',
+        color: '#0047b9',
         fontSize: 15,
       },
       elevation: {
@@ -596,13 +599,15 @@ const styles = StyleSheet.create({
       datePickerContainer: {
         flexDirection: 'column',
         alignItems: 'center',
+        borderWidth:1,
         borderRadius:10,
+        borderColor:'#0047b9'
         // paddingHorizontal:1,
       },
       datePickerLabel: {
         fontSize: 16, // You can adjust the font size as needed
         marginBottom: 3, // Spacing between label and button
-        color:'#0054a4',
+        color:'#0047b9',
         fontWeight:'600',
       },
       datePickerButton: {
@@ -623,6 +628,7 @@ const styles = StyleSheet.create({
         elevation: 5,
       },
   container: {
+    backgroundColor:'#daf5ff',
       flex: 1,
       
       // backgroundColor:'#e6e6e7',
@@ -646,7 +652,7 @@ const styles = StyleSheet.create({
     pickcontainer:{
         backgroundColor:'white',
         borderWidth: 1,
-        borderColor: '#d4d4d2',
+        borderColor: '#6c9be6',
         
        flex:1,
        borderRadius: 30,
@@ -661,27 +667,31 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         padding: 0,
       },
-    addbtn:{
-     backgroundColor: '#0054a4',
-     paddingLeft:1,
-     paddingRight:1,
-     color:'white',
-      // padding:2,
-      marginTop:8,
-      marginBottom:10,
-      width:'42%',
-
-    },
+      addbtn: {
+        backgroundColor: '#0047b9',
+        paddingLeft: 1,
+        paddingRight: 1,
+        color: '#000',
+        marginTop: 8,
+        marginBottom: 10,
+        borderRadius:50,
+        width: '42%',
+      },
+      
+      addbtnText: {
+        color: '#fff', // Set the text color here
+      },
     addbtn1:{
+      fontFamily:'System-Bold',
       flexDirection: 'row-reverse',
       justifyContent: 'space-between',
       borderRadius:10,
-      backgroundColor: 'transparent', // Set the background color to transparent
+      backgroundColor: '#fff', // Set the background color to transparent
         borderColor: 'transparent',
-      // backgroundColor: '#0054a4',
+      // backgroundColor: '#0047b9',
       // paddingLeft:1,
       // paddingRight:1,
-      color:'#fff',
+      color:'#000',
        // padding:2,
       //  marginTop:8,
       //  marginBottom:10,
@@ -706,7 +716,7 @@ const styles = StyleSheet.create({
     tableHeader: {
    borderRadius:5,
       marginTop:10,
-      backgroundColor:'#0054a4',
+      backgroundColor:'#0047b9',
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -742,9 +752,15 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center', // Center content vertically
     },
+    
     actionButton: {
       paddingHorizontal: 0,
       paddingVertical: 2,
+      marginLeft: 0,
+    },
+    actionButton1: {
+      paddingHorizontal: 0,
+      paddingVertical: 0,
       marginLeft: 0,
     },
     actionButtonText: {

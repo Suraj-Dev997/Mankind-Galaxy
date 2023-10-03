@@ -60,7 +60,7 @@ export const SplashScreen = ({navigation }) =>{
     logo: {
       fontSize:70,
       fontWeight:'800',
-      color: '#0054a4',
+      color: '#0047b9',
     },
     img: {
       width:'100%',

@@ -309,7 +309,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     if (isLoading) {
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#0054a4"/>
+        <ActivityIndicator size="large" color="#0047b9"/>
       </View>
       );
     }
@@ -368,7 +368,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="arrow-down-bold-box"
-            iconColor="#0054a4"
+            iconColor="#0047b9"
             size={30}
             onPress={() => console.log('Pressed')}
           />
@@ -395,7 +395,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
             Download
           </Button> */}
           {isLoading ? (
-        <ActivityIndicator size="large" color="#0054a4" />
+        <ActivityIndicator size="large" color="#0047b9" />
       ) : (
         <Button  icon="download"
         mode="contained"
@@ -422,7 +422,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     {selectedValue === 'date' && (
   <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
 
-  <LinearGradient colors={['#0054a4',  '#00aacf']} style={styles.datePickerContainer}>
+  <LinearGradient colors={['#0047b9',  '#00aacf']} style={styles.datePickerContainer}>
   <Button
           icon="calendar"
           mode="contained"
@@ -443,7 +443,7 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     </LinearGradient>
   
  
-  <LinearGradient colors={['#0054a4',  '#00aacf']} style={styles.datePickerContainer}>
+  <LinearGradient colors={['#0047b9',  '#00aacf']} style={styles.datePickerContainer}>
   <Button
           icon="calendar"
           mode="contained"
@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
       },
       buttonText1: {
         textAlign:'center',
-        color: '#0054a4',
+        color: '#0047b9',
         fontSize: 15,
       },
       elevation: {
@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
       datePickerLabel: {
         fontSize: 16, // You can adjust the font size as needed
         marginBottom: 3, // Spacing between label and button
-        color:'#0054a4',
+        color:'#0047b9',
         fontWeight:'600',
       },
       datePickerButton: {
@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
         padding: 0,
       },
     addbtn:{
-     backgroundColor: '#0054a4',
+     backgroundColor: '#0047b9',
      paddingLeft:1,
      paddingRight:1,
      color:'white',
@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
       borderRadius:10,
       backgroundColor: 'transparent', // Set the background color to transparent
         borderColor: 'transparent',
-      // backgroundColor: '#0054a4',
+      // backgroundColor: '#0047b9',
       // paddingLeft:1,
       // paddingRight:1,
       color:'#fff',
@@ -637,7 +637,7 @@ const styles = StyleSheet.create({
     tableHeader: {
    borderRadius:5,
       marginTop:10,
-      backgroundColor:'#0054a4',
+      backgroundColor:'#0047b9',
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',

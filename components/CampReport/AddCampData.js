@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import { BASE_URL } from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LinearGradient from 'react-native-linear-gradient';
 
 const AddCampData = () => {
   
@@ -26,7 +27,13 @@ const AddCampData = () => {
 // console.log('route',id)
 
 const submitData = () => {
+  if (!selectedValue || !selectedAnswers  ) {
+    // Display an alert message if any required fields are empty
+    alert('Please fill in all required fields');
+    return;
+  }
   // Retrieve the userId from AsyncStorage
+  
   AsyncStorage.getItem('userdata')
     .then((data) => {
       if (data) {
@@ -72,9 +79,9 @@ const submitData = () => {
               console.log('forworded crid', crid);
 
             } else {
-              // Handle any other logic or display an error message
-              console.error('API Request was not successful');
-              // You can also display an error message to the user
+              console.log('API Request was not successful');
+          // Display an alert message for the user
+          alert('Fill all the details');
             }
             // After successfully submitting data, you can navigate to the next screen
           })
@@ -138,7 +145,7 @@ const submitData = () => {
           onChangeText={(text) => handleAnswerChange(question.rqid, text)}
           mode="outlined"
           style={styles.input}
-          outlineColor='#0054a4'
+          outlineColor='#0047b9'
           activeOutlineColor='#08a5d8'
           keyboardType="numeric"
         />
@@ -178,7 +185,9 @@ const submitData = () => {
   };
  
   return (
-    <ScrollView>
+
+      // <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
+        <ScrollView >
         <View style={styles.container}>
       <View style={styles.form}>
  
@@ -197,23 +206,47 @@ const submitData = () => {
           </Picker>
         </View>
 
-        <Button
-        buttonColor='#0054a4'
-          mode="contained"
-          // onPress={()=> navigation.navigate("UploadCampImages")}
+    
+        <LinearGradient colors={['#0047b9',  '#0c93d7']} style={styles.addbtn} >
+ <Button
+       
           onPress={submitData}
-          style={styles.button}
+          
+          labelStyle={styles.addbtnText}
         >
           Next
         </Button>
+ </LinearGradient>
       </View>
     </View>
-    </ScrollView>
+        </ScrollView>
+    
+      // </LinearGradient>
+       
+
   
   );
 };
 
 const styles = StyleSheet.create({
+  addbtn: {
+    backgroundColor: '#0047b9',
+    paddingLeft: 1,
+    paddingRight: 1,
+    color: 'white',
+    marginTop: 8,
+    marginBottom: 10,
+    borderRadius:50,
+   
+  },
+  addbtn1: {
+    
+    color: '#fff',
+    
+  },
+  addbtnText: {
+    color: '#fff', // Set the text color here
+  },
   datePickerContainer: {
     flexDirection: 'column',
 // alignItems:'center'
@@ -223,7 +256,7 @@ const styles = StyleSheet.create({
   pickcontainer:{
     backgroundColor:'white',
     borderWidth: 1,
-    borderColor: '#0054a4',
+    borderColor: '#0047b9',
    borderRadius: 5,
    marginTop:10,
     marginBottom: 15,
@@ -233,14 +266,14 @@ const styles = StyleSheet.create({
     // backgroundColor:'#fff',
     width:'100%',
     borderWidth: 1,
-    borderColor: '#0054a4',
+    borderColor: '#0047b9',
     borderRadius: 5,
     padding: 0,
   },
   datePickerLabel: {
     fontSize: 14, // You can adjust the font size as needed
     marginBottom: 3, // Spacing between label and button
-    color:'#0054a4',
+    color:'#0047b9',
     fontWeight:'600',
    
   },
@@ -252,11 +285,12 @@ const styles = StyleSheet.create({
     fontSize: 16, // You can adjust the font size as needed
     backgroundColor:'#fff',
     borderWidth: 1,
-    borderColor: '#0054a4',
+    borderColor: '#0047b9',
     padding:5,
     marginBottom: 12,
   },
   container: {
+      // backgroundColor:'#B9D9EB',
     flex: 1,
     padding: 16,
   },
@@ -280,7 +314,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   changeAvatarText: {
-    color: '#0054a4',
+    color: '#0047b9',
     textAlign: 'center',
   },
 });

@@ -80,7 +80,7 @@ const UserProfileForm = () => {
 //           onChangeText={(text) => setName(text)}
 //           mode="outlined"
 //           style={styles.input}
-//           outlineColor='#0054a4'
+//           outlineColor='#0047b9'
 //           activeOutlineColor='#08a5d8'
 //         />
 
@@ -90,7 +90,7 @@ const UserProfileForm = () => {
 //           onChangeText={(text) => setQualification(text)}
 //           mode="outlined"
 //           style={styles.input}
-//           outlineColor='#0054a4'
+//           outlineColor='#0047b9'
 //           activeOutlineColor='#08a5d8'
 //         />
 
@@ -113,7 +113,7 @@ const UserProfileForm = () => {
   
 
 //         <Button
-//         buttonColor='#0054a4'
+//         buttonColor='#0047b9'
 //           mode="contained"
 //           onPress={() => {
 //             // Handle form submission here
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   datePickerLabel: {
     fontSize: 14, // You can adjust the font size as needed
     marginBottom: 3, // Spacing between label and button
-    color:'#0054a4',
+    color:'#0047b9',
     fontWeight:'600',
    
   },
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     fontSize: 16, // You can adjust the font size as needed
     backgroundColor:'#fff',
     borderWidth: 1,
-    borderColor: '#0054a4',
+    borderColor: '#0047b9',
     padding:5,
     marginBottom: 12,
   },
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   changeAvatarText: {
-    color: '#0054a4',
+    color: '#0047b9',
     textAlign: 'center',
   },
 });

@@ -1,6 +1,9 @@
 
+               
+
+
 import React,{ useEffect,useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image, ScrollView,Linking,StatusBar,BackHandler,Alert  } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image, ScrollView,Linking,StatusBar,BackHandler,Alert ,ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import Icon1 from 'react-native-vector-icons/MaterialIcons';
 import IconF from 'react-native-vector-icons/FontAwesome';
@@ -45,8 +48,8 @@ export const Home =  () =>{
       });
   }, []);
 //Version checking code-------------------------------------
-  useEffect(() => {
-    const ApiVersionUrl = `${BASE_URL1}${'/AccountApi/GetLatestAppVersion'}`;
+ useEffect(() => {
+    const ApiVersionUrl = `${BASE_URL}${'/auth/getAppVersion'}`;
     const checkAppVersion = async () => {
       try {
            const response = await fetch(ApiVersionUrl, {
@@ -56,10 +59,10 @@ export const Home =  () =>{
            },
         });
         const data = await response.json();
-        const latestVersion = data.toString();
-        console.log(latestVersion);
-        // const currentVersion = DeviceInfo.getVersion(); // Replace with your current app version
-        const currentVersion = '12' // Replace with your current app version
+        const latestVersion = data[0].version;
+        console.log("this is data",data);
+        const currentVersion = DeviceInfo.getVersion(); // Replace with your current app version
+        // const currentVersion = '1' // Replace with your current app version
     
         
         console.log("Current b",currentVersion);
@@ -75,7 +78,7 @@ export const Home =  () =>{
                 text: 'Update',
                 onPress: () => {
                   // Replace the URL with your own update URL or the Play Store URL
-                  Linking.openURL('www.google.com');
+                  Linking.openURL('https://play.google.com/store/apps');
                 },
               },
             ],
@@ -127,16 +130,19 @@ export const Home =  () =>{
   }, []);
 
     return(
-      <LinearGradient colors={['#dffbfe',  '#14bee1']} style={styles.container}>
+      <ImageBackground
+      source={require('./Images/Splash.jpg')}
+      style={styles.backgroundImage}
+    >
         <View style={styles.container}>
        
-           <StatusBar backgroundColor="#0054a4"/>
+           <StatusBar backgroundColor="#0047b9"/>
          
           <View > 
           
         <View style={[styles.container1,styles.elevation]} >    
         {/* {categories.map((category) => (
-           <LinearGradient colors={['#4b93d8',  '#0054a4']} style={[styles.button,styles.elevation]}>
+           <LinearGradient colors={['#4b93d8',  '#0047b9']} style={[styles.button,styles.elevation]}>
         <TouchableOpacity
           key={category.id}
           onPress={() => props.navigation.navigate("HomeMenu")}
@@ -149,7 +155,7 @@ export const Home =  () =>{
       {categories.map((category) => (
   <LinearGradient
     key={category.category_id} // Assigning a unique key
-    colors={['#4b93d8', '#0054a4']}
+    colors={['#0047b9', '#0c93d7']}
     style={[styles.button, styles.elevation]}
   >
     <TouchableOpacity
@@ -164,21 +170,27 @@ export const Home =  () =>{
           </View>
           
       </View>
-      </LinearGradient>
+      </ImageBackground>
      
     );
   }
 
   const styles = StyleSheet.create({
+    backgroundImage: {
+      justifyContent: 'center',
+      alignItems: 'center',
+   
+      resizeMode: 'cover', // or 'stretch' if you want the image to stretch to cover the entire screen
+    },
     container: {
       // backgroundColor:'#fff',
-      flexGrow: 1,
-      justifyContent: 'center',
+      // flexGrow: 1,
+      // justifyContent: 'center',
       
     },
     container1: {
  width:'100%',
-      padding: 10,
+      padding: 0,
       flexGrow: 1,
       justifyContent: 'center',
       alignItems: 'center',
@@ -193,10 +205,10 @@ export const Home =  () =>{
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      // backgroundColor: '#0054a4',
+      // backgroundColor: '#0047b9',
       padding: 30,
       marginVertical: 10,
-      borderRadius: 50,
+      borderRadius: 20,
     },
     button1: {
       flex: 1,

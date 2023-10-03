@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Image, TouchableOpacity,ActivityIndicator } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { Button, Searchbar, IconButton } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
@@ -164,21 +165,21 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
           style={styles.actionButton}
           onPress={() => handleInfo(item.crid)}
         >
-          <IconButton icon="information-outline" iconColor="#0054a4" size={25} />
+          <IconButton icon="note" iconColor="#0047b9" size={20} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
-            icon="square-edit-outline"
-            iconColor="#0054a4"
-            size={25}
+            icon="application-edit"
+            iconColor="#0047b9"
+            size={20}
             onPress={() => handleEdit(item.crid)}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
-            icon="delete-outline"
-            iconColor="#0054a4"
-            size={25}
+            icon="delete"
+            iconColor="#0047b9"
+            size={20}
             onPress={() => handleDelete(item.crid)}
           />
         </TouchableOpacity>
@@ -192,20 +193,27 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
     <View style={styles.container}>
       <View style={styles.headerMain}>
         <View style={styles.headertop}>
+        <LinearGradient colors={['#0047b9',  '#0c93d7']} style={styles.addbtn} >
           <Button
             icon="plus"
-            mode="contained"
-            style={styles.addbtn}
+            elevation={4}
+            // mode="contained"
+            style={styles.addbtn1}
+            labelStyle={styles.addbtnText}
             onPress={() => navigation.navigate("AddCampReport",{id})}
           >
               Add Report
           </Button>
+          </LinearGradient>
         </View>
         <View style={styles.header}>
           <Searchbar
             placeholder="Search"
             onChangeText={handleSearchTextChange}
             value={searchText}
+            style={styles.searchbarStyle}
+        
+        
           />
         </View>
       </View>
@@ -213,7 +221,7 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
         <TableHeader />
         {isLoading ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#0054a4"/>
+          <ActivityIndicator size="large" color="#0047b9"/>
         </View>
           ) : (
         <FlatList
@@ -228,7 +236,14 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
 };
 
 const styles = StyleSheet.create({
+ 
+  searchbarStyle: {
+    backgroundColor: '#fff',
+    borderWidth:1, 
+    borderColor:'#0047b9'
+  },
   container: {
+    backgroundColor:'#daf5ff',
     flex: 1,
   },
   headerMain: {
@@ -245,13 +260,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addbtn: {
-    backgroundColor: '#0054a4',
+    backgroundColor: '#0047b9',
     paddingLeft: 1,
     paddingRight: 1,
-    color: 'white',
+    color: '#fff',
     marginTop: 8,
     marginBottom: 10,
+    borderRadius:50,
     width: '42%',
+  },
+  
+  addbtnText: {
+    color: '#fff', // Set the text color here
   },
   tableCont: {
     margin: 5,
@@ -263,7 +283,7 @@ const styles = StyleSheet.create({
   tableHeader: {
     borderRadius: 5,
     marginTop: 10,
-    backgroundColor: '#0054a4',
+    backgroundColor: '#0047b9',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

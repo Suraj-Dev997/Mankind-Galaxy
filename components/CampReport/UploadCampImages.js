@@ -14,7 +14,8 @@ import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import { BASE_URL } from '../Configuration/Config';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LinearGradient from 'react-native-linear-gradient';
 
 const UploadCampImages = () => {
   const navigation = useNavigation();
@@ -26,12 +27,23 @@ const UploadCampImages = () => {
   const { crid, id } = route.params;
 
   const handleImageUpload = async () => {
+
     try {
+
+      if (imageUris.length >= 3) {
+        // If there are already 3 images, show an alert
+        alert('You can upload a maximum of 3 images');
+        return;
+      }
       const images = await ImagePicker.openPicker({
         mediaType: 'photo',
         multiple: true, // Allow multiple image selection
       });
-  
+      if (images.length + imageUris.length > 3) {
+        // If the total number of selected images exceeds 3, show an alert
+        alert('You can upload a maximum of 3 images');
+        return;
+      }
       const previews = images.map((image, index) => (
         <TouchableOpacity key={index} onPress={() => handleDeleteImage(index)}>
           <Image source={{ uri: image.path }} style={styles.previewImage} />
@@ -40,12 +52,12 @@ const UploadCampImages = () => {
       ));
   
       // Store image URIs directly in an array
-      const imageUris = images.map((image) => image.path);
+      const newImageUris  = images.map((image) => image.path);
   
       setImagePreviews((prevPreviews) => [...prevPreviews, ...previews]);
       
       // Store the image URIs in another state variable
-      setImageUris((prevImageUris) => [...prevImageUris, ...imageUris]);
+      setImageUris((prevImageUris) => [...prevImageUris, ...newImageUris ]);
     } catch (error) {
       // Handle the error, e.g., if the user cancels the selection
       console.error('Image picker error:', error);
@@ -70,6 +82,11 @@ const UploadCampImages = () => {
   };
 
   const submitData = async () => {
+    if (!feedback || !imageUris  ) {
+      // Display an alert message if any required fields are empty
+      alert('Please fill in all required fields');
+      return;
+    }
     try {
       const ApiUrl = `${BASE_URL}${'/report/uploadImages'}`;
   
@@ -96,7 +113,7 @@ const UploadCampImages = () => {
             type: 'image/jpeg',
           });
         });
-  
+        console.log(formData)
         // Send a POST request with the FormData
         const response = await fetch(ApiUrl, {
           method: 'POST',
@@ -131,13 +148,14 @@ const UploadCampImages = () => {
   
   
   return (
+    // <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.form}>
-        <Text style={styles.datePickerLabel}>Upload only 3 Images</Text>
+
           <TouchableOpacity onPress={handleImageUpload}>
             <Button
-              // buttonColor="#0054a4"
+              // buttonColor="#0047b9"
               mode="contained"
               style={styles.uploadButton}
             >
@@ -146,7 +164,7 @@ const UploadCampImages = () => {
           </TouchableOpacity>
           {/* <TouchableOpacity onPress={handlePdfUpload}>
             <Button
-              buttonColor="#0054a4"
+              buttonColor="#0047b9"
               mode="contained"
               style={styles.uploadButton}
             >
@@ -171,22 +189,44 @@ const UploadCampImages = () => {
           <TouchableOpacity
             
           >
-            <Button
-              buttonColor="#0054a4"
-              mode="contained"
-              style={styles.button}
-              onPress={submitData}
-            >
-              Submit
-            </Button>
+           
+            <LinearGradient colors={['#0047b9',  '#0c93d7']} style={styles.addbtn} >
+ <Button
+       
+          onPress={submitData}
+          
+          labelStyle={styles.addbtnText}
+        >
+          Submit
+        </Button>
+ </LinearGradient>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
+    // </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  addbtn: {
+    backgroundColor: '#0047b9',
+    paddingLeft: 1,
+    paddingRight: 1,
+    color: 'white',
+    marginTop: 8,
+    marginBottom: 10,
+    borderRadius:50,
+   
+  },
+  addbtn1: {
+    
+    color: '#fff',
+    
+  },
+  addbtnText: {
+    color: '#fff', // Set the text color here
+  },
   deleteButton: {
     color: 'red',
     textAlign: 'center',
@@ -200,7 +240,7 @@ const styles = StyleSheet.create({
       pickcontainer:{
         backgroundColor:'white',
         borderWidth: 1,
-        borderColor: '#0054a4',
+        borderColor: '#0047b9',
        borderRadius: 5,
        marginTop:10,
         marginBottom: 15,
@@ -210,14 +250,14 @@ const styles = StyleSheet.create({
         // backgroundColor:'#fff',
         width:'100%',
         borderWidth: 1,
-        borderColor: '#0054a4',
+        borderColor: '#0047b9',
         borderRadius: 5,
         padding: 0,
       },
       datePickerLabel: {
         fontSize: 14, // You can adjust the font size as needed
         marginBottom: 3, // Spacing between label and button
-        color:'#0054a4',
+        color:'#0047b9',
         fontWeight:'600',
        
       },
@@ -229,11 +269,12 @@ const styles = StyleSheet.create({
         fontSize: 16, // You can adjust the font size as needed
         backgroundColor:'#fff',
         borderWidth: 1,
-        borderColor: '#0054a4',
+        borderColor: '#0047b9',
         padding:5,
         marginBottom: 12,
       },
       container: {
+          // backgroundColor:'#B9D9EB',
         flex: 1,
         padding: 16,
       },
@@ -257,13 +298,13 @@ const styles = StyleSheet.create({
         marginBottom: 16,
       },
       changeAvatarText: {
-        color: '#0054a4',
+        color: '#0047b9',
         textAlign: 'center',
       },
   uploadButton: {
-    backgroundColor: '#08a5d8',
-    borderColor:'#0054a4',
-    color:'#0054a4',
+    backgroundColor: '#0c93d7',
+    borderColor:'#0047b9',
+    color:'#0047b9',
     // borderStyle: 'dotted',
     borderWidth:2,
     marginTop: 16,

@@ -8,6 +8,7 @@ import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { BASE_URL } from '../Configuration/Config';
 import { format } from 'date-fns';
+import LinearGradient from 'react-native-linear-gradient';
 
 
 
@@ -197,7 +198,8 @@ const UpdateUserProfileForm = () => {
   };
 
   return (
-    <View style={styles.container}>
+    // <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
+      <View style={styles.container}>
       <TouchableOpacity onPress={chooseImage}>
         <View style={styles.avatarContainer}>
           {avatarUri ? (
@@ -224,7 +226,7 @@ const UpdateUserProfileForm = () => {
           onChangeText={(text) => setName(text)}
           mode="outlined"
           style={styles.input}
-          outlineColor="#0054a4"
+          outlineColor="#0047b9"
           activeOutlineColor="#08a5d8"
         />
 
@@ -234,7 +236,7 @@ const UpdateUserProfileForm = () => {
           onChangeText={(text) => setVenue(text)}
           mode="outlined"
           style={styles.input}
-          outlineColor="#0054a4"
+          outlineColor="#0047b9"
           activeOutlineColor="#08a5d8"
         />
 
@@ -257,16 +259,21 @@ const UpdateUserProfileForm = () => {
           )}
         </View>
 
+       
+        <LinearGradient colors={['#0047b9',  '#0c93d7']} style={styles.addbtn} >
         <Button
-          buttonColor="#0054a4"
-          mode="contained"
+          // buttonColor="#0047b9"
+          // mode="contained"
           onPress={EditDoctor}
-          style={styles.button}
-        >
+          labelStyle={styles.addbtnText}
+          >
           Submit
         </Button>
+        </LinearGradient>
       </View>
     </View>
+    // </LinearGradient>
+    
   );
 };
 
@@ -277,8 +284,26 @@ const styles = StyleSheet.create({
   datePickerLabel: {
     fontSize: 14,
     marginBottom: 3,
-    color: '#0054a4',
+    color: '#0047b9',
     fontWeight: '600',
+  },
+  addbtn: {
+    backgroundColor: '#0047b9',
+    paddingLeft: 1,
+    paddingRight: 1,
+    color: 'white',
+    marginTop: 8,
+    marginBottom: 10,
+    borderRadius:50,
+   
+  },
+  addbtn1: {
+    
+    color: '#fff',
+    
+  },
+  addbtnText: {
+    color: '#fff', // Set the text color here
   },
   datePickerButton: {
     width: 'auto',
@@ -288,11 +313,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#0054a4',
+    borderColor: '#0047b9',
     padding: 5,
     marginBottom: 12,
   },
   container: {
+    // backgroundColor:'#B9D9EB',
     flex: 1,
     padding: 16,
   },
@@ -313,7 +339,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   changeAvatarText: {
-    color: '#0054a4',
+    color: '#0047b9',
     textAlign: 'center',
   },
 });

@@ -128,7 +128,7 @@ const PosterList = () => {
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="file-image"
-            iconColor="#0054a4"
+            iconColor="#0047b9"
             size={20}
             onPress={() => navigation.navigate("PosterDownload")}
           />
@@ -136,7 +136,7 @@ const PosterList = () => {
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="application-edit"
-            iconColor="#0054a4"
+            iconColor="#0047b9"
             size={20}
             onPress={() => handleEdit(item.doctor_id)}
           />
@@ -144,7 +144,7 @@ const PosterList = () => {
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="delete"
-            iconColor="#0054a4"
+            iconColor="#0047b9"
             size={20}
             onPress={() => handleDelete(item.doctor_id)}
           />
@@ -178,7 +178,7 @@ const PosterList = () => {
         <TableHeader />
         {isLoading ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#0054a4"/>
+          <ActivityIndicator size="large" color="#0047b9"/>
         </View>
           ) : (
         <FlatList
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addbtn: {
-    backgroundColor: '#0054a4',
+    backgroundColor: '#0047b9',
     paddingLeft: 1,
     paddingRight: 1,
     color: 'white',
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   tableHeader: {
     borderRadius: 5,
     marginTop: 10,
-    backgroundColor: '#0054a4',
+    backgroundColor: '#0047b9',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

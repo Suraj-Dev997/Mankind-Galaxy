@@ -202,7 +202,7 @@ export const HomeMenu = (props) => {
               {row.map((subcategory, subcategoryIndex) => (
                 <LinearGradient
                   key={subcategory.id}
-                  colors={['#4b93d8', '#0054a4']}
+                  colors={['#0047b9', '#0c93d7']}
                   style={[
                     styles.button,
                     styles.elevation,
@@ -227,8 +227,8 @@ export const HomeMenu = (props) => {
   };
 
   return (
-    <LinearGradient colors={['#dffbfe', '#14bee1']} style={styles.container}>
-      <StatusBar backgroundColor="#0054a4" />
+    <LinearGradient  colors={[  '#daf5ff','#72c5f8']} style={styles.container}>
+      <StatusBar backgroundColor="#0047b9" />
       <View>{getContentBasedOnCategory()}</View>
     </LinearGradient>
   );
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     height: 90,
     textAlign: 'center',
-    backgroundColor: '#0054a4',
+    backgroundColor: '#0047b9',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     height: 80,
 
     textAlign: 'center',
-    backgroundColor: '#0054a4',
+    backgroundColor: '#0047b9',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   },
   buttonText1: {
     textAlign: 'center',
-    color: '#0054a4',
+    color: '#0047b9',
     fontSize: 15,
   },
   elevation: {

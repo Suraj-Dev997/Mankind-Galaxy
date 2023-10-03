@@ -47,7 +47,7 @@ export const HomeMenu = (props) => {
           {rowItems.map((subcategory) => (
             <LinearGradient
               key={subcategory.subcategory_id}
-              colors={['#4b93d8', '#0054a4']}
+              colors={['#4b93d8', '#0047b9']}
               style={[styles.button, styles.elevation]}
             >
               <TouchableOpacity
@@ -74,7 +74,7 @@ export const HomeMenu = (props) => {
   
   return (
     <LinearGradient colors={['#dffbfe', '#14bee1']} style={styles.container}>
-      <StatusBar backgroundColor="#0054a4" />
+      <StatusBar backgroundColor="#0047b9" />
     {renderCategoriesPoster()}
       
     </LinearGradient>
@@ -101,7 +101,7 @@ button: {
   marginHorizontal: 3,
   height: 100,
   textAlign:'center',
-  backgroundColor: '#0054a4',
+  backgroundColor: '#0047b9',
   justifyContent: 'center',
   alignItems: 'center',
   borderRadius:20,
@@ -135,7 +135,7 @@ buttonText: {
 },
 buttonText1: {
   textAlign:'center',
-  color: '#0054a4',
+  color: '#0047b9',
   fontSize: 20,
 },
 elevation: {

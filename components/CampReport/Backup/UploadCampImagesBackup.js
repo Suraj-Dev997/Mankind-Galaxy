@@ -58,7 +58,7 @@ const UploadCampImages = () => {
           
           <TouchableOpacity onPress={handleImageUpload}>
             <Button
-              buttonColor="#0054a4"
+              buttonColor="#0047b9"
               mode="contained"
               style={styles.uploadButton}
             >
@@ -67,7 +67,7 @@ const UploadCampImages = () => {
           </TouchableOpacity>
           <TouchableOpacity onPress={handlePdfUpload}>
             <Button
-              buttonColor="#0054a4"
+              buttonColor="#0047b9"
               mode="contained"
               style={styles.uploadButton}
             >
@@ -86,7 +86,7 @@ const UploadCampImages = () => {
             onPress={() => navigation.navigate('UserProfileForm')}
           >
             <Button
-              buttonColor="#0054a4"
+              buttonColor="#0047b9"
               mode="contained"
               style={styles.button}
             >
@@ -102,7 +102,7 @@ const UploadCampImages = () => {
 const styles = StyleSheet.create({
   // Existing styles...
   uploadButton: {
-    backgroundColor: '#0054a4',
+    backgroundColor: '#0047b9',
     marginTop: 16,
   },
   previewContainer: {
