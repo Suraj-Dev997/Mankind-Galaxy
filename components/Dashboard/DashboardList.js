@@ -185,15 +185,15 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
     return (
       <View style={styles.headerMain}>
         <View style={[styles.row, styles.container1]}>
-              <TouchableOpacity style={[styles.button1, styles.elevation]}>
+              <TouchableOpacity style={[styles.button1]}>
                 <Text style={styles.buttonText1}>Total Camps: </Text>
                 <Text style={styles.buttonText1}>{totalCamps} </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button1, styles.elevation]}>
+              <TouchableOpacity style={[styles.button1]}>
                 <Text style={styles.buttonText1}>Patient Screened:</Text>
                 <Text style={styles.buttonText1}>{totalScreened} </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button1, styles.elevation]}>
+              <TouchableOpacity style={[styles.button1]}>
                 <Text style={styles.buttonText1}>Patient Diagnosed:</Text>
                 <Text style={styles.buttonText1}>{totalDiagnosed} </Text>
               </TouchableOpacity>
@@ -572,8 +572,9 @@ const styles = StyleSheet.create({
       button1: {
         flex: 1,
         margin:2,
-        marginHorizontal: 2,
-      
+        marginHorizontal: 5,
+        borderWidth:2,
+        borderColor: '#72c5f8',
         height: 80,
         textAlign:'center',
         backgroundColor: '#ffffff',

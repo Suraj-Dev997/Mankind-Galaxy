@@ -159,7 +159,7 @@ const PosterList = () => {
           <TouchableOpacity style={styles.actionButton}>
             <IconButton
               icon="file-image"
-              iconColor="#0047b9"
+              iconColor="#0a94d6"
               size={20}
               onPress={() => handlePoster(item.doctor_id, item.dc_id)}
             />
@@ -167,7 +167,7 @@ const PosterList = () => {
           <TouchableOpacity style={styles.actionButton}>
             <IconButton
               icon="application-edit"
-              iconColor="#0047b9"
+              iconColor="#222"
               size={20}
               onPress={() => handleEdit(item.doctor_id, item.dc_id)}
             />
@@ -175,7 +175,7 @@ const PosterList = () => {
           <TouchableOpacity style={styles.actionButton}>
             <IconButton
               icon="delete"
-              iconColor="#0047b9"
+              iconColor="#dc222d"
               size={20}
               onPress={() => handleDelete(item.doctor_id)}
             />

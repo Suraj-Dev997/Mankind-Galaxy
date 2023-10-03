@@ -363,7 +363,7 @@ const UserProfileForm = () => {
   };
 
   return (
-    // <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
+    <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
        <View style={styles.container}>
       <TouchableOpacity onPress={chooseImage}>
         <View style={styles.avatarContainer}>
@@ -409,7 +409,9 @@ const UserProfileForm = () => {
           <Text style={styles.datePickerLabel} onPress={showCampDate}>
             Select Date:
           </Text>
-          <Button style={styles.datePickerButton} onPress={showCampDate}>
+          <Button style={styles.datePickerButton} onPress={showCampDate}
+          labelStyle={styles.addbtnText1}
+          >
             {campDate.getDate().toString().padStart(2, '0')}-
             {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
             {campDate.getFullYear()}
@@ -463,7 +465,7 @@ const UserProfileForm = () => {
         </Modal>
       </View>
     </View>
-    // </LinearGradient>
+ </LinearGradient>
    
   );
 };
@@ -499,6 +501,9 @@ const styles = StyleSheet.create({
   },
   addbtnText: {
     color: '#fff', // Set the text color here
+  },
+  addbtnText1: {
+    color: '#474747', // Set the text color here
   },
   modalTitle: {
     fontSize: 18,
@@ -542,6 +547,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#0047b9',
+    color:'#000',
     padding: 5,
     marginBottom: 12,
   },

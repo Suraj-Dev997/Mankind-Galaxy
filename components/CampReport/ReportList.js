@@ -165,12 +165,12 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
           style={styles.actionButton}
           onPress={() => handleInfo(item.crid)}
         >
-          <IconButton icon="note" iconColor="#0047b9" size={20} />
+          <IconButton icon="note" iconColor="#0a94d6" size={20} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="application-edit"
-            iconColor="#0047b9"
+            iconColor="#222"
             size={20}
             onPress={() => handleEdit(item.crid)}
           />
@@ -178,7 +178,7 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
             icon="delete"
-            iconColor="#0047b9"
+            iconColor="#dc222d"
             size={20}
             onPress={() => handleDelete(item.crid)}
           />

@@ -148,7 +148,7 @@ const UploadCampImages = () => {
   
   
   return (
-    // <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
+    <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.form}>
@@ -204,7 +204,7 @@ const UploadCampImages = () => {
         </View>
       </ScrollView>
     </View>
-    // </LinearGradient>
+ </LinearGradient>
   );
 };
 

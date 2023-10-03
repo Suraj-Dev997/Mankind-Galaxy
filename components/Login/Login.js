@@ -82,14 +82,14 @@ const handleLogin = async () => {
         resizeMode="contain"
       />
        <TextInput
-        style={[styles.input,styles.elevation]}
+        style={[styles.input]}
         placeholder="Employee Code"
         placeholderTextColor="#1c7cd8"
         onChangeText={(text) => setEmpCode(text)}
         value={EmpCode}
       />
       <TextInput
-        style={[styles.input,styles.elevation]}
+        style={[styles.input]}
         placeholder="Password"
         placeholderTextColor="#1c7cd8"
         secureTextEntry={true}
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: '#fff',
     color:'#0047b9',
-    borderColor: '#e6e6e6',
+    borderColor: '#72c5f8',
     borderWidth: 1,
     borderRadius: 30,
     paddingHorizontal: 16,

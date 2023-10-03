@@ -169,7 +169,7 @@ export const HomeMenu = (props) => {
                 colors={['#EDF5F0', '#D8DEDA']}
                 style={[
                   styles.button1,
-                  styles.elevation,
+                 
                   {
                     width: screenWidth / buttonsPerRow,
                   },
@@ -184,7 +184,7 @@ export const HomeMenu = (props) => {
                 colors={['#EDF5F0', '#D8DEDA']}
                 style={[
                   styles.button1,
-                  styles.elevation,
+                
                   {
                     width: screenWidth / buttonsPerRow,
                   },
@@ -266,9 +266,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
     height: 80,
-
+borderWidth:2,
+borderColor: '#72c5f8',
     textAlign: 'center',
-    backgroundColor: '#0047b9',
+    // backgroundColor: '#0047b9',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,

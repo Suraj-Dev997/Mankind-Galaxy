@@ -198,7 +198,7 @@ const UpdateUserProfileForm = () => {
   };
 
   return (
-    // <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
+    <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
       <View style={styles.container}>
       <TouchableOpacity onPress={chooseImage}>
         <View style={styles.avatarContainer}>
@@ -244,7 +244,7 @@ const UpdateUserProfileForm = () => {
           <Text style={styles.datePickerLabel} onPress={showCampDate}>
             Select Date:
           </Text>
-          <Button style={styles.datePickerButton} onPress={showCampDate}>
+          <Button style={styles.datePickerButton} onPress={showCampDate}  labelStyle={styles.addbtnText1}>
   {campDate}
 </Button>
           {showCampDatePicker && (
@@ -272,12 +272,15 @@ const UpdateUserProfileForm = () => {
         </LinearGradient>
       </View>
     </View>
-    // </LinearGradient>
+  </LinearGradient>
     
   );
 };
 
 const styles = StyleSheet.create({
+  addbtnText1: {
+    color: '#474747', // Set the text color here
+  },
   datePickerContainer: {
     flexDirection: 'column',
   },

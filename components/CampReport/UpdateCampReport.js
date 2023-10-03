@@ -339,13 +339,14 @@ const UpdateCampReport = () => {
 
   return (
     <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
-       <View style={styles.container}>
-       {/* Loading indicator */}
-       {isLoading && (
+      {/* Loading indicator */}
+      {isLoading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0047b9" />
         </View>
       )}
+       <View style={styles.container}>
+       
 
       <View style={styles.form}>
       <Text style={styles.datePickerLabel}>Select Name of MR:</Text>
@@ -402,7 +403,7 @@ const UpdateCampReport = () => {
 <View style={styles.datePickerContainer} >
     
     <Text style={styles.datePickerLabel} onPress={showCampDate}>Select Date of Camp:</Text>
-    <Button style={styles.datePickerButton} onPress={showCampDate}>
+    <Button style={styles.datePickerButton} onPress={showCampDate}  labelStyle={styles.addbtnText1}>
     {formattedCampDate}
 </Button>
     {showCampDatePicker && (
@@ -583,6 +584,9 @@ const styles = StyleSheet.create({
   changeAvatarText: {
     color: '#0047b9',
     textAlign: 'center',
+  },
+  addbtnText1: {
+    color: '#474747', // Set the text color here
   },
 });
 
