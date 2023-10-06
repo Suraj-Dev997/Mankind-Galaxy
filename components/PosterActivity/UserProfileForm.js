@@ -74,7 +74,8 @@ const UserProfileForm = () => {
         const data = await response.json();
         console.log('Poster added successfully:', data);
       } else {
-        console.log('Error adding poster:', response.statusText);
+        const data = await response.json();
+        console.log('Error adding poster:', data);
       }
     } catch (error) {
       console.log('Error:', error);
@@ -475,10 +476,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
+    borderWidth:1,
+    borderColor:'#0047b9',
     borderRadius: 10,
     padding: 20,
     width: '80%',

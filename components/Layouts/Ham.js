@@ -20,7 +20,7 @@ const LogoutPopup = ({ visible, onDismiss, handleLogoutfunction }) => {
           <Text style={styles.popupText}>Are you sure you want to logout?</Text>
           <View style={styles.buttonContainer}>
           <Button
-           mode="outlined" 
+           mode="contained" 
            onPress={onDismiss} style={styles.button}  labelStyle={{ color: '#fff' }}>
             Cancel
 </Button>

@@ -78,7 +78,7 @@ export const Home =  () =>{
                 text: 'Update',
                 onPress: () => {
                   // Replace the URL with your own update URL or the Play Store URL
-                  Linking.openURL('https://play.google.com/store/apps');
+                  Linking.openURL('https://play.google.com/store/apps/details?id=com.mankindgalaxy');
                 },
               },
             ],
@@ -135,7 +135,7 @@ export const Home =  () =>{
        
            <StatusBar backgroundColor="#0047b9"/>
          
-          <View > 
+    
           
         <View style={[styles.container1,styles.elevation]} >    
         {/* {categories.map((category) => (
@@ -150,19 +150,25 @@ export const Home =  () =>{
         </LinearGradient>
       ))} */}
       {categories.map((category) => (
-  <LinearGradient
-    key={category.category_id} // Assigning a unique key
+        <View  key={category.category_id}>
+           <TouchableOpacity
+      onPress={() => handleCategoryPress(category.category_id)}
+      activeOpacity={1} 
+    >
+          <LinearGradient
+    // Assigning a unique key
     colors={['#0047b9', '#0c93d7']}
     style={[styles.button, styles.elevation]}
   >
-    <TouchableOpacity
-      onPress={() => handleCategoryPress(category.category_id)}
-    >
+   
       <Text style={styles.buttonText}>{category.categeory_name}</Text>
-    </TouchableOpacity>
+    
   </LinearGradient>
-))}
+  </TouchableOpacity>
         </View>
+  
+))}
+        
      
           </View>
           
@@ -181,11 +187,7 @@ export const Home =  () =>{
       
     },
     container1: {
- width:'100%',
- padding: 10,
-      flexGrow: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+padding:20,
       
     },
     row: {
@@ -199,7 +201,7 @@ export const Home =  () =>{
       justifyContent: 'center',
       // backgroundColor: '#0047b9',
       padding: 30,
-      marginVertical: 10,
+      marginVertical: 15,
       borderRadius: 20,
     },
     button1: {
