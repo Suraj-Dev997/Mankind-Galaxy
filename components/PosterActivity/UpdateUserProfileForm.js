@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity,Alert } from 'react-native';
-import { TextInput, Button, Avatar } from 'react-native-paper';
+import { View, Text, Image, StyleSheet, TouchableOpacity,Alert,FlatList } from 'react-native';
+import { TextInput, Button, Avatar,DefaultTheme } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,11 +20,64 @@ const UpdateUserProfileForm = () => {
   const [campDate, setCampDate] = useState();
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
   const [doctorDetail, setDoctorDetail] = useState(null);
+  const [doctorNames, setDoctorNames] = useState([]);
+  const [textInputValue, setTextInputValue] = useState('');
+  const [filteredDoctorNames, setFilteredDoctorNames] = useState([]);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState('');
 
   const route = useRoute();
   const navigation = useNavigation();
   const { doctorId,dc_id,id } = route.params;
 
+  useEffect(() => {
+    // Fetch doctor names from the API
+    const ApiUrl = `${BASE_URL}${'/doc/getDoctorWithUserId'}`;
+    
+    // Fetch the userId from AsyncStorage
+    AsyncStorage.getItem('userdata')
+      .then((data) => {
+        if (data) {
+          const userData = JSON.parse(data);
+          const userId = userData.responseData.user_id;
+          
+          // Call fetchData with the retrieved userId
+          console.log("Getting user id:", userId);
+          
+          // Fetch data using the retrieved userId
+          return fetch(ApiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: userId, // Use the retrieved userId here
+              subCatId: id,
+            }),
+          });
+        } else {
+          console.error('Invalid or missing data in AsyncStorage');
+        }
+      })
+      .then((response) => {
+        if (!response) {
+          return; // Return early if there was an issue with AsyncStorage
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          // Extract doctor names from the response
+          console.log(data)
+          const names = data.map((doctor) => doctor.doctor_name);
+          setDoctorNames(names);
+          console.log(names);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching doctor names:', error);
+      });
+  }, [id]);
 
   useEffect(() => {
     const handleMoreInfo = async(doctor) => {
@@ -49,7 +102,7 @@ const UpdateUserProfileForm = () => {
             // console.log('API Response:', data);
             if (Array.isArray(data) && data.length > 0) {
               const doctorData = data[0];
-              setName(doctorData.doctor_name);
+              setTextInputValue(doctorData.doctor_name);
               setVenue(doctorData.camp_venue);
               setCampDate(doctorData.camp_date);
               if (doctorData.doctor_img) {
@@ -83,6 +136,20 @@ const UpdateUserProfileForm = () => {
 
   },[doctorDetail])
 
+  const handleTextInputChange = (text) => {
+    setTextInputValue(text);
+    // Filter the doctor names based on user input
+    const filteredNames = doctorNames.filter((name) =>
+      name.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredDoctorNames(filteredNames);
+    setIsDropdownVisible(!!text); // Hide the dropdown if text is empty
+  };
+  const handleDoctorSelect = (name) => {
+    setSelectedDoctor(name);
+    setTextInputValue(name);
+    setIsDropdownVisible(false);
+  };
 
 
   const EditDoctor = async () => {
@@ -220,15 +287,40 @@ const UpdateUserProfileForm = () => {
       </TouchableOpacity>
 
       <View style={styles.form}>
-        <TextInput
-          label="Name"
-          value={name}
-          onChangeText={(text) => setName(text)}
-          mode="outlined"
-          style={styles.input}
-          outlineColor="#0047b9"
-          activeOutlineColor="#08a5d8"
-        />
+      <View style={styles.inputContainer}>
+          <TextInput
+            backgroundColor='#fff'
+            underlineColor='#fff'
+            style={styles.inputField}
+            outlineColor='#0047b9'
+            theme={{
+              ...DefaultTheme,
+              colors: {
+                ...DefaultTheme.colors,
+                primary: '#0047b9', // Change the label color to blue
+              },
+            }}
+            activeOutlineColor='#08a5d8'
+            value={textInputValue}
+            onChangeText={handleTextInputChange}
+            label="Name of Doctor"
+          />
+          {isDropdownVisible && (
+            <FlatList
+              data={filteredDoctorNames}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => handleDoctorSelect(item)}
+                >
+                  <Text>{item}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              style={styles.dropdownList}
+            />
+          )}
+        </View>
 
         <TextInput
           label="Venue"
@@ -278,6 +370,31 @@ const UpdateUserProfileForm = () => {
 };
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    borderColor: '#0047b9',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom:15,
+    overflow: 'hidden',
+    backgroundColor:'#fff',
+  },
+  inputField: {
+    padding: 0,
+    fontSize: 15,
+  },
+  dropdownList: {
+    maxHeight: 150, // Set a max height for the dropdown list
+    borderColor: '#ccc',
+    backgroundColor:'#fff',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderRadius: 5,
+  },
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
   addbtnText1: {
     color: '#474747', // Set the text color here
   },

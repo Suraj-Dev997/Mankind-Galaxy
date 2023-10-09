@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  FlatList
 } from 'react-native';
-import {TextInput, Button, Avatar, Menu, Divider} from 'react-native-paper';
+import {TextInput, Button, Avatar, Menu, Divider,DefaultTheme} from 'react-native-paper';
+
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,11 +28,13 @@ const UserProfileForm = () => {
   const [avatarUri, setAvatarUri] = useState(null); // To store the URI of the selected image
   const [campDate, setCampDate] = useState(new Date());
   const [showCampDatePicker, setShowCampDatePicker] = useState(false);
-
+  const [doctorNames, setDoctorNames] = useState([]);
   const [textInputValue, setTextInputValue] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState('');
-
+  const [filteredDoctorNames, setFilteredDoctorNames] = useState([]);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState('');
   const showDropdown = () => setDropdownVisible(true);
   const hideDropdown = () => setDropdownVisible(false);
   const route = useRoute();
@@ -38,6 +42,55 @@ const UserProfileForm = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const {id} = route.params;
   // console.log("this is sub id",id)
+
+  useEffect(() => {
+    // Fetch doctor names from the API
+    const ApiUrl = `${BASE_URL}${'/doc/getDoctorWithUserId'}`;
+    
+    // Fetch the userId from AsyncStorage
+    AsyncStorage.getItem('userdata')
+      .then((data) => {
+        if (data) {
+          const userData = JSON.parse(data);
+          const userId = userData.responseData.user_id;
+          
+          // Call fetchData with the retrieved userId
+          console.log("Getting user id:", userId);
+          
+          // Fetch data using the retrieved userId
+          return fetch(ApiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: userId, // Use the retrieved userId here
+              subCatId: id,
+            }),
+          });
+        } else {
+          console.error('Invalid or missing data in AsyncStorage');
+        }
+      })
+      .then((response) => {
+        if (!response) {
+          return; // Return early if there was an issue with AsyncStorage
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          // Extract doctor names from the response
+          console.log(data)
+          const names = data.map((doctor) => doctor.doctor_name);
+          setDoctorNames(names);
+          console.log(names);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching doctor names:', error);
+      });
+  }, [id]);
 
   useEffect(() => {
     const getData = async () => {
@@ -55,6 +108,22 @@ const UserProfileForm = () => {
     };
     getData();
   }, []);
+
+  const handleTextInputChange = (text) => {
+    setTextInputValue(text);
+    // Filter the doctor names based on user input
+    const filteredNames = doctorNames.filter((name) =>
+      name.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredDoctorNames(filteredNames);
+    setIsDropdownVisible(!!text); // Hide the dropdown if text is empty
+  };
+  const handleDoctorSelect = (name) => {
+    setSelectedDoctor(name);
+    setTextInputValue(name);
+    setIsDropdownVisible(false);
+  };
+
   const addPoster = async (docId, dcId, subCatId) => {
     try {
       const ApiUrl = `${BASE_URL}${'/addPoster'}`;
@@ -83,7 +152,7 @@ const UserProfileForm = () => {
   };
   const findDoctor = async () => {
      // Check if any required fields are empty
-     if (!name || !campDate || !venue || !avatarUri) {
+     if (!textInputValue || !campDate || !venue || !avatarUri) {
       // Display an alert message if any required fields are empty
       alert('Please fill in all required fields');
       return;
@@ -96,7 +165,7 @@ const UserProfileForm = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          doctorName: name,
+          doctorName: textInputValue,
         }),
       });
 
@@ -122,7 +191,7 @@ const UserProfileForm = () => {
       const formData = new FormData();
       formData.append('user_id', userId); // Replace with the actual user ID
       formData.append('subcat_id', id); // Replace with the actual subcategory ID
-      formData.append('doctorName', name);
+      formData.append('doctorName', textInputValue);
       const formattedCampDate = format(campDate, 'dd-MM-yyyy');
       formData.append('campDate', formattedCampDate); // Convert date to ISO format
       formData.append('campVenue', venue);
@@ -184,7 +253,7 @@ const UserProfileForm = () => {
       const formData = new FormData();
       formData.append('user_id', userId); // Replace with the actual user ID
       formData.append('subcat_id', id); // Replace with the actual subcategory ID
-      formData.append('doctorName', name);
+      formData.append('doctorName', textInputValue);
       const formattedCampDate = format(campDate, 'dd-MM-yyyy');
       formData.append('campDate', formattedCampDate); // Convert date to ISO format
       formData.append('campVenue', venue);
@@ -386,7 +455,41 @@ const UserProfileForm = () => {
       </TouchableOpacity>
 
       <View style={styles.form}>
-        <TextInput
+      <View style={styles.inputContainer}>
+          <TextInput
+            backgroundColor='#fff'
+            underlineColor='#fff'
+            style={styles.inputField}
+            outlineColor='#0047b9'
+            theme={{
+              ...DefaultTheme,
+              colors: {
+                ...DefaultTheme.colors,
+                primary: '#0047b9', // Change the label color to blue
+              },
+            }}
+            activeOutlineColor='#08a5d8'
+            value={textInputValue}
+            onChangeText={handleTextInputChange}
+            label="Name of Doctor"
+          />
+          {isDropdownVisible && (
+            <FlatList
+              data={filteredDoctorNames}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => handleDoctorSelect(item)}
+                >
+                  <Text>{item}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              style={styles.dropdownList}
+            />
+          )}
+        </View>
+        {/* <TextInput
           label="Name"
           value={name}
           onChangeText={text => setName(text)}
@@ -394,7 +497,7 @@ const UserProfileForm = () => {
           style={styles.input}
           outlineColor="#0047b9"
           activeOutlineColor="#08a5d8"
-        />
+        /> */}
 
         <TextInput
           label="Venue"
@@ -472,6 +575,31 @@ const UserProfileForm = () => {
 };
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    borderColor: '#0047b9',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom:15,
+    overflow: 'hidden',
+    backgroundColor:'#fff',
+  },
+  inputField: {
+    padding: 0,
+    fontSize: 15,
+  },
+  dropdownList: {
+    maxHeight: 150, // Set a max height for the dropdown list
+    borderColor: '#ccc',
+    backgroundColor:'#fff',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderRadius: 5,
+  },
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',

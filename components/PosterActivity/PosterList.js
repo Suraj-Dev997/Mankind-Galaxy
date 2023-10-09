@@ -75,7 +75,7 @@ const PosterList = () => {
             const userId = userData.responseData.user_id;
 
             // Fetch data from the API using the retrieved userId
-            const ApiUrl = `${BASE_URL}${'/doc/getDoctorWithUserId'}`;
+            const ApiUrl = `${BASE_URL}${'/doc/getDoctorDataWithUserId'}`;
             return fetch(ApiUrl, {
               method: 'POST',
               headers: {
