@@ -213,8 +213,9 @@ const submitData = () => {
   };
  
   return (
+    <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
     <ScrollView>
-       <LinearGradient colors={['#72c5f8',  '#daf5ff']} style={styles.container} >
+      
        <View style={styles.container}>
       <View style={styles.form}>
   
@@ -244,9 +245,10 @@ const submitData = () => {
  </LinearGradient>
       </View>
     </View>
-       </LinearGradient>
+   
        
     </ScrollView>
+    </LinearGradient>
   
   );
 };

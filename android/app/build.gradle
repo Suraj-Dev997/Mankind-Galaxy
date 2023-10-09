@@ -78,8 +78,8 @@ android {
         applicationId "com.mankindgalaxy"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "2"
+        versionCode 3
+        versionName "3"
     }
     signingConfigs {
         debug {

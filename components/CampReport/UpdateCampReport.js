@@ -61,6 +61,7 @@ const UpdateCampReport = () => {
   
         if (response.ok) {
           const data = await response.json();
+          console.log("data is: ",data)
           if (Array.isArray(data) && data.length > 0) {
             const doctorData = data[0];
             console.log("Data camp:", doctorData);
@@ -78,6 +79,7 @@ const UpdateCampReport = () => {
   
             // Store doctorData.empcode in a separate state variable
             const doctorEmpcode = doctorData.empcode;
+            console.log("EmpCode is: ",doctorEmpcode);
             setUserEmpcode(doctorEmpcode);
             
   
@@ -118,7 +120,7 @@ const UpdateCampReport = () => {
                   setSelectedEmpcode(matchingMr.empcode)
                   // console.log("Emp code:",matchingMr.empcode);
                 } else {
-                  console.error('No matching MR found');
+                  console.log('No matching MR found');
                 }
               } else {
                 console.log('No MR data found');

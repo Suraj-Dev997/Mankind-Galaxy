@@ -167,7 +167,7 @@ const UpdateUserProfileForm = () => {
           const formData = new FormData();
           formData.append('doctor_id', doctorId);
           formData.append('dc_id', dc_id);
-          formData.append('doctor_name', name);
+          formData.append('doctor_name', textInputValue);
           formData.append('user_id', userId); // Use the retrieved userId
           formData.append('camp_date', campDate);
           formData.append('camp_venue', venue);

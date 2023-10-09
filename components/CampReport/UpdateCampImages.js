@@ -87,14 +87,11 @@ useEffect(() => {
         // console.log(imagePaths);
 
         // Set the imagePreviews and feedback states
-        // setImagePreviews(
-        //   imagePaths.map((path, index) => (
-        //     <TouchableOpacity key={index}>
-        //       <Image source={{ uri: path }} style={styles.previewImage} />
-        //       <Text style={styles.deleteButton}>Delete</Text>
-        //     </TouchableOpacity>
-        //   ))
-        // );
+        const imagePreviews = imagePaths.map((path, index) => (
+          <ImagePreview key={index} uri={path} index={index} crimgid={CriImID[index]} />
+        ));
+        
+        setImagePreviews(imagePreviews);
         setFeedback(feedbackText);
       } else {
         console.error('Failed to fetch data from the API');
@@ -117,8 +114,29 @@ useEffect(() => {
   // Call the fetchData function when the component is mounted
   fetchData();
 }, [crid]);
+function ImagePreview({ uri, index, crimgid }) {
+  const handleDeleteImage1 = async () => {
+    // Call the deleteImage function with the crimgid to delete
+    await deleteImage(crimgid);
+console.log(crimgid)
+    // Update the image previews after deleting the image
+    setImagePreviews((prevPreviews) =>
+      prevPreviews.filter((_, i) => i !== index)
+    );
+  }
 
-
+  return (
+    <TouchableOpacity onPress={handleDeleteImage1}>
+      <Image source={{ uri }} style={styles.previewImage} />
+      <Text style={styles.deleteButton}>Delete</Text>
+    </TouchableOpacity>
+  );
+}
+// const handleDeleteImage1 = (indexToDelete) => {
+//   setImagePreviews((prevPreviews) =>
+//     prevPreviews.filter((_, index) => index !== indexToDelete)
+//   );
+// };
   const handleImageUpload = async () => {
     try {
       if (imageUris.length >= 3) {
