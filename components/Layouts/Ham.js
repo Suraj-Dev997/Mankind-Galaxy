@@ -45,9 +45,9 @@ const Ham = () => {
   const [Des, setDes] = useState('');
   const [Sessionid, setSeesionid] = useState('');
   const [UserId, setUserId] = useState('');
-    const [data, setData] = useState(null);
-    const navigation = useNavigation();
-   
+  const [data, setData] = useState(null);
+  const navigation = useNavigation();
+
     useEffect(() => {
       const getData = async () => {
         try {

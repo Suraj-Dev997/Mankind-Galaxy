@@ -18,10 +18,11 @@ import {useRoute} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
 import {BASE_URL} from '../Configuration/Config';
 import {format} from 'date-fns';
-import {request, PERMISSIONS, RESULTS, check} from 'react-native-permissions';
+import {request, PERMISSIONS, RESULTS, check,requestMultiple} from 'react-native-permissions';
 import LinearGradient from 'react-native-linear-gradient';
 
 const UserProfileForm = () => {
+  const [permissionStatus, setPermissionStatus] = useState('undetermined');
   const [userId, setUserId] = useState(null);
   const [name, setName] = useState('');
   const [venue, setVenue] = useState('');
@@ -388,28 +389,17 @@ const UserProfileForm = () => {
     setShowCampDatePicker(true);
   };
   const chooseImage = async () => {
-    const cameraPermission = PERMISSIONS.ANDROID.CAMERA;
-    const storagePermission = PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
+    try {
+      const result = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
 
-    const cameraStatus = await check(cameraPermission);
-    const storageStatus = await check(storagePermission);
-
-    if (cameraStatus !== RESULTS.GRANTED) {
-      const result = await request(cameraPermission);
-      if (result !== RESULTS.GRANTED) {
-        Alert.alert('Camera permission required');
-        return;
+      if (result === 'granted') {
+        setPermissionStatus('granted');
+      } else {
+        setPermissionStatus('denied');
       }
+    } catch (error) {
+      console.log('Error requesting storage permission:', error);
     }
-
-    if (storageStatus !== RESULTS.GRANTED) {
-      const result = await request(storagePermission);
-      if (result !== RESULTS.GRANTED) {
-        Alert.alert('Storage permission required');
-        return;
-      }
-    }
-
     ImagePicker.openPicker({
       width: 200, // Maximum width for the selected image
       height: 200, // Maximum height for the selected image
@@ -453,7 +443,7 @@ const UserProfileForm = () => {
         </View>
         <Text style={styles.changeAvatarText}>Upload Profile Image</Text>
       </TouchableOpacity>
-
+      {/* <Text>Storage Permission Status: {permissionStatus}</Text> */}
       <View style={styles.form}>
       <View style={styles.inputContainer}>
           <TextInput
@@ -581,7 +571,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom:15,
     overflow: 'hidden',
-    backgroundColor:'#fff',
+    backgroundColor:'#ffffff',
   },
   inputField: {
     padding: 0,

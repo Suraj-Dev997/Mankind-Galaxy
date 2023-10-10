@@ -3,7 +3,7 @@
 
 
 import React,{ useEffect,useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image, ScrollView,Linking,StatusBar,BackHandler,Alert ,ImageBackground } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image, ScrollView,Linking,StatusBar,BackHandler,Alert ,ImageBackground,PermissionsAndroid  } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import Icon1 from 'react-native-vector-icons/MaterialIcons';
 import IconF from 'react-native-vector-icons/FontAwesome';
@@ -14,11 +14,13 @@ import { BASE_URL } from '../Configuration/Config';
 import { BASE_URL1 } from '../Configuration/Config';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { check, PERMISSIONS, request } from 'react-native-permissions';
 
 
 
 export const Home =  () =>{
   const navigation = useNavigation();
+  const [permissionStatus, setPermissionStatus] = useState('undetermined');
 
   const handleCategoryPress = (categoryName) => {
 
@@ -47,6 +49,10 @@ export const Home =  () =>{
         console.error('Error fetching categories:', error);
       });
   }, []);
+
+
+
+
 //Version checking code-------------------------------------
  useEffect(() => {
     const ApiVersionUrl = `${BASE_URL}${'/auth/getAppVersion'}`;
@@ -92,10 +98,29 @@ export const Home =  () =>{
           'Failed to check the app version. Please try again later.'
         );
       }
-    };
+    }; 
     checkAppVersion();
+
+  }, []);
+
+
+  useEffect(() => {
+    requestStoragePermission();
   }, []);
   //Version checking code-------------------------------------
+  const requestStoragePermission = async () => {
+    try {
+      const result = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+
+      if (result === 'granted') {
+        setPermissionStatus('granted');
+      } else {
+        setPermissionStatus('denied');
+      }
+    } catch (error) {
+      console.error('Error requesting storage permission:', error);
+    }
+  };
 
   // let user = await AsyncStorage.getItem('user');  
   const checkLoggedIn = async () => {
