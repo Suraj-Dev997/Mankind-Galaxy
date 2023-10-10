@@ -1,1 +1,47 @@
 Privacy Policy - https://app.freeprivacypolicy.com/download/2aa72a5a-a62b-4d1a-a1df-902abfd2e290
+
+
+
+{subcategoryRows.map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.container1}>
+              {row.map((subcategory, subcategoryIndex) => (
+                <LinearGradient
+                  key={subcategory.id}
+                  colors={['#0047b9', '#0c93d7']}
+                  style={[
+                    styles.button,
+                    styles.elevation,
+                    {
+                      width: screenWidth / buttonsPerRow,
+                    },
+                  ]}
+                >
+                  <TouchableOpacity onPress={() => navigateToCategoryScreen(subcategory.id, subcategory.name)}>
+                    <Text style={styles.buttonText}>{subcategory.name}</Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              ))}
+            </View>
+          ))}
+
+
+     {subcategoryRows.map((row, rowIndex) => (
+  <View key={rowIndex} style={styles.container1}>
+    {row.map((subcategory, subcategoryIndex) => (
+      <View
+        key={subcategory.id}
+        style={[
+          styles.button,
+          styles.elevation,
+          {
+            width: screenWidth / buttonsPerRow,
+            backgroundColor: '#0047b9', // Set the background color here
+          },
+        ]}
+        onTouchStart={() => navigateToCategoryScreen(subcategory.id, subcategory.name)} // Use onTouchStart for touch event
+      >
+        <Text style={styles.buttonText}>{subcategory.name}</Text>
+      </View>
+    ))}
+  </View>
+))}

@@ -197,7 +197,7 @@ export const HomeMenu = (props) => {
               </LinearGradient>
             </View>
           )}
-          {subcategoryRows.map((row, rowIndex) => (
+       {subcategoryRows.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.container1}>
               {row.map((subcategory, subcategoryIndex) => (
                 <LinearGradient
@@ -210,8 +210,9 @@ export const HomeMenu = (props) => {
                       width: screenWidth / buttonsPerRow,
                     },
                   ]}
+                  onTouchStart={() => navigateToCategoryScreen(subcategory.id, subcategory.name)} // Use onTouchStart for touch event
                 >
-                  <TouchableOpacity onPress={() => navigateToCategoryScreen(subcategory.id, subcategory.name)}>
+                  <TouchableOpacity >
                     <Text style={styles.buttonText}>{subcategory.name}</Text>
                   </TouchableOpacity>
                 </LinearGradient>
