@@ -336,13 +336,29 @@ const CategoryDash = ({ users, filteredUsers, renderUserItem }) => (
       console.log('Getting user id:', userId);// Replace with your user ID
         const subCatId = id; // Replace with your subcategory ID
         const randomFileName = `Report_${generateRandomNumber()}.csv`;
-        const apiUrl = `${BASE_URL}/dashboard/getFilterCampReportCsv/?userId=${userId}&subCatId=${subCatId}`;
+        // const apiUrl = `${BASE_URL}/dashboard/getFilterCampReportCsv/?userId=${userId}&subCatId=${subCatId}`;
   
-        const response = await RNFetchBlob.config({
-          fileCache: true,
-          path: `${RNFetchBlob.fs.dirs.DownloadDir}/${randomFileName}`, // Save in the download folder
-        }).fetch('GET', apiUrl);
-  
+        // const response = await RNFetchBlob.config({
+        //   fileCache: true,
+        //   path: `${RNFetchBlob.fs.dirs.DownloadDir}/${randomFileName}`, 
+        // }).fetch('GET', apiUrl);
+        const apiUrl = `${BASE_URL}/dashboard/getFilterCampReportCsv`;
+
+const payload = {
+  userId: userId,
+  subCatId: id,
+  startDate: fromDate,
+  endDate: toDate,
+  filterBy: selectedValue
+};
+console.log("Payload is",payload)
+const response = await RNFetchBlob.config({
+  fileCache: true,
+  path: `${RNFetchBlob.fs.dirs.DownloadDir}/${randomFileName}`, // Save in the download folder
+}).fetch('POST', apiUrl, {
+  'Content-Type': 'application/json', // Set the content type as JSON
+}, JSON.stringify(payload));
+console.log("Response is",response)
         if (response.respInfo.status === 200) {
           // Show success alert
           console.log("Report CSV file downloaded successfully")
