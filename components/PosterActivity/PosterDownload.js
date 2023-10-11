@@ -147,17 +147,39 @@ const PosterDownload = () => {
       console.log('download pdf link', avatarUri);
       const randomNum = Math.floor(Math.random() * 10000); // Generates a random number between 0 and 9999
       const pdfName = `Document_${randomNum}.pdf`;
+      const imageWidth = 830; // 8.5 inches (standard page width) * 72 DPI
+      const imageHeight = 970; // 11 inches (standard page height) * 72 DPI
+  
+      const resizedImage = await Image.resolveAssetSource({ uri: avatarUri });
+      const aspectRatio = resizedImage.width / resizedImage.height;
+      const newImageWidth = aspectRatio >= 1 ? imageWidth : imageHeight * aspectRatio;
+      const newImageHeight = aspectRatio >= 1 ? imageWidth / aspectRatio : imageHeight;
+      const containerStyle = `
+      width: ${imageWidth}px;
+      height: ${imageHeight}px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    `;
 
+    const imageStyle = `
+      max-width: ${newImageWidth}px;
+      max-height: ${newImageHeight}px;
+      width: auto;
+      height: auto;
+    `;
       const htmlContent = `
-        <html>
-          <body>  
-            <img src="$(avatarUri)"  style="max-width:100%; height:auto; page-break-before: always;" />
-          </body>
-        </html>
+      <html>
+      <body>
+        <div style="${containerStyle}">
+          <img src="${avatarUri}" style="${imageStyle}" />
+        </div>
+      </body>
+    </html>
       `;
-
+  
       const options = {
-        html: `<div><img src="${avatarUri}" style="max-width:100%; height:auto;" /></div>`,
+        html: htmlContent,
         fileName: pdfName,
         directory: 'Documents',
       };
