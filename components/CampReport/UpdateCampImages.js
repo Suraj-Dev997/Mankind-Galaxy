@@ -214,12 +214,11 @@ console.log(crimgid)
       // Handle the case where userId is not available
       return;
     }
-    const ApiUrl = `${BASE_URL}${'/report/UploadImages'}`;
-      
-  
+    const ApiUrl = `${BASE_URL}${'/report/updateImages'}`;
+
       // Create a FormData object
       const formData = new FormData();
-  
+
       // Append data to the FormData object
       formData.append('crId', crid); // Replace with the correct crId
       formData.append('userId', userId); // Replace with the correct userId
@@ -229,16 +228,14 @@ console.log(crimgid)
       imageUris.forEach((imageUri, index) => {
         const imageName = `image_${index + 1}.jpg`;
         formData.append('images', {
-        
           uri: imageUri,
           name: imageName,
           type: 'image/jpeg',
         });
-      
+
       });
-      
+
       console.log(formData)
-  
       // Send a POST request with the FormData
       const response = await fetch(ApiUrl, {
         method: 'POST',
@@ -274,7 +271,7 @@ console.log(crimgid)
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.form}>
-          
+        <Text style={styles.datePickerLabel}>Upload a maximum of 3 images.</Text>
           <TouchableOpacity onPress={handleImageUpload}>
             <Button
               // buttonColor="#0047b9"
@@ -301,8 +298,9 @@ console.log(crimgid)
               <View key={index}>{preview}</View>
             ))}
           </View>
+          <Text style={styles.datePickerLabel}>Feedback</Text>
           <TextInput
-            label="Feedback"
+            // label="Feedback"
             value={feedback}
             onChangeText={(text) => setFeedback(text)}
             mode="outlined"
@@ -378,7 +376,7 @@ const styles = StyleSheet.create({
       },
       datePickerLabel: {
         fontSize: 14, // You can adjust the font size as needed
-        marginBottom: 3, // Spacing between label and button
+        marginBottom: 0, // Spacing between label and button
         color:'#0047b9',
         fontWeight:'600',
        

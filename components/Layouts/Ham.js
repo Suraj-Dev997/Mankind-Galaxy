@@ -5,7 +5,7 @@ import UserProfile from './UserProfile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Icon1 from 'react-native-vector-icons/MaterialIcons';
-import { BASE_URL1 } from '../Configuration/Config';
+import { BASE_URL } from '../Configuration/Config';
 
 const LogoutPopup = ({ visible, onDismiss, handleLogoutfunction }) => {
   return (
@@ -58,6 +58,7 @@ const Ham = () => {
             setDes(data.responseData.designation);
             setUserId(data.responseData.userId);
             setSeesionid(data.responseData.sessionId);
+            console.log("Session id is",data.responseData.sessionID)
           }
         } catch (error) {
           console.log('Error retrieving data:', error);
@@ -68,49 +69,100 @@ const Ham = () => {
   
    
 
-    const handleLogoutfunction = async () => {
-      const ApiLogoutUrl = `${BASE_URL1}${'/AccountApi/EndUserLoginSession'}`;
-      const response = await fetch(ApiLogoutUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          sessionId: Sessionid,
-          userId: UserId
-        }),
-      });
-      console.log('Session-id:',Sessionid)
-      console.log('User-id:',UserId)
-      const responseData = await response.json();
+    // const handleLogoutfunction = async () => {
+    //   console.log('Session-id:',Sessionid)
+    //   const ApiLogoutUrl = `${BASE_URL}${'/auth/logout'}`;
+    //   const response = await fetch(ApiLogoutUrl, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ 
+    //       sessionId: Sessionid
+    //     }),
+    //   });
      
-      if (response.ok) {
-        // await AsyncStorage.setItem('user', "Suraj");
+    //   const responseData = await response.json();
+     
+    //   if (response.ok) {
+    //     // await AsyncStorage.setItem('user', "Suraj");
+    //     console.log("Resopnse is",response);
+    //     console.log("Resopnse recived");
+    //     try {
+    //       await AsyncStorage.removeItem('userdata');
+    //       setFullName("");
+    //         setDes("");
+    //         setUserId("");
+    //         setSeesionid("");
+    //       navigation.navigate('Login');
+    //       console.log('Session End');
+    //       setPopupVisible(false);
+    //     } catch (error) {
+    //       console.log('Error Session End:', error);
+    //       setPopupVisible(false);
+    //     }
+    //     console.log(responseData.errorCode)
+    //   } else {
+    //     // errorMessage(responseData.error);
+       
+    //     console.log("F")
+    //   }
+    //   setPopupVisible(false);
+    // };
 
-        console.log("Resopnse recived");
-        try {
-          await AsyncStorage.removeItem('userdata');
-          setFullName("");
+    const handleLogoutfunction = async () => {
+    
+      const ApiLogoutUrl = `${BASE_URL}/auth/logout`;
+      
+      // Retrieve the user data from AsyncStorage
+      try {
+        const data = await AsyncStorage.getItem('userdata');
+        console.log("data on logout",data)
+        if (data) {
+          const userData = JSON.parse(data);
+          const Sessionid = userData.responseData.sessionID;
+          console.log('Session-id:', Sessionid);
+          // Now you can use the `userId` in your API request
+          // Add the userId to the body of your POST request
+          const response = await fetch(ApiLogoutUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              sessionId: Sessionid
+          
+            }),
+          });
+          
+          const responseData = await response.json();
+    
+          if (response.ok) {
+            // Perform the logout actions and navigate to the login screen
+            await AsyncStorage.removeItem('userdata');
+            setFullName("");
             setDes("");
             setUserId("");
             setSeesionid("");
-          navigation.navigate('Login');
-          console.log('Session End');
+            navigation.navigate('Login');
+            console.log('Session End');
+            setPopupVisible(false);
+            console.log(responseData.errorCode);
+            console.log(responseData.message);
+          } else {
+            console.log("F");
+          }
           setPopupVisible(false);
-        } catch (error) {
-          console.log('Error Session End:', error);
+        } else {
+          console.error('Invalid or missing data in AsyncStorage');
           setPopupVisible(false);
         }
-        console.log(responseData.errorCode)
-      } else {
-        // errorMessage(responseData.error);
-       
-        console.log("F")
+      } catch (error) {
+        console.error('Error handling logout:', error);
+        setPopupVisible(false);
       }
-      setPopupVisible(false);
     };
-
- 
+    
 
   const handleProfileIconPress = () => {
     setIsProfileModalVisible(!isProfileModalVisible);

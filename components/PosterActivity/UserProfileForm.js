@@ -445,6 +445,9 @@ const UserProfileForm = () => {
       </TouchableOpacity>
       {/* <Text>Storage Permission Status: {permissionStatus}</Text> */}
       <View style={styles.form}>
+      <Text style={styles.datePickerLabel} >
+      Name of Doctor
+          </Text>
       <View style={styles.inputContainer}>
           <TextInput
             backgroundColor='#fff'
@@ -461,7 +464,7 @@ const UserProfileForm = () => {
             activeOutlineColor='#08a5d8'
             value={textInputValue}
             onChangeText={handleTextInputChange}
-            label="Name of Doctor"
+            // label="Name of Doctor"
           />
           {isDropdownVisible && (
             <FlatList
@@ -488,9 +491,11 @@ const UserProfileForm = () => {
           outlineColor="#0047b9"
           activeOutlineColor="#08a5d8"
         /> */}
-
+<Text style={styles.datePickerLabel} >
+Venue
+          </Text>
         <TextInput
-          label="Venue"
+          // label="Venue"
           value={venue}
           onChangeText={text => setVenue(text)}
           mode="outlined"
@@ -569,7 +574,7 @@ const styles = StyleSheet.create({
     borderColor: '#0047b9',
     borderWidth: 1,
     borderRadius: 5,
-    marginBottom:15,
+    marginBottom:10,
     overflow: 'hidden',
     backgroundColor:'#ffffff',
   },
@@ -655,7 +660,7 @@ const styles = StyleSheet.create({
   },
   datePickerLabel: {
     fontSize: 14, // You can adjust the font size as needed
-    marginBottom: 3, // Spacing between label and button
+    marginBottom: 0, // Spacing between label and button
     color: '#0047b9',
     fontWeight: '600',
   },

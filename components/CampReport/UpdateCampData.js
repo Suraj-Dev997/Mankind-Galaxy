@@ -168,7 +168,7 @@ const submitData = () => {
       <View key={question.rqid}>
         <Text style={styles.datePickerLabel}>{question.question}</Text>
         <TextInput
-          label={`Answer for ${question.question}`}
+          // label={`Answer for ${question.question}`}
           value={selectedAnswers[question.rqid] || ''}
           onChangeText={(text) => handleAnswerChange(question.rqid, text)}
           mode="outlined"
@@ -221,6 +221,7 @@ const submitData = () => {
   
 
         {renderQuestions()}
+        <Text style={styles.datePickerLabel}>Select Brand</Text>
         <View style={styles.pickcontainer}>
   <Picker
             selectedValue={selectedValue}
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#0047b9',
    borderRadius: 5,
-   marginTop:10,
+   marginTop:2,
     marginBottom: 15,
    
   },
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
   },
   datePickerLabel: {
     fontSize: 14, // You can adjust the font size as needed
-    marginBottom: 3, // Spacing between label and button
+    marginBottom: 0, // Spacing between label and button
     color:'#0047b9',
     fontWeight:'600',
    

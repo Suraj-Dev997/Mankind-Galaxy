@@ -152,8 +152,9 @@ const PosterList = () => {
           style={styles.userImage}
         />
         <View style={styles.userInfo}>
-          <Text>{item.doctor_name}</Text>
-          <Text>Date: {item.camp_date}</Text>
+          <Text style={styles.userInfoText}>{item.doctor_name}</Text>
+          <Text style={styles.userInfoText}>{item.camp_venue}</Text>
+          <Text style={styles.userInfoText}>Date: {item.camp_date}</Text>
         </View>
         <View style={styles.actionButtons}>
           <TouchableOpacity style={styles.actionButton}>
@@ -166,7 +167,7 @@ const PosterList = () => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton}>
             <IconButton
-              icon="application-edit"
+              icon="square-edit-outline"
               iconColor="#222"
               size={20}
               onPress={() => handleEdit(item.doctor_id, item.dc_id)}
@@ -311,7 +312,12 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   userInfo: {
+    color:'#000',
     flex: 1,
+  },
+  userInfoText: {
+    color:'#000',
+  
   },
   actionButtons: {
     flexDirection: 'row',

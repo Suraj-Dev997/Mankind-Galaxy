@@ -310,7 +310,7 @@ const PosterDownload = () => {
       {avatarUri ? (
         <ViewShot ref={viewShotRef} options={{format: 'jpg', quality: 0.9}} style={styles.viewsstyle}>
           {/* Your content that you want to capture */}
-          <Image source={{uri: avatarUri}} style={{width: 250, height: 390}} />
+          <Image source={{uri: avatarUri+ '?random=' + new Date().getTime()}} style={{width: 250, height: 390}} />
         </ViewShot>
       ) : (
         <Text style={styles.noPosterText}>Poster not available</Text>

@@ -321,6 +321,7 @@ const AddCampReport = () => {
           ))}
         </Picker>
       </View>
+      <Text style={styles.datePickerLabel}>Name of Doctor</Text>
       <View style={styles.inputContainer}>
           <TextInput
             backgroundColor='#fff'
@@ -337,7 +338,7 @@ const AddCampReport = () => {
             activeOutlineColor='#08a5d8'
             value={textInputValue}
             onChangeText={handleTextInputChange}
-            label="Name of Doctor"
+            // label="Name of Doctor"
           />
           {isDropdownVisible && (
             <FlatList
@@ -376,8 +377,9 @@ const AddCampReport = () => {
       />
     )}
   </View>
+  <Text style={styles.datePickerLabel}>HQ</Text>
   <TextInput
-          label="HQ"
+          // label="HQ"
           value={hq}
           onChangeText={(text) => setHq(text)}
           mode="outlined"
@@ -477,7 +479,7 @@ const styles = StyleSheet.create({
   },
   datePickerLabel: {
     fontSize: 14, // You can adjust the font size as needed
-    marginBottom: 3, // Spacing between label and button
+    marginBottom: 0, // Spacing between label and button
     color:'#0047b9',
     fontWeight:'600',
    

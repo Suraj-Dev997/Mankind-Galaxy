@@ -166,7 +166,7 @@ export const HomeMenu = (props) => {
           {category === 3 && (
             <View style={styles.container1}>
               <LinearGradient
-                colors={['#EDF5F0', '#D8DEDA']}
+                colors={['#fff', '#fff']}
                 style={[
                   styles.button1,
                  
@@ -181,7 +181,7 @@ export const HomeMenu = (props) => {
                 </TouchableOpacity>
               </LinearGradient>
               <LinearGradient
-                colors={['#EDF5F0', '#D8DEDA']}
+                colors={['#fff', '#fff']}
                 style={[
                   styles.button1,
                 
@@ -248,6 +248,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   button: {
+    borderWidth: 2, // Adjust the border width as needed
+    borderColor:'#fff',
     flex: 1,
     marginHorizontal: 3,
     height: 90,
@@ -267,8 +269,8 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
     height: 80,
-borderWidth:2,
-borderColor: '#72c5f8',
+borderWidth:1,
+borderColor: '#dc222d',
     textAlign: 'center',
     // backgroundColor: '#0047b9',
     justifyContent: 'center',

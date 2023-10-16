@@ -152,7 +152,7 @@ const UploadCampImages = () => {
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.form}>
-
+        <Text style={styles.datePickerLabel}>Upload a maximum of 3 images.</Text>
           <TouchableOpacity onPress={handleImageUpload}>
             <Button
               // buttonColor="#0047b9"
@@ -179,8 +179,9 @@ const UploadCampImages = () => {
               <View key={index}>{preview}</View>
             ))}
           </View>
+          <Text style={styles.datePickerLabel}>Feedback</Text>
           <TextInput
-            label="Feedback"
+            // label="Feedback"
             value={feedback}
             onChangeText={(text) => setFeedback(text)}
             mode="outlined"
@@ -256,7 +257,7 @@ const styles = StyleSheet.create({
       },
       datePickerLabel: {
         fontSize: 14, // You can adjust the font size as needed
-        marginBottom: 3, // Spacing between label and button
+        marginBottom: 0, // Spacing between label and button
         color:'#0047b9',
         fontWeight:'600',
        

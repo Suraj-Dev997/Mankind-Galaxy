@@ -150,7 +150,32 @@ const UpdateUserProfileForm = () => {
     setTextInputValue(name);
     setIsDropdownVisible(false);
   };
+  const addPoster = async () => {
+    try {
+      const ApiUrl = `${BASE_URL}${'/addPoster'}`;
+      const response = await fetch(ApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          docId:doctorId,
+          dcId:dc_id,
+          subCatId:id,
+        }),
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Poster Updated successfully:', data);
+      } else {
+        const data = await response.json();
+        console.log('Error Updating poster:', data);
+      }
+    } catch (error) {
+      console.log('Error:', error);
+    }
+  };
 
   const EditDoctor = async () => {
     const { dc_id,id } = route.params;
@@ -200,6 +225,7 @@ const UpdateUserProfileForm = () => {
                 {
                   text: 'OK',
                   onPress: () => {
+                    addPoster();
                     navigation.goBack(); // Navigate to PosterList with the id
                   },
                 },
@@ -287,6 +313,9 @@ const UpdateUserProfileForm = () => {
       </TouchableOpacity>
 
       <View style={styles.form}>
+      <Text style={styles.datePickerLabel} >
+      Name of Doctor
+          </Text>
       <View style={styles.inputContainer}>
           <TextInput
             backgroundColor='#fff'
@@ -303,7 +332,7 @@ const UpdateUserProfileForm = () => {
             activeOutlineColor='#08a5d8'
             value={textInputValue}
             onChangeText={handleTextInputChange}
-            label="Name of Doctor"
+            // label="Name of Doctor"
           />
           {isDropdownVisible && (
             <FlatList
@@ -321,9 +350,11 @@ const UpdateUserProfileForm = () => {
             />
           )}
         </View>
-
+        <Text style={styles.datePickerLabel} >
+Venue
+          </Text>
         <TextInput
-          label="Venue"
+          // label="Venue"
           value={venue}
           onChangeText={(text) => setVenue(text)}
           mode="outlined"
@@ -374,7 +405,7 @@ const styles = StyleSheet.create({
     borderColor: '#0047b9',
     borderWidth: 1,
     borderRadius: 5,
-    marginBottom:15,
+    marginBottom:10,
     overflow: 'hidden',
     backgroundColor:'#fff',
   },
@@ -403,7 +434,7 @@ const styles = StyleSheet.create({
   },
   datePickerLabel: {
     fontSize: 14,
-    marginBottom: 3,
+    marginBottom: 0,
     color: '#0047b9',
     fontWeight: '600',
   },

@@ -153,11 +153,11 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
       <View style={styles.userItem}>
       
       <View style={styles.userInfo}>
-        <Text>{item.doctor_name}</Text>
+        <Text style={styles.userInfoText}>{item.doctor_name}</Text>
         
       </View>
       <View style={styles.userInfo}>
-      <Text> {formattedDate}</Text>
+      <Text style={styles.userInfoText}> {formattedDate}</Text>
         
       </View>
       <View style={styles.actionButtons}>
@@ -165,11 +165,11 @@ const formattedDate = campDate.toLocaleDateString('en-US', dateOptions);
           style={styles.actionButton}
           onPress={() => handleInfo(item.crid)}
         >
-          <IconButton icon="note" iconColor="#0a94d6" size={20} />
+          <IconButton icon="information" iconColor="#0a94d6" size={20} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <IconButton
-            icon="application-edit"
+            icon="square-edit-outline"
             iconColor="#222"
             size={20}
             onPress={() => handleEdit(item.crid)}
@@ -313,6 +313,10 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     flex: 1,
+  },
+  userInfoText: {
+    color:'#000',
+  
   },
   actionButtons: {
     flexDirection: 'row',

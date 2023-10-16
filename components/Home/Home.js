@@ -206,10 +206,15 @@ export const Home =  () =>{
   const styles = StyleSheet.create({
    
     container: {
+
+
       // backgroundColor:'#fff',
       flexGrow: 1,
       justifyContent: 'center',
       
+    },
+    borderbutton:{
+    
     },
     container1: {
 padding:20,
@@ -220,6 +225,8 @@ padding:20,
       marginBottom: 6,
     },
     button: {
+      borderWidth: 2, // Adjust the border width as needed
+   borderColor:'#fff',
       width: '100%',
       flexDirection: 'row',
       alignItems: 'center',
