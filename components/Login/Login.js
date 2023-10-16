@@ -96,8 +96,8 @@ const handleLogin = async () => {
         onChangeText={(text) => setPassword(text)}
         value={Password}
       />
-       <LinearGradient colors={['#0047b9',  '#0c93d7']} style={[styles.buttonContainer,styles.elevation]} >
-       <TouchableOpacity  onPress={handleLogin}>
+       <LinearGradient colors={['#0047b9',  '#0c93d7']} style={[styles.buttonContainer,styles.elevation]} onTouchStart={handleLogin}>
+       <TouchableOpacity  >
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
        </LinearGradient>
