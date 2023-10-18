@@ -175,7 +175,7 @@ export const HomeMenu = (props) => {
                   },
                 ]}
               >
-                <TouchableOpacity onPress={() => console.log('Button 1 clicked')}>
+                <TouchableOpacity >
                   <Text style={styles.buttonText1}>Total Camps: </Text>
                   <Text style={styles.buttonText1}>{totalCamps} </Text>
                 </TouchableOpacity>
@@ -190,7 +190,7 @@ export const HomeMenu = (props) => {
                   },
                 ]}
               >
-                <TouchableOpacity onPress={() => console.log('Button 2 clicked')}>
+                <TouchableOpacity >
                   <Text style={styles.buttonText1}>Total Doctors: </Text>
                   <Text style={styles.buttonText1}>{totalDoctors} </Text>
                 </TouchableOpacity>

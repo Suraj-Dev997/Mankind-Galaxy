@@ -5,7 +5,8 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,Alert
+  ScrollView,Alert,
+  ActivityIndicator
 } from 'react-native';
 import { TextInput, Button, Avatar } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -24,6 +25,7 @@ const UploadCampImages = () => {
   const [pdfPreviews, setPdfPreviews] = useState([]);
   const [feedback, setFeedback] = useState(''); // Feedback text
   const [imageUris, setImageUris] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { crid, id } = route.params;
 
   const handleImageUpload = async () => {
@@ -82,12 +84,13 @@ const UploadCampImages = () => {
   };
 
   const submitData = async () => {
-    if (!feedback || !imageUris  ) {
+    if ( !imageUris  ) {
       // Display an alert message if any required fields are empty
       alert('Please fill in all required fields');
       return;
     }
     try {
+      setLoading(true);
       const ApiUrl = `${BASE_URL}${'/report/uploadImages'}`;
   
       // Retrieve userId from AsyncStorage
@@ -143,6 +146,8 @@ const UploadCampImages = () => {
     } catch (error) {
       // Handle any errors that occur during the upload process
       console.error('Error uploading data:', error);
+    }finally {
+      setLoading(false); // Stop loading, whether successful or not
     }
   };
   
@@ -185,6 +190,8 @@ const UploadCampImages = () => {
             value={feedback}
             onChangeText={(text) => setFeedback(text)}
             mode="outlined"
+            outlineColor='#0047b9'
+            activeOutlineColor='#08a5d8'
             style={styles.input}
           />
           <TouchableOpacity
@@ -198,7 +205,11 @@ const UploadCampImages = () => {
           
           labelStyle={styles.addbtnText}
         >
-          Submit
+         {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              'Submit'
+            )}
         </Button>
  </LinearGradient>
           </TouchableOpacity>

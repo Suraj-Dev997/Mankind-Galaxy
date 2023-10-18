@@ -6,7 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Alert
+  Alert,
+  ActivityIndicator
 } from 'react-native';
 import { TextInput, Button, Avatar } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -26,6 +27,7 @@ const UpdateCampImages = () => {
   const [feedback, setFeedback] = useState(''); // Feedback text
   const [crimgId, setCrimgId] = useState([]);
   const [imageUris, setImageUris] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { crid, id } = route.params;
   // console.log('ImagePage crid',crid)
 const deleteImage = async (crimgid) => {
@@ -208,6 +210,7 @@ console.log(crimgid)
   };
   const submitData = async () => {
     try {
+      setLoading(true);
       const userId = await getUserIdFromStorage();
     
     if (userId === null) {
@@ -263,6 +266,8 @@ console.log(crimgid)
     } catch (error) {
       // Handle any errors that occur during the upload process
       console.error('Error uploading data:', error);
+    }finally {
+      setLoading(false); // Stop loading, whether successful or not
     }
   };
   
@@ -304,6 +309,8 @@ console.log(crimgid)
             value={feedback}
             onChangeText={(text) => setFeedback(text)}
             mode="outlined"
+            outlineColor='#0047b9'
+            activeOutlineColor='#08a5d8'
             style={styles.input}
           />
           <TouchableOpacity
@@ -317,7 +324,11 @@ console.log(crimgid)
           
           labelStyle={styles.addbtnText}
         >
-          Submit
+           {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              'Submit'
+            )}
         </Button>
  </LinearGradient>
           </TouchableOpacity>

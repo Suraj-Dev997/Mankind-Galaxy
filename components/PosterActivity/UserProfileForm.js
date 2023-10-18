@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
-  FlatList
+  FlatList,
+  ActivityIndicator
 } from 'react-native';
 import {TextInput, Button, Avatar, Menu, Divider,DefaultTheme} from 'react-native-paper';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -22,6 +24,7 @@ import {request, PERMISSIONS, RESULTS, check,requestMultiple} from 'react-native
 import LinearGradient from 'react-native-linear-gradient';
 
 const UserProfileForm = () => {
+  const [loading, setLoading] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState('undetermined');
   const [userId, setUserId] = useState(null);
   const [name, setName] = useState('');
@@ -41,9 +44,30 @@ const UserProfileForm = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const T ='6:45 PM'
+  const [selectedTime, setSelectedTime] = useState(T);
   const {id} = route.params;
   // console.log("this is sub id",id)
 
+  const showTimePicker = () => {
+    setTimePickerVisibility(true);
+  };
+
+  const hideTimePicker = () => {
+    setTimePickerVisibility(false);
+  };
+  function getCurrentTime() {
+    const currentTime = new Date();
+    return currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  const handleTimeConfirm = (time) => {
+    const formattedTime = time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    setSelectedTime(formattedTime);
+    console.log('Time is',formattedTime)
+    hideTimePicker();
+  };
   useEffect(() => {
     // Fetch doctor names from the API
     const ApiUrl = `${BASE_URL}${'/doc/getDoctorWithUserId'}`;
@@ -159,6 +183,7 @@ const UserProfileForm = () => {
       return;
     }
     try {
+      setLoading(true);
       const ApiUrl = `${BASE_URL}${'/doc/findDoctorPresent'}`;
       const response = await fetch(ApiUrl, {
         method: 'POST',
@@ -181,6 +206,8 @@ const UserProfileForm = () => {
       }
     } catch (error) {
       console.error('Error:', error);
+    }finally {
+      setLoading(false); // Stop loading, whether successful or not
     }
   };
   const handleYes = async () => {
@@ -189,6 +216,7 @@ const UserProfileForm = () => {
     const {id} = route.params; // Make sure 'route' is accessible in this scope
 
     try {
+      setLoading(true);
       const formData = new FormData();
       formData.append('user_id', userId); // Replace with the actual user ID
       formData.append('subcat_id', id); // Replace with the actual subcategory ID
@@ -243,6 +271,8 @@ const UserProfileForm = () => {
       }
     } catch (error) {
       console.error('Error:', error);
+    }finally {
+      setLoading(false); // Stop loading, whether successful or not
     }
   };
   const handleNo = async () => {
@@ -251,6 +281,7 @@ const UserProfileForm = () => {
     const {id} = route.params; // Make sure 'route' is accessible in this scope
 
     try {
+      setLoading(true);
       const formData = new FormData();
       formData.append('user_id', userId); // Replace with the actual user ID
       formData.append('subcat_id', id); // Replace with the actual subcategory ID
@@ -305,6 +336,8 @@ const UserProfileForm = () => {
       }
     } catch (error) {
       console.error('Error:', error);
+    }finally {
+      setLoading(false); // Stop loading, whether successful or not
     }
   };
   const AddDoctor = async () => {
@@ -526,6 +559,26 @@ Venue
             />
           )}
         </View>
+
+
+        <View style={styles.datePickerContainer}>
+          <Text style={styles.datePickerLabel} onPress={showTimePicker} >
+            Select Time:
+          </Text>
+          <Button style={styles.datePickerButton} onPress={showTimePicker} 
+          labelStyle={styles.addbtnText1}
+          >
+          {selectedTime}
+          </Button>
+          <DateTimePickerModal
+        isVisible={isTimePickerVisible}
+        mode="time"
+        is24Hour={false}
+        onConfirm={handleTimeConfirm}
+        onCancel={hideTimePicker}
+      />
+        </View>
+      
         <LinearGradient colors={['#0047b9',  '#0c93d7']} style={styles.addbtn} >
         <Button
           // buttonColor="#0047b9"
@@ -533,7 +586,11 @@ Venue
           onPress={findDoctor}
           labelStyle={styles.addbtnText}
           >
-          Submit
+         {loading ? (
+           <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              'Submit'
+            )}
         </Button>
         </LinearGradient>
         <Modal
@@ -570,6 +627,7 @@ Venue
 };
 
 const styles = StyleSheet.create({
+  
   inputContainer: {
     borderColor: '#0047b9',
     borderWidth: 1,
@@ -683,12 +741,12 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   form: {
-    marginTop: 40,
+    marginTop: 10,
     flex: 1,
   },
   input: {
     borderColor: 'blue',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   profileimg: {
    
@@ -698,7 +756,7 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 2,
   },
   changeAvatarText: {
     color: '#0047b9',

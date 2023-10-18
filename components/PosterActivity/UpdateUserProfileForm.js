@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity,Alert,FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity,Alert,FlatList,ActivityIndicator } from 'react-native';
 import { TextInput, Button, Avatar,DefaultTheme } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BASE_URL } from '../Configuration/Config';
 import { format } from 'date-fns';
 import LinearGradient from 'react-native-linear-gradient';
-
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 
 const UpdateUserProfileForm = () => {
@@ -25,10 +25,34 @@ const UpdateUserProfileForm = () => {
   const [filteredDoctorNames, setFilteredDoctorNames] = useState([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const T ='6:45 PM'
+  const [selectedTime, setSelectedTime] = useState(T);
 
   const route = useRoute();
   const navigation = useNavigation();
   const { doctorId,dc_id,id } = route.params;
+
+
+  const showTimePicker = () => {
+    setTimePickerVisibility(true);
+  };
+
+  const hideTimePicker = () => {
+    setTimePickerVisibility(false);
+  };
+  function getCurrentTime() {
+    const currentTime = new Date();
+    return currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  const handleTimeConfirm = (time) => {
+    const formattedTime = time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    setSelectedTime(formattedTime);
+    console.log('Time is',formattedTime)
+    hideTimePicker();
+  };
 
   useEffect(() => {
     // Fetch doctor names from the API
@@ -182,6 +206,7 @@ const UpdateUserProfileForm = () => {
   
     // Retrieve userId from AsyncStorage
     try {
+      setLoading(true);
       const data = await AsyncStorage.getItem('userdata');
       if (data) {
         const userData = JSON.parse(data);
@@ -189,6 +214,7 @@ const UpdateUserProfileForm = () => {
   
         // Continue with your FormData and API request
         try {
+      
           const formData = new FormData();
           formData.append('doctor_id', doctorId);
           formData.append('dc_id', dc_id);
@@ -243,6 +269,8 @@ const UpdateUserProfileForm = () => {
       }
     } catch (error) {
       console.error('Error retrieving data:', error);
+    }finally {
+      setLoading(false); // Stop loading, whether successful or not
     }
   };
   
@@ -382,6 +410,25 @@ Venue
           )}
         </View>
 
+
+        <View style={styles.datePickerContainer}>
+          <Text style={styles.datePickerLabel} onPress={showTimePicker} >
+            Select Time:
+          </Text>
+          <Button style={styles.datePickerButton} onPress={showTimePicker} 
+          labelStyle={styles.addbtnText1}
+          >
+          {selectedTime}
+          </Button>
+          <DateTimePickerModal
+        isVisible={isTimePickerVisible}
+        mode="time"
+        is24Hour={false}
+        onConfirm={handleTimeConfirm}
+        onCancel={hideTimePicker}
+      />
+        </View>
+
        
         <LinearGradient colors={['#0047b9',  '#0c93d7']} style={styles.addbtn} >
         <Button
@@ -390,7 +437,11 @@ Venue
           onPress={EditDoctor}
           labelStyle={styles.addbtnText}
           >
-          Submit
+         {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              'Submit'
+            )}
         </Button>
         </LinearGradient>
       </View>
@@ -474,12 +525,12 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   form: {
-    marginTop: 40,
+    marginTop: 10,
     flex: 1,
   },
   input: {
     borderColor: 'blue',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   profileimg: {},
   button: {
@@ -487,7 +538,7 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 2,
   },
   changeAvatarText: {
     color: '#0047b9',

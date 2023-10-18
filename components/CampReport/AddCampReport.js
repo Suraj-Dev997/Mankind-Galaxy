@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList,ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList,ActivityIndicator,Alert } from 'react-native';
 import { TextInput, Button, Avatar,DefaultTheme  } from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -230,14 +230,46 @@ const AddCampReport = () => {
     setShowCampDatePicker(true);
   };
 
-  const submitData = () => {
+  const findDoctor = async () => {
     // Check if any required fields are empty
     if (!selectedMr || !textInputValue || !formattedCampDate ) {
       // Display an alert message if any required fields are empty
       alert('Please fill in all required fields');
       return;
     }
+   try {
+     const ApiUrl = `${BASE_URL}${'/report/findDoctorPresent'}`;
+     const response = await fetch(ApiUrl, {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json',
+       },
+       body: JSON.stringify({
+        name:textInputValue,
+        date:formattedCampDate,
+        empcode:selectedMrInfo.empcode || ''
+       }),
+     });
+
+     const data = await response.json();
+
+     if (data.errorCode === '1') {
+       console.log('Doctor found');
+       Alert.alert('Info', 'Doctor already present with same MR and same date, Please change MR or Date ', [
+        { text: 'OK', onPress: () => 'Ok Pressed' },
+      ]);
   
+     } else {
+       console.log('Doctor not found');
+       submitData();
+     }
+   } catch (error) {
+     console.error('Error:', error);
+   }
+ };
+
+  const submitData = () => {
+
     // Fetch the userId from AsyncStorage
     AsyncStorage.getItem('userdata')
       .then((data) => {
@@ -391,7 +423,7 @@ const AddCampReport = () => {
  <LinearGradient colors={['#0047b9',  '#0c93d7']} style={styles.addbtn} >
  <Button
        
-          onPress={submitData}
+          onPress={findDoctor}
           
           labelStyle={styles.addbtnText}
         >
