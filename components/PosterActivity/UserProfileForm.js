@@ -45,8 +45,7 @@ const UserProfileForm = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
-  const T ='6:45 PM'
-  const [selectedTime, setSelectedTime] = useState(T);
+  const [selectedTime, setSelectedTime] = useState(getCurrentTime());
   const {id} = route.params;
   // console.log("this is sub id",id)
 
@@ -177,7 +176,7 @@ const UserProfileForm = () => {
   };
   const findDoctor = async () => {
      // Check if any required fields are empty
-     if (!textInputValue || !campDate || !venue || !avatarUri) {
+     if (!textInputValue || !campDate || !venue || !avatarUri || !selectedTime) {
       // Display an alert message if any required fields are empty
       alert('Please fill in all required fields');
       return;
@@ -224,6 +223,7 @@ const UserProfileForm = () => {
       const formattedCampDate = format(campDate, 'dd-MM-yyyy');
       formData.append('campDate', formattedCampDate); // Convert date to ISO format
       formData.append('campVenue', venue);
+      formData.append('campTime', selectedTime);
       console.log(formData);
       if (avatarUri) {
         const image = {
@@ -289,6 +289,7 @@ const UserProfileForm = () => {
       const formattedCampDate = format(campDate, 'dd-MM-yyyy');
       formData.append('campDate', formattedCampDate); // Convert date to ISO format
       formData.append('campVenue', venue);
+      formData.append('campTime', selectedTime);
       console.log(formData);
       if (avatarUri) {
         const image = {

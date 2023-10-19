@@ -27,8 +27,8 @@ const UpdateUserProfileForm = () => {
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [loading, setLoading] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
-  const T ='6:45 PM'
-  const [selectedTime, setSelectedTime] = useState(T);
+const [imgName,setImgName]= useState();
+  const [selectedTime, setSelectedTime] = useState();
 
   const route = useRoute();
   const navigation = useNavigation();
@@ -129,9 +129,12 @@ const UpdateUserProfileForm = () => {
               setTextInputValue(doctorData.doctor_name);
               setVenue(doctorData.camp_venue);
               setCampDate(doctorData.camp_date);
+              setSelectedTime(doctorData.camp_time);
               if (doctorData.doctor_img) {
                 // Assuming that the API provides a valid image URL
                 setAvatarUri(`${ProfileUrl}${doctorData.doctor_img}`);
+                setImgName(doctorData.doctor_img)
+                console.log("Img name:",doctorData.doctor_img);
                 
               
               }
@@ -222,7 +225,8 @@ const UpdateUserProfileForm = () => {
           formData.append('user_id', userId); // Use the retrieved userId
           formData.append('camp_date', campDate);
           formData.append('camp_venue', venue);
-  
+          formData.append('camp_time', selectedTime);
+          formData.append('doctor_img', imgName);
           if (avatarUri) {
             const image = {
               uri: avatarUri,

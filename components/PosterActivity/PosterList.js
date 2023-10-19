@@ -153,7 +153,8 @@ const PosterList = () => {
         />
         <View style={styles.userInfo}>
           <Text style={styles.userInfoText}>{item.doctor_name}</Text>
-          <Text style={styles.userInfoText}>{item.camp_venue}</Text>
+          <Text style={styles.userInfoText}>Venue: {item.camp_venue}</Text>
+          <Text style={styles.userInfoText}>Time: {item.camp_time}</Text>
           <Text style={styles.userInfoText}>Date: {item.camp_date}</Text>
         </View>
         <View style={styles.actionButtons}>
