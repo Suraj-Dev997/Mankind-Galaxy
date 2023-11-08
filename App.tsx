@@ -28,6 +28,7 @@ import UpdateCampData from './components/CampReport/UpdateCampData';
 import UpdateCampReport from './components/CampReport/UpdateCampReport';
 import UpdateCampImages from './components/CampReport/UpdateCampImages';
 import CampInfo from './components/CampReport/CampInfo';
+import Test from './components/Test';
 
 
 
@@ -57,7 +58,7 @@ function App(): JSX.Element {
               options={{ headerShown: false }}
             />
     {/* <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} /> */}
-   
+    <Stack.Screen name='Test' component={Test}  />
     <Stack.Screen name='Login' component={Login} options={{title:"User Login",headerShown: false }} />
     <Stack.Screen name='Ham' component={Ham} />
     <Stack.Screen name='HomeMenu' component={HomeMenu} options={{title:"Menu" }} /> 

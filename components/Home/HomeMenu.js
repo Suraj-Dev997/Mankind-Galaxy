@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -8,20 +8,19 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import { BASE_URL } from '../Configuration/Config';
+import {BASE_URL} from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const HomeMenu = (props) => {
+export const HomeMenu = props => {
   const route = useRoute();
-  const { category } = route.params;
+  const {category} = route.params;
   const [subcategories, setSubcategories] = useState([]);
   const [totalCamps, setTotalCamps] = useState(0);
   const [totalDoctors, setTotalDoctors] = useState(0);
-  
 
-  const fetchTotalCamps = async (userId) => {
+  const fetchTotalCamps = async userId => {
     try {
       const ApiUrl = `${BASE_URL}${'/dashboard/getTotalCamps'}`;
       const response = await fetch(ApiUrl, {
@@ -49,26 +48,26 @@ export const HomeMenu = (props) => {
   };
 
   AsyncStorage.getItem('userdata')
-  .then((data) => {
-    if (data) {
-      const userData = JSON.parse(data);
-      const userId = userData.responseData.user_id;
-      // Call fetchData with the retrieved userId
-    
-      fetchTotalCamps(userId);
-    } else {
-      console.error('Invalid or missing data in AsyncStorage');
-    }
-  })
-  .catch((error) => {
-    console.error('Error retrieving data:', error);
-  });
+    .then(data => {
+      if (data) {
+        const userData = JSON.parse(data);
+        const userId = userData.responseData.user_id;
+        // Call fetchData with the retrieved userId
+
+        fetchTotalCamps(userId);
+      } else {
+        console.log('Invalid or missing data in AsyncStorage');
+      }
+    })
+    .catch(error => {
+      console.error('Error retrieving data:', error);
+    });
 
   useEffect(() => {
     fetchTotalCamps();
   }, []);
 
-  const fetchTotalDoctors = async (userId) => {
+  const fetchTotalDoctors = async userId => {
     try {
       const ApiUrl = `${BASE_URL}${'/dashboard/getTotalDoctors'}`;
       const response = await fetch(ApiUrl, {
@@ -95,20 +94,20 @@ export const HomeMenu = (props) => {
     }
   };
   AsyncStorage.getItem('userdata')
-  .then((data) => {
-    if (data) {
-      const userData = JSON.parse(data);
-      const userId = userData.responseData.user_id;
-      // Call fetchData with the retrieved userId
-     
-      fetchTotalDoctors(userId);
-    } else {
-      console.error('Invalid or missing data in AsyncStorage');
-    }
-  })
-  .catch((error) => {
-    console.error('Error retrieving data:', error);
-  });
+    .then(data => {
+      if (data) {
+        const userData = JSON.parse(data);
+        const userId = userData.responseData.user_id;
+        // Call fetchData with the retrieved userId
+
+        fetchTotalDoctors(userId);
+      } else {
+        console.log('Invalid or missing data in AsyncStorage');
+      }
+    })
+    .catch(error => {
+      console.error('Error retrieving data:', error);
+    });
 
   useEffect(() => {
     fetchTotalDoctors();
@@ -118,17 +117,16 @@ export const HomeMenu = (props) => {
     // Fetch subcategories from the API
     const ApiUrl = `${BASE_URL}${'/cat/getSubCategory'}`;
     fetch(ApiUrl)
-      .then((response) => response.json())
-      .then((data) => {
-   
-        console.log(data)
-        const subcategoryData = data[0].map((subcategory) => ({
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        const subcategoryData = data[0].map(subcategory => ({
           id: subcategory.subcategory_id,
           name: subcategory.subcategory_name,
         }));
         setSubcategories(subcategoryData);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error fetching subcategories:', error);
       });
   }, []);
@@ -136,13 +134,13 @@ export const HomeMenu = (props) => {
   const navigateToCategoryScreen = (id, name) => {
     switch (category) {
       case 1:
-        props.navigation.navigate('PosterList', { id, name });
+        props.navigation.navigate('PosterList', {id, name});
         break;
       case 2:
-        props.navigation.navigate('ReportList', { id, name });
+        props.navigation.navigate('ReportList', {id, name});
         break;
       case 3:
-        props.navigation.navigate('DashboardList', { id, name });
+        props.navigation.navigate('DashboardList', {id, name});
         break;
       default:
         break;
@@ -169,13 +167,12 @@ export const HomeMenu = (props) => {
                 colors={['#fff', '#fff']}
                 style={[
                   styles.button1,
-                 
+
                   {
                     width: screenWidth / buttonsPerRow,
                   },
-                ]}
-              >
-                <TouchableOpacity >
+                ]}>
+                <TouchableOpacity>
                   <Text style={styles.buttonText1}>Total Camps: </Text>
                   <Text style={styles.buttonText1}>{totalCamps} </Text>
                 </TouchableOpacity>
@@ -184,20 +181,19 @@ export const HomeMenu = (props) => {
                 colors={['#fff', '#fff']}
                 style={[
                   styles.button1,
-                
+
                   {
                     width: screenWidth / buttonsPerRow,
                   },
-                ]}
-              >
-                <TouchableOpacity >
+                ]}>
+                <TouchableOpacity>
                   <Text style={styles.buttonText1}>Total Doctors: </Text>
                   <Text style={styles.buttonText1}>{totalDoctors} </Text>
                 </TouchableOpacity>
               </LinearGradient>
             </View>
           )}
-       {subcategoryRows.map((row, rowIndex) => (
+          {subcategoryRows.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.container1}>
               {row.map((subcategory, subcategoryIndex) => (
                 <LinearGradient
@@ -210,9 +206,11 @@ export const HomeMenu = (props) => {
                       width: screenWidth / buttonsPerRow,
                     },
                   ]}
-                  onTouchStart={() => navigateToCategoryScreen(subcategory.id, subcategory.name)} // Use onTouchStart for touch event
+                  onTouchStart={() =>
+                    navigateToCategoryScreen(subcategory.id, subcategory.name)
+                  } // Use onTouchStart for touch event
                 >
-                  <TouchableOpacity >
+                  <TouchableOpacity>
                     <Text style={styles.buttonText}>{subcategory.name}</Text>
                   </TouchableOpacity>
                 </LinearGradient>
@@ -228,7 +226,7 @@ export const HomeMenu = (props) => {
   };
 
   return (
-    <LinearGradient  colors={[  '#daf5ff','#72c5f8']} style={styles.container}>
+    <LinearGradient colors={['#daf5ff', '#72c5f8']} style={styles.container}>
       <StatusBar backgroundColor="#0047b9" />
       <View>{getContentBasedOnCategory()}</View>
     </LinearGradient>
@@ -249,7 +247,7 @@ const styles = StyleSheet.create({
   },
   button: {
     borderWidth: 2, // Adjust the border width as needed
-    borderColor:'#fff',
+    borderColor: '#fff',
     flex: 1,
     marginHorizontal: 3,
     height: 90,
@@ -269,8 +267,8 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
     height: 80,
-borderWidth:1,
-borderColor: '#dc222d',
+    borderWidth: 1,
+    borderColor: '#dc222d',
     textAlign: 'center',
     // backgroundColor: '#0047b9',
     justifyContent: 'center',

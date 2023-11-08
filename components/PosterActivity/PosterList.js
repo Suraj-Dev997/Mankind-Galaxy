@@ -33,7 +33,7 @@ const PosterList = () => {
     const {id} = route.params;
     navigation.navigate('UpdateUserProfileForm', {doctorId, dc_id, id}); // Pass the doctorId as a parameter
   };
-  
+
   const handlePoster = (doctorId, dc_id) => {
     const {id} = route.params;
     navigation.navigate('PosterDownload', {doctorId, dc_id, id}); // Pass the doctorId as a parameter
@@ -96,7 +96,7 @@ const PosterList = () => {
                 setIsLoading(false);
               });
           } else {
-            console.error('Invalid or missing data in AsyncStorage');
+            console.log('Invalid or missing data in AsyncStorage');
             setIsLoading(false);
           }
         })
@@ -115,7 +115,7 @@ const PosterList = () => {
     //       console.log("Getting user id:", userId)
     //       fetchData(userId);
     //     } else {
-    //       console.error('Invalid or missing data in AsyncStorage');
+    //       console.log('Invalid or missing data in AsyncStorage');
     //     }
     //   })
     //   .catch((error) => {
@@ -191,18 +191,16 @@ const PosterList = () => {
     <View style={styles.container}>
       <View style={styles.headerMain}>
         <View style={styles.headertop}>
-         
-          <LinearGradient colors={['#0047b9',  '#0c93d7']} style={styles.addbtn} >
-          <Button
-            icon="plus"
-            elevation={4}
-            // mode="contained"
-            style={styles.addbtn1}
-            labelStyle={styles.addbtnText}
-            onPress={() => navigation.navigate('UserProfileForm', {id})}>
-          
+          <LinearGradient colors={['#0047b9', '#0c93d7']} style={styles.addbtn}>
+            <Button
+              icon="plus"
+              elevation={4}
+              // mode="contained"
+              style={styles.addbtn1}
+              labelStyle={styles.addbtnText}
+              onPress={() => navigation.navigate('UserProfileForm', {id})}>
               Add Poster
-          </Button>
+            </Button>
           </LinearGradient>
         </View>
         <View style={styles.header}>
@@ -235,13 +233,13 @@ const PosterList = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor:'#daf5ff',
+    backgroundColor: '#daf5ff',
     flex: 1,
   },
   searchbarStyle: {
     backgroundColor: '#fff',
-    borderWidth:1, 
-    borderColor:'#0047b9'
+    borderWidth: 1,
+    borderColor: '#0047b9',
   },
   headerMain: {
     padding: 16,
@@ -263,13 +261,11 @@ const styles = StyleSheet.create({
     color: 'white',
     marginTop: 8,
     marginBottom: 10,
-    borderRadius:50,
+    borderRadius: 50,
     width: '42%',
   },
   addbtn1: {
-    
     color: '#fff',
-    
   },
   addbtnText: {
     color: '#fff', // Set the text color here
@@ -313,12 +309,11 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   userInfo: {
-    color:'#000',
+    color: '#000',
     flex: 1,
   },
   userInfoText: {
-    color:'#000',
-  
+    color: '#000',
   },
   actionButtons: {
     flexDirection: 'row',

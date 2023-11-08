@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  KeyboardAvoidingView,
 } from 'react-native';
 import {TextInput, Button, Avatar, DefaultTheme} from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -42,9 +41,6 @@ const AddCampReport = () => {
   const formattedCampDate = format(campDate, 'dd-MM-yyyy');
   const [mrNames, setMrNames] = useState([]); // State to store MR names
   const initialSelectedMr = 'Name of MR';
-  const initialSelectedTL = 'Name of TL';
-  const initialSelectedSL = 'Name of Sl';
-  const initialSelectedFL = 'Name of FL';
   const [selectedMr, setSelectedMr] = useState(initialSelectedMr);
   const [mrHQs, setMrHQs] = useState({}); // Store MR HQs
   const [selectedMrInfo, setSelectedMrInfo] = useState({
@@ -55,45 +51,42 @@ const AddCampReport = () => {
   const [mrData, setMrData] = useState([]);
   const [role, setRole] = useState([]);
 
-  const [empCodeMain, setEmpCodeMain] = useState(null);
   const [showTLDropdown, setShowTLDropdown] = useState(true);
   const [showSLDropdown, setShowSLDropdown] = useState(true);
   const [showFLDropdown, setShowFLDropdown] = useState(true);
 
-  const [tlNames, setTLNames] = useState([]);
+  const [tlNames, setTLNames] = useState([]); // State to store TL names
+  const [initialSelectedTL, setInitialSelectedTL] = useState('Name of TL');
   const [selectedTL, setSelectedTL] = useState(initialSelectedTL);
-  const [tlHQs, setTLHQs] = useState({});
+  const [tlHQs, setTLHQs] = useState({}); // Store TL HQs
   const [selectedTLInfo, setSelectedTLInfo] = useState({
     empcode: '',
     hq: '',
     name: '',
   });
   const [tlData, setTLData] = useState([]);
-  const [selectedTLEmployeeCode, setSelectedTLEmployeeCode] = useState('');
 
-  // State and related information for SL
-  const [slNames, setSLNames] = useState([]);
+  const [slNames, setSLNames] = useState([]); // State to store SL names
+  const [initialSelectedSL, setInitialSelectedSL] = useState('Name of SL');
   const [selectedSL, setSelectedSL] = useState(initialSelectedSL);
-  const [slHQs, setSLHQs] = useState({});
+  const [slHQs, setSLHQs] = useState({}); // Store SL HQs
   const [selectedSLInfo, setSelectedSLInfo] = useState({
     empcode: '',
     hq: '',
     name: '',
   });
   const [slData, setSLData] = useState([]);
-  const [selectedSLEmployeeCode, setSelectedSLEmployeeCode] = useState('');
 
-  // State and related information for FL
-  const [flNames, setFLNames] = useState([]);
+  const [flNames, setFLNames] = useState([]); // State to store FL names
+  const [initialSelectedFL, setInitialSelectedFL] = useState('Name of FL');
   const [selectedFL, setSelectedFL] = useState(initialSelectedFL);
-  const [flHQs, setFLHQs] = useState({});
+  const [flHQs, setFLHQs] = useState({}); // Store FL HQs
   const [selectedFLInfo, setSelectedFLInfo] = useState({
     empcode: '',
     hq: '',
     name: '',
   });
   const [flData, setFLData] = useState([]);
-  const [selectedFLEmployeeCode, setSelectedFLEmployeeCode] = useState('');
 
   useEffect(() => {
     // Inside the useEffect, retrieve data from AsyncStorage
@@ -102,27 +95,8 @@ const AddCampReport = () => {
         if (data !== null) {
           const userData = JSON.parse(data);
           setRole(userData.responseData.role);
-          const empcode = userData.responseData.empID; // Use the correct key to get empcode
-          console.log('Retrieved data:', empcode);
-
-          // Call fetchTLData with the retrieved empcode
-          if (userData.responseData.role === 3) {
-            // Set empcode for role 3
-            setEmpCodeMain(empcode);
-            console.log('Set EmpCode', empcode);
-          } else if (userData.responseData.role === 4) {
-            // Set empcode for role 4
-            setSelectedTLEmployeeCode(empcode);
-            console.log('Set EmpCode', empcode);
-          } else if (userData.responseData.role === 5) {
-            // Set empcode for role 5
-            setSelectedSLEmployeeCode(empcode);
-            console.log('Set EmpCode', empcode);
-          } else if (userData.responseData.role === 6) {
-            // Set empcode for role 6
-            setSelectedFLEmployeeCode(empcode);
-            console.log('Set EmpCode', empcode);
-          }
+          const empcode = userData.responseData.role;
+          console.log('Retrieved data-------------:', empcode);
         } else {
           // Data not found
           console.log('No data found with the key "userdata".');
@@ -144,7 +118,6 @@ const AddCampReport = () => {
         setShowTLDropdown(true);
         setShowSLDropdown(true);
         setShowFLDropdown(true);
-
         break;
       case 4:
         // Role 4: TL dropdown is hidden
@@ -170,186 +143,164 @@ const AddCampReport = () => {
     }
   }, [role]);
 
-  useEffect(() => {
-    const fetchTLData = empcode => {
-      setIsLoading(true);
-      // Replace 'API_URL_FOR_TL' with the actual API endpoint for TL data
-      const ApiUrl = `${BASE_URL}${'/report/getEmpData'}`;
-      console.log('this is empcode for TL :', empcode);
-      fetch(ApiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          empcode: empcode,
-        }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          // console.log('TL data:', data);
-          if (data) {
-            // Extract TL names and HQs from the API response
-            const tlData = data.map(tl => ({
-              name: tl.name,
-              hq: tl.hq,
-              empcode: tl.empcode,
-            }));
+  const fetchTLData = empcode => {
+    setIsLoading(true);
+    // Replace 'API_URL_FOR_TL' with the actual API endpoint for TL data
+    const ApiUrl = `${BASE_URL}${'/report/getEmpData'}`;
 
-            const tlHQs = {};
-            tlData.forEach(tl => {
-              tlHQs[tl.name] = tl.hq;
-            });
+    fetch(ApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        empcode: empcode,
+      }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('TL data:', data);
+        if (data) {
+          // Extract TL names and HQs from the API response
+          const tlData = data.map(tl => ({
+            name: tl.name,
+            hq: tl.hq,
+            empcode: tl.empcode,
+          }));
 
-            // Set the TL data, TL names, and their respective HQs in the state
-            setTLData(tlData);
-            setTLNames(tlData.map(tl => tl.name));
-            setTLHQs(tlHQs);
+          const tlHQs = {};
+          tlData.forEach(tl => {
+            tlHQs[tl.name] = tl.hq;
+          });
 
-            // Set the selected TL and HQ based on the initial TL (e.g., the first TL)
-            const initialSelectedTL = tlData[0]?.name || '';
-            setSelectedTL(initialSelectedTL);
-            setHq(tlHQs[initialSelectedTL] || '');
+          // Set the TL data, TL names, and their respective HQs in the state
+          setTLData(tlData);
+          setTLNames(tlData.map(tl => tl.name));
+          setTLHQs(tlHQs);
 
-            // Set selected TL's information in the state
-            setSelectedTLInfo(tlData[0] || {});
-            setSelectedTLEmployeeCode(tlData[0]?.empcode || '');
-            setIsLoading(false);
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching TL names and HQs:', error);
+          // Set the selected TL and HQ based on the initial TL (e.g., the first TL)
+          const initialSelectedTL = tlData[0]?.name || '';
+          setSelectedTL(initialSelectedTL);
+          setHq(tlHQs[initialSelectedTL] || '');
+
+          // Set selected TL's information in the state
+          setSelectedTLInfo(tlData[0] || {});
           setIsLoading(false);
-        });
-    };
-
-    if (role === 3) {
-      fetchTLData(empCodeMain);
-    }
-  }, [empCodeMain, role]);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching TL names and HQs:', error);
+        setIsLoading(false);
+      });
+  };
 
   // Function to fetch SL data
-  useEffect(() => {
-    const fetchSLData = empcode => {
-      setIsLoading(true);
-      // Replace 'API_URL_FOR_SL' with the actual API endpoint for SL data
-      const ApiUrl = `${BASE_URL}${'/report/getEmpData'}`;
-      console.log('this is empcode for SL :', empcode);
-      fetch(ApiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          empcode: empcode,
-        }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          // console.log('SL data:', data);
-          if (data) {
-            // Extract SL names and HQs from the API response
-            const slData = data.map(sl => ({
-              name: sl.name,
-              hq: sl.hq,
-              empcode: sl.empcode,
-            }));
+  const fetchSLData = empcode => {
+    setIsLoading(true);
+    // Replace 'API_URL_FOR_SL' with the actual API endpoint for SL data
+    const ApiUrl = `${BASE_URL}${'/report/getEmpData'}`;
 
-            const slHQs = {};
-            slData.forEach(sl => {
-              slHQs[sl.name] = sl.hq;
-            });
+    fetch(ApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        empcode: empcode,
+      }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('SL data:', data);
+        if (data) {
+          // Extract SL names and HQs from the API response
+          const slData = data.map(sl => ({
+            name: sl.name,
+            hq: sl.hq,
+            empcode: sl.empcode,
+          }));
 
-            // Set the SL data, SL names, and their respective HQs in the state
-            setSLData(slData);
-            setSLNames(slData.map(sl => sl.name));
-            setSLHQs(slHQs);
+          const slHQs = {};
+          slData.forEach(sl => {
+            slHQs[sl.name] = sl.hq;
+          });
 
-            // Set the selected SL and HQ based on the initial SL (e.g., the first SL)
-            const initialSelectedSL = slData[0]?.name || '';
-            setSelectedSL(initialSelectedSL);
-            setHq(slHQs[initialSelectedSL] || '');
+          // Set the SL data, SL names, and their respective HQs in the state
+          setSLData(slData);
+          setSLNames(slData.map(sl => sl.name));
+          setSLHQs(slHQs);
 
-            // Set selected SL's information in the state
-            setSelectedSLInfo(slData[0] || {});
-            setSelectedSLEmployeeCode(slData[0]?.empcode || '');
-            setIsLoading(false);
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching SL names and HQs:', error);
+          // Set the selected SL and HQ based on the initial SL (e.g., the first SL)
+          const initialSelectedSL = slData[0]?.name || '';
+          setSelectedSL(initialSelectedSL);
+          setHq(slHQs[initialSelectedSL] || '');
+
+          // Set selected SL's information in the state
+          setSelectedSLInfo(slData[0] || {});
           setIsLoading(false);
-        });
-    };
-    if (role === 3 || role === 4) {
-      fetchSLData(selectedTLEmployeeCode);
-    }
-  }, [role, selectedTL, selectedTLEmployeeCode]);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching SL names and HQs:', error);
+        setIsLoading(false);
+      });
+  };
 
   // Function to fetch FL data
-  useEffect(() => {
-    const fetchFLData = empcode => {
-      setIsLoading(true);
-      // Replace 'API_URL_FOR_FL' with the actual API endpoint for FL data
-      const ApiUrl = `${BASE_URL}${'/report/getEmpData'}`;
-      console.log('this is empcode for FL :', empcode);
-      fetch(ApiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          empcode: empcode,
-        }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          // console.log('FL data:', data);
-          if (data) {
-            // Extract FL names and HQs from the API response
-            const flData = data.map(fl => ({
-              name: fl.name,
-              hq: fl.hq,
-              empcode: fl.empcode,
-            }));
+  const fetchFLData = empcode => {
+    setIsLoading(true);
+    // Replace 'API_URL_FOR_FL' with the actual API endpoint for FL data
+    const ApiUrl = `${BASE_URL}${'/report/getEmpData'}`;
 
-            const flHQs = {};
-            flData.forEach(fl => {
-              flHQs[fl.name] = fl.hq;
-            });
+    fetch(ApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        empcode: empcode,
+      }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('FL data:', data);
+        if (data) {
+          // Extract FL names and HQs from the API response
+          const flData = data.map(fl => ({
+            name: fl.name,
+            hq: fl.hq,
+            empcode: fl.empcode,
+          }));
 
-            // Set the FL data, FL names, and their respective HQs in the state
-            setFLData(flData);
-            setFLNames(flData.map(fl => fl.name));
-            setFLHQs(flHQs);
+          const flHQs = {};
+          flData.forEach(fl => {
+            flHQs[fl.name] = fl.hq;
+          });
 
-            // Set the selected FL and HQ based on the initial FL (e.g., the first FL)
-            const initialSelectedFL = flData[0]?.name || '';
-            setSelectedFL(initialSelectedFL);
-            setHq(flHQs[initialSelectedFL] || '');
+          // Set the FL data, FL names, and their respective HQs in the state
+          setFLData(flData);
+          setFLNames(flData.map(fl => fl.name));
+          setFLHQs(flHQs);
 
-            // Set selected FL's information in the state
-            setSelectedFLInfo(flData[0] || {});
-            setSelectedFLEmployeeCode(flData[0]?.empcode || '');
-            setIsLoading(false);
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching FL names and HQs:', error);
+          // Set the selected FL and HQ based on the initial FL (e.g., the first FL)
+          const initialSelectedFL = flData[0]?.name || '';
+          setSelectedFL(initialSelectedFL);
+          setHq(flHQs[initialSelectedFL] || '');
+
+          // Set selected FL's information in the state
+          setSelectedFLInfo(flData[0] || {});
           setIsLoading(false);
-        });
-    };
-    if (role === 3 || role === 4 || role === 5) {
-      fetchFLData(selectedSLEmployeeCode);
-    }
-  }, [role, selectedSL, selectedSLEmployeeCode]);
-
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching FL names and HQs:', error);
+        setIsLoading(false);
+      });
+  };
   useEffect(() => {
-    const fetchMrData = empcode => {
+    const fetchMRData = empcode => {
       setIsLoading(true);
-      // Replace 'API_URL_FOR_FL' with the actual API endpoint for FL data
       const ApiUrl = `${BASE_URL}${'/report/getEmpData'}`;
-      console.log('this is empcode for MR :', empcode);
       fetch(ApiUrl, {
         method: 'POST',
         headers: {
@@ -361,44 +312,59 @@ const AddCampReport = () => {
       })
         .then(response => response.json())
         .then(data => {
-          // console.log('MR data:', data);
+          console.log('data getting', data);
           if (data) {
-            // Extract FL names and HQs from the API response
+            // Extract MR names and HQs from the API response
             const mrData = data.map(mr => ({
               name: mr.name,
               hq: mr.hq,
-              empcode: mr.empcode,
+              empcode: mr.empcode, // Include empcode in the MR data
             }));
 
-            const flHQs = {};
+            // Create an object to store MR names and their respective HQs
+            const mrHQs = {};
             mrData.forEach(mr => {
               mrHQs[mr.name] = mr.hq;
             });
 
-            // Set the FL data, FL names, and their respective HQs in the state
+            // Set the MR data, MR names, and their respective HQs in the state
             setMrData(mrData);
             setMrNames(mrData.map(mr => mr.name));
             setMrHQs(mrHQs);
 
-            // Set the selected FL and HQ based on the initial FL (e.g., the first FL)
+            // Set the selected MR and HQ based on the initial MR (e.g., the first MR)
             const initialSelectedMr = mrData[0]?.name || '';
             setSelectedMr(initialSelectedMr);
             setHq(mrHQs[initialSelectedMr] || '');
 
-            // Set selected FL's information in the state
+            // Set selected MR's information in the state
             setSelectedMrInfo(mrData[0] || {});
             setIsLoading(false);
           }
         })
         .catch(error => {
-          console.error('Error fetching FL names and HQs:', error);
+          console.error('Error fetching MR names and HQs:', error);
           setIsLoading(false);
         });
     };
-    if (role === 3 || role === 4 || role === 5 || role === 6) {
-      fetchMrData(selectedFLEmployeeCode);
-    }
-  }, [mrHQs, role, selectedFL, selectedFLEmployeeCode]);
+
+    AsyncStorage.getItem('userdata')
+      .then(data => {
+        if (data) {
+          const userData = JSON.parse(data);
+          const empcode = userData.responseData.empID;
+          // Call fetchData with the retrieved userId
+          console.log('Getting user id:', empcode);
+          fetchMRData(empcode);
+        } else {
+          console.log('Invalid or missing data in AsyncStorage');
+        }
+      })
+      .catch(error => {
+        console.error('Error retrieving data:', error);
+      });
+    fetchMRData();
+  }, []);
 
   const handleMrChange = itemValue => {
     setSelectedMr(itemValue);
@@ -412,40 +378,6 @@ const AddCampReport = () => {
 
     // Update the selectedMrInfo state with the new MR info
     setSelectedMrInfo(selectedMrInfo);
-  };
-
-  const handleDropdownChange = (itemValue, dropdownType) => {
-    switch (dropdownType) {
-      case 'TL':
-        setSelectedTL(itemValue);
-        // Get the HQ for the selected TL from the tlHQs object
-        const selectedTLHQ = tlHQs[itemValue];
-        setHq(selectedTLHQ || '');
-        // Find the TL info for the selected TL
-        const selectedTLInfo = tlData.find(tl => tl.name === itemValue) || {};
-        setSelectedTLInfo(selectedTLInfo);
-        break;
-      case 'SL':
-        setSelectedSL(itemValue);
-        // Get the HQ for the selected SL from the slHQs object
-        const selectedSLHQ = slHQs[itemValue];
-        setHq(selectedSLHQ || '');
-        // Find the SL info for the selected SL
-        const selectedSLInfo = slData.find(sl => sl.name === itemValue) || {};
-        setSelectedSLInfo(selectedSLInfo);
-        break;
-      case 'FL':
-        setSelectedFL(itemValue);
-        // Get the HQ for the selected FL from the flHQs object
-        const selectedFLHQ = flHQs[itemValue];
-        setHq(selectedFLHQ || '');
-        // Find the FL info for the selected FL
-        const selectedFLInfo = flData.find(fl => fl.name === itemValue) || {};
-        setSelectedFLInfo(selectedFLInfo);
-        break;
-      default:
-        break;
-    }
   };
 
   useEffect(() => {
@@ -646,163 +578,149 @@ const AddCampReport = () => {
 
   return (
     <LinearGradient colors={['#72c5f8', '#daf5ff']} style={styles.container}>
-      {isLoading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0047b9" />
-        </View>
-      )}
-      <View style={styles.container}>
-        <View style={styles.form}>
-          {showTLDropdown && (
-            <View>
-              <Text style={styles.datePickerLabel}>Select Name of TL:</Text>
-              <View style={styles.pickcontainer}>
-                <Picker
-                  selectedValue={selectedTL}
-                  style={styles.picker}
-                  onValueChange={itemValue => {
-                    setSelectedTL(itemValue);
-                    // Get the employee code for the selected TL from TL data
-                    const selectedTLEmployeeCode =
-                      tlData.find(tl => tl.name === itemValue)?.empcode || '';
-                    setSelectedTLEmployeeCode(selectedTLEmployeeCode);
-                  }}>
-                  {tlNames.map((name, index) => (
-                    <Picker.Item key={index} label={name} value={name} />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-          )}
-          {showSLDropdown && (
-            <View>
-              <Text style={styles.datePickerLabel}>Select Name of SL:</Text>
-              <View style={styles.pickcontainer}>
-                <Picker
-                  selectedValue={selectedSL}
-                  style={styles.picker}
-                  onValueChange={itemValue => {
-                    setSelectedSL(itemValue);
-                    // Get the employee code for the selected TL from TL data
-                    const selectedSLEmployeeCode =
-                      slData.find(sl => sl.name === itemValue)?.empcode || '';
-                    setSelectedSLEmployeeCode(selectedSLEmployeeCode);
-                  }}>
-                  {slNames.map((name, index) => (
-                    <Picker.Item key={index} label={name} value={name} />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-          )}
-          {showFLDropdown && (
-            <View>
-              <Text style={styles.datePickerLabel}>Select Name of FL:</Text>
-              <View style={styles.pickcontainer}>
-                <Picker
-                  selectedValue={selectedFL}
-                  style={styles.picker}
-                  onValueChange={itemValue => {
-                    setSelectedFL(itemValue);
-                    // Get the employee code for the selected TL from TL data
-                    const selectedFLEmployeeCode =
-                      flData.find(fl => fl.name === itemValue)?.empcode || '';
-                    setSelectedFLEmployeeCode(selectedFLEmployeeCode);
-                  }}>
-                  {flNames.map((name, index) => (
-                    <Picker.Item key={index} label={name} value={name} />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-          )}
-          <Text style={styles.datePickerLabel}>Select Name of MR:</Text>
-          <View style={styles.pickcontainer}>
-            <Picker
-              selectedValue={selectedMr}
-              style={styles.picker}
-              onValueChange={handleMrChange}>
-              {mrNames.map((name, index) => (
-                <Picker.Item key={index} label={name} value={name} />
-              ))}
-            </Picker>
+      <ScrollView>
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0047b9" />
           </View>
-          <Text style={styles.datePickerLabel}>Name of Doctor</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              backgroundColor="#fff"
-              underlineColor="#fff"
-              style={styles.inputField}
-              outlineColor="#0047b9"
-              theme={{
-                ...DefaultTheme,
-                colors: {
-                  ...DefaultTheme.colors,
-                  primary: '#0047b9', // Change the label color to blue
-                },
-              }}
-              activeOutlineColor="#08a5d8"
-              value={textInputValue}
-              onChangeText={handleTextInputChange}
-              // label="Name of Doctor"
-            />
-            {isDropdownVisible && (
-              <FlatList
-                data={filteredDoctorNames}
-                renderItem={({item}) => (
-                  <TouchableOpacity
-                    style={styles.dropdownItem}
-                    onPress={() => handleDoctorSelect(item)}>
-                    <Text>{item}</Text>
-                  </TouchableOpacity>
-                )}
-                keyExtractor={(item, index) => index.toString()}
-                style={styles.dropdownList}
-              />
+        )}
+        <View style={styles.container}>
+          <View style={styles.form}>
+            {showTLDropdown && (
+              <View>
+                <Text style={styles.datePickerLabel}>Select Name of TL:</Text>
+                <View style={styles.pickcontainer}>
+                  <Picker
+                    selectedValue={selectedMr}
+                    style={styles.picker}
+                    onValueChange={handleMrChange}>
+                    {mrNames.map((name, index) => (
+                      <Picker.Item key={index} label={name} value={name} />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
             )}
-          </View>
+            {showSLDropdown && (
+              <View>
+                <Text style={styles.datePickerLabel}>Select Name of SL:</Text>
+                <View style={styles.pickcontainer}>
+                  <Picker
+                    selectedValue={selectedMr}
+                    style={styles.picker}
+                    onValueChange={handleMrChange}>
+                    {mrNames.map((name, index) => (
+                      <Picker.Item key={index} label={name} value={name} />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+            )}
+            {showFLDropdown && (
+              <View>
+                <Text style={styles.datePickerLabel}>Select Name of FL:</Text>
+                <View style={styles.pickcontainer}>
+                  <Picker
+                    selectedValue={selectedMr}
+                    style={styles.picker}
+                    onValueChange={handleMrChange}>
+                    {mrNames.map((name, index) => (
+                      <Picker.Item key={index} label={name} value={name} />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+            )}
+            <Text style={styles.datePickerLabel}>Select Name of MR:</Text>
+            <View style={styles.pickcontainer}>
+              <Picker
+                selectedValue={selectedMr}
+                style={styles.picker}
+                onValueChange={handleMrChange}>
+                {mrNames.map((name, index) => (
+                  <Picker.Item key={index} label={name} value={name} />
+                ))}
+              </Picker>
+            </View>
+            <Text style={styles.datePickerLabel}>Name of Doctor</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                backgroundColor="#fff"
+                underlineColor="#fff"
+                style={styles.inputField}
+                outlineColor="#0047b9"
+                theme={{
+                  ...DefaultTheme,
+                  colors: {
+                    ...DefaultTheme.colors,
+                    primary: '#0047b9', // Change the label color to blue
+                  },
+                }}
+                activeOutlineColor="#08a5d8"
+                value={textInputValue}
+                onChangeText={handleTextInputChange}
+                // label="Name of Doctor"
+              />
+              {isDropdownVisible && (
+                <FlatList
+                  data={filteredDoctorNames}
+                  renderItem={({item}) => (
+                    <TouchableOpacity
+                      style={styles.dropdownItem}
+                      onPress={() => handleDoctorSelect(item)}>
+                      <Text>{item}</Text>
+                    </TouchableOpacity>
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                  style={styles.dropdownList}
+                />
+              )}
+            </View>
 
-          <View style={styles.datePickerContainer}>
-            <Text style={styles.datePickerLabel} onPress={showCampDate}>
-              Select Date of Camp:
-            </Text>
-            <Button
-              style={styles.datePickerButton}
-              onPress={showCampDate}
-              labelStyle={styles.addbtnText1}>
-              {campDate.getDate().toString().padStart(2, '0')}-
-              {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
-              {campDate.getFullYear()}
-            </Button>
-            {showCampDatePicker && (
-              <DateTimePicker
-                value={campDate}
-                mode="date"
-                is24Hour={true}
-                display="default"
-                dateFormat="DD-MM-YYYY"
-                onChange={handleCampDateChange}
-              />
-            )}
+            <View style={styles.datePickerContainer}>
+              <Text style={styles.datePickerLabel} onPress={showCampDate}>
+                Select Date of Camp:
+              </Text>
+              <Button
+                style={styles.datePickerButton}
+                onPress={showCampDate}
+                labelStyle={styles.addbtnText1}>
+                {campDate.getDate().toString().padStart(2, '0')}-
+                {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
+                {campDate.getFullYear()}
+              </Button>
+              {showCampDatePicker && (
+                <DateTimePicker
+                  value={campDate}
+                  mode="date"
+                  is24Hour={true}
+                  display="default"
+                  dateFormat="DD-MM-YYYY"
+                  onChange={handleCampDateChange}
+                />
+              )}
+            </View>
+            <Text style={styles.datePickerLabel}>HQ</Text>
+            <TextInput
+              // label="HQ"
+              value={hq}
+              onChangeText={text => setHq(text)}
+              mode="outlined"
+              style={styles.input}
+              outlineColor="#0047b9"
+              activeOutlineColor="#08a5d8"
+              editable={false}
+            />
+            <LinearGradient
+              colors={['#0047b9', '#0c93d7']}
+              style={styles.addbtn}>
+              <Button onPress={findDoctor} labelStyle={styles.addbtnText}>
+                Next
+              </Button>
+            </LinearGradient>
           </View>
-          <Text style={styles.datePickerLabel}>HQ</Text>
-          <TextInput
-            // label="HQ"
-            value={hq}
-            onChangeText={text => setHq(text)}
-            mode="outlined"
-            style={styles.input}
-            outlineColor="#0047b9"
-            activeOutlineColor="#08a5d8"
-            editable={false}
-          />
-          <LinearGradient colors={['#0047b9', '#0c93d7']} style={styles.addbtn}>
-            <Button onPress={findDoctor} labelStyle={styles.addbtnText}>
-              Next
-            </Button>
-          </LinearGradient>
         </View>
-      </View>
+      </ScrollView>
     </LinearGradient>
   );
 };

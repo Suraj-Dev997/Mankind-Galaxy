@@ -9,20 +9,19 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  KeyboardAvoidingView,
 } from 'react-native';
 import {TextInput, Button, Avatar, DefaultTheme} from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
 import {useNavigation} from '@react-navigation/native';
-import {BASE_URL} from '../Configuration/Config';
+import {BASE_URL} from './Configuration/Config';
 import {useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {format} from 'date-fns';
 import LinearGradient from 'react-native-linear-gradient';
 
-const AddCampReport = () => {
+const Test = () => {
   const [doctorNames, setDoctorNames] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [filteredDoctorNames, setFilteredDoctorNames] = useState([]);
@@ -38,7 +37,7 @@ const AddCampReport = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [dropdownItems] = useState(['Option 1', 'node', 'React']);
   const route = useRoute();
-  const {id} = route.params;
+  const {id} = 1;
   const formattedCampDate = format(campDate, 'dd-MM-yyyy');
   const [mrNames, setMrNames] = useState([]); // State to store MR names
   const initialSelectedMr = 'Name of MR';
@@ -55,7 +54,7 @@ const AddCampReport = () => {
   const [mrData, setMrData] = useState([]);
   const [role, setRole] = useState([]);
 
-  const [empCodeMain, setEmpCodeMain] = useState(null);
+  const [empCode, setEmpCode] = useState(null);
   const [showTLDropdown, setShowTLDropdown] = useState(true);
   const [showSLDropdown, setShowSLDropdown] = useState(true);
   const [showFLDropdown, setShowFLDropdown] = useState(true);
@@ -108,20 +107,16 @@ const AddCampReport = () => {
           // Call fetchTLData with the retrieved empcode
           if (userData.responseData.role === 3) {
             // Set empcode for role 3
-            setEmpCodeMain(empcode);
-            console.log('Set EmpCode', empcode);
+            setEmpCode(empcode);
           } else if (userData.responseData.role === 4) {
             // Set empcode for role 4
             setSelectedTLEmployeeCode(empcode);
-            console.log('Set EmpCode', empcode);
           } else if (userData.responseData.role === 5) {
             // Set empcode for role 5
             setSelectedSLEmployeeCode(empcode);
-            console.log('Set EmpCode', empcode);
           } else if (userData.responseData.role === 6) {
             // Set empcode for role 6
             setSelectedFLEmployeeCode(empcode);
-            console.log('Set EmpCode', empcode);
           }
         } else {
           // Data not found
@@ -223,10 +218,8 @@ const AddCampReport = () => {
         });
     };
 
-    if (role === 3) {
-      fetchTLData(empCodeMain);
-    }
-  }, [empCodeMain, role]);
+    fetchTLData(empCode);
+  }, [empCode]);
 
   // Function to fetch SL data
   useEffect(() => {
@@ -281,10 +274,9 @@ const AddCampReport = () => {
           setIsLoading(false);
         });
     };
-    if (role === 3 || role === 4) {
-      fetchSLData(selectedTLEmployeeCode);
-    }
-  }, [role, selectedTL, selectedTLEmployeeCode]);
+
+    fetchSLData(selectedTLEmployeeCode);
+  }, [selectedTL, selectedTLEmployeeCode]);
 
   // Function to fetch FL data
   useEffect(() => {
@@ -339,10 +331,9 @@ const AddCampReport = () => {
           setIsLoading(false);
         });
     };
-    if (role === 3 || role === 4 || role === 5) {
-      fetchFLData(selectedSLEmployeeCode);
-    }
-  }, [role, selectedSL, selectedSLEmployeeCode]);
+
+    fetchFLData(selectedSLEmployeeCode);
+  }, [selectedSL, selectedSLEmployeeCode]);
 
   useEffect(() => {
     const fetchMrData = empcode => {
@@ -395,10 +386,9 @@ const AddCampReport = () => {
           setIsLoading(false);
         });
     };
-    if (role === 3 || role === 4 || role === 5 || role === 6) {
-      fetchMrData(selectedFLEmployeeCode);
-    }
-  }, [mrHQs, role, selectedFL, selectedFLEmployeeCode]);
+
+    fetchMrData(selectedFLEmployeeCode);
+  }, [mrHQs, selectedFL, selectedFLEmployeeCode]);
 
   const handleMrChange = itemValue => {
     setSelectedMr(itemValue);
@@ -646,163 +636,167 @@ const AddCampReport = () => {
 
   return (
     <LinearGradient colors={['#72c5f8', '#daf5ff']} style={styles.container}>
-      {isLoading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0047b9" />
-        </View>
-      )}
-      <View style={styles.container}>
-        <View style={styles.form}>
-          {showTLDropdown && (
-            <View>
-              <Text style={styles.datePickerLabel}>Select Name of TL:</Text>
-              <View style={styles.pickcontainer}>
-                <Picker
-                  selectedValue={selectedTL}
-                  style={styles.picker}
-                  onValueChange={itemValue => {
-                    setSelectedTL(itemValue);
-                    // Get the employee code for the selected TL from TL data
-                    const selectedTLEmployeeCode =
-                      tlData.find(tl => tl.name === itemValue)?.empcode || '';
-                    setSelectedTLEmployeeCode(selectedTLEmployeeCode);
-                  }}>
-                  {tlNames.map((name, index) => (
-                    <Picker.Item key={index} label={name} value={name} />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-          )}
-          {showSLDropdown && (
-            <View>
-              <Text style={styles.datePickerLabel}>Select Name of SL:</Text>
-              <View style={styles.pickcontainer}>
-                <Picker
-                  selectedValue={selectedSL}
-                  style={styles.picker}
-                  onValueChange={itemValue => {
-                    setSelectedSL(itemValue);
-                    // Get the employee code for the selected TL from TL data
-                    const selectedSLEmployeeCode =
-                      slData.find(sl => sl.name === itemValue)?.empcode || '';
-                    setSelectedSLEmployeeCode(selectedSLEmployeeCode);
-                  }}>
-                  {slNames.map((name, index) => (
-                    <Picker.Item key={index} label={name} value={name} />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-          )}
-          {showFLDropdown && (
-            <View>
-              <Text style={styles.datePickerLabel}>Select Name of FL:</Text>
-              <View style={styles.pickcontainer}>
-                <Picker
-                  selectedValue={selectedFL}
-                  style={styles.picker}
-                  onValueChange={itemValue => {
-                    setSelectedFL(itemValue);
-                    // Get the employee code for the selected TL from TL data
-                    const selectedFLEmployeeCode =
-                      flData.find(fl => fl.name === itemValue)?.empcode || '';
-                    setSelectedFLEmployeeCode(selectedFLEmployeeCode);
-                  }}>
-                  {flNames.map((name, index) => (
-                    <Picker.Item key={index} label={name} value={name} />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-          )}
-          <Text style={styles.datePickerLabel}>Select Name of MR:</Text>
-          <View style={styles.pickcontainer}>
-            <Picker
-              selectedValue={selectedMr}
-              style={styles.picker}
-              onValueChange={handleMrChange}>
-              {mrNames.map((name, index) => (
-                <Picker.Item key={index} label={name} value={name} />
-              ))}
-            </Picker>
+      <ScrollView>
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0047b9" />
           </View>
-          <Text style={styles.datePickerLabel}>Name of Doctor</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              backgroundColor="#fff"
-              underlineColor="#fff"
-              style={styles.inputField}
-              outlineColor="#0047b9"
-              theme={{
-                ...DefaultTheme,
-                colors: {
-                  ...DefaultTheme.colors,
-                  primary: '#0047b9', // Change the label color to blue
-                },
-              }}
-              activeOutlineColor="#08a5d8"
-              value={textInputValue}
-              onChangeText={handleTextInputChange}
-              // label="Name of Doctor"
-            />
-            {isDropdownVisible && (
-              <FlatList
-                data={filteredDoctorNames}
-                renderItem={({item}) => (
-                  <TouchableOpacity
-                    style={styles.dropdownItem}
-                    onPress={() => handleDoctorSelect(item)}>
-                    <Text>{item}</Text>
-                  </TouchableOpacity>
-                )}
-                keyExtractor={(item, index) => index.toString()}
-                style={styles.dropdownList}
-              />
+        )}
+        <View style={styles.container}>
+          <View style={styles.form}>
+            {showTLDropdown && (
+              <View>
+                <Text style={styles.datePickerLabel}>Select Name of TL:</Text>
+                <View style={styles.pickcontainer}>
+                  <Picker
+                    selectedValue={selectedTL}
+                    style={styles.picker}
+                    onValueChange={itemValue => {
+                      setSelectedTL(itemValue);
+                      // Get the employee code for the selected TL from TL data
+                      const selectedTLEmployeeCode =
+                        tlData.find(tl => tl.name === itemValue)?.empcode || '';
+                      setSelectedTLEmployeeCode(selectedTLEmployeeCode);
+                    }}>
+                    {tlNames.map((name, index) => (
+                      <Picker.Item key={index} label={name} value={name} />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
             )}
-          </View>
+            {showSLDropdown && (
+              <View>
+                <Text style={styles.datePickerLabel}>Select Name of SL:</Text>
+                <View style={styles.pickcontainer}>
+                  <Picker
+                    selectedValue={selectedSL}
+                    style={styles.picker}
+                    onValueChange={itemValue => {
+                      setSelectedSL(itemValue);
+                      // Get the employee code for the selected TL from TL data
+                      const selectedSLEmployeeCode =
+                        slData.find(sl => sl.name === itemValue)?.empcode || '';
+                      setSelectedSLEmployeeCode(selectedSLEmployeeCode);
+                    }}>
+                    {slNames.map((name, index) => (
+                      <Picker.Item key={index} label={name} value={name} />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+            )}
+            {showFLDropdown && (
+              <View>
+                <Text style={styles.datePickerLabel}>Select Name of FL:</Text>
+                <View style={styles.pickcontainer}>
+                  <Picker
+                    selectedValue={selectedFL}
+                    style={styles.picker}
+                    onValueChange={itemValue => {
+                      setSelectedFL(itemValue);
+                      // Get the employee code for the selected TL from TL data
+                      const selectedFLEmployeeCode =
+                        flData.find(fl => fl.name === itemValue)?.empcode || '';
+                      setSelectedFLEmployeeCode(selectedFLEmployeeCode);
+                    }}>
+                    {flNames.map((name, index) => (
+                      <Picker.Item key={index} label={name} value={name} />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+            )}
+            <Text style={styles.datePickerLabel}>Select Name of MR:</Text>
+            <View style={styles.pickcontainer}>
+              <Picker
+                selectedValue={selectedMr}
+                style={styles.picker}
+                onValueChange={handleMrChange}>
+                {mrNames.map((name, index) => (
+                  <Picker.Item key={index} label={name} value={name} />
+                ))}
+              </Picker>
+            </View>
+            <Text style={styles.datePickerLabel}>Name of Doctor</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                backgroundColor="#fff"
+                underlineColor="#fff"
+                style={styles.inputField}
+                outlineColor="#0047b9"
+                theme={{
+                  ...DefaultTheme,
+                  colors: {
+                    ...DefaultTheme.colors,
+                    primary: '#0047b9', // Change the label color to blue
+                  },
+                }}
+                activeOutlineColor="#08a5d8"
+                value={textInputValue}
+                onChangeText={handleTextInputChange}
+                // label="Name of Doctor"
+              />
+              {isDropdownVisible && (
+                <FlatList
+                  data={filteredDoctorNames}
+                  renderItem={({item}) => (
+                    <TouchableOpacity
+                      style={styles.dropdownItem}
+                      onPress={() => handleDoctorSelect(item)}>
+                      <Text>{item}</Text>
+                    </TouchableOpacity>
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                  style={styles.dropdownList}
+                />
+              )}
+            </View>
 
-          <View style={styles.datePickerContainer}>
-            <Text style={styles.datePickerLabel} onPress={showCampDate}>
-              Select Date of Camp:
-            </Text>
-            <Button
-              style={styles.datePickerButton}
-              onPress={showCampDate}
-              labelStyle={styles.addbtnText1}>
-              {campDate.getDate().toString().padStart(2, '0')}-
-              {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
-              {campDate.getFullYear()}
-            </Button>
-            {showCampDatePicker && (
-              <DateTimePicker
-                value={campDate}
-                mode="date"
-                is24Hour={true}
-                display="default"
-                dateFormat="DD-MM-YYYY"
-                onChange={handleCampDateChange}
-              />
-            )}
+            <View style={styles.datePickerContainer}>
+              <Text style={styles.datePickerLabel} onPress={showCampDate}>
+                Select Date of Camp:
+              </Text>
+              <Button
+                style={styles.datePickerButton}
+                onPress={showCampDate}
+                labelStyle={styles.addbtnText1}>
+                {campDate.getDate().toString().padStart(2, '0')}-
+                {(campDate.getMonth() + 1).toString().padStart(2, '0')}-
+                {campDate.getFullYear()}
+              </Button>
+              {showCampDatePicker && (
+                <DateTimePicker
+                  value={campDate}
+                  mode="date"
+                  is24Hour={true}
+                  display="default"
+                  dateFormat="DD-MM-YYYY"
+                  onChange={handleCampDateChange}
+                />
+              )}
+            </View>
+            <Text style={styles.datePickerLabel}>HQ</Text>
+            <TextInput
+              // label="HQ"
+              value={hq}
+              onChangeText={text => setHq(text)}
+              mode="outlined"
+              style={styles.input}
+              outlineColor="#0047b9"
+              activeOutlineColor="#08a5d8"
+              editable={false}
+            />
+            <LinearGradient
+              colors={['#0047b9', '#0c93d7']}
+              style={styles.addbtn}>
+              <Button onPress={findDoctor} labelStyle={styles.addbtnText}>
+                Next
+              </Button>
+            </LinearGradient>
           </View>
-          <Text style={styles.datePickerLabel}>HQ</Text>
-          <TextInput
-            // label="HQ"
-            value={hq}
-            onChangeText={text => setHq(text)}
-            mode="outlined"
-            style={styles.input}
-            outlineColor="#0047b9"
-            activeOutlineColor="#08a5d8"
-            editable={false}
-          />
-          <LinearGradient colors={['#0047b9', '#0c93d7']} style={styles.addbtn}>
-            <Button onPress={findDoctor} labelStyle={styles.addbtnText}>
-              Next
-            </Button>
-          </LinearGradient>
         </View>
-      </View>
+      </ScrollView>
     </LinearGradient>
   );
 };
@@ -938,4 +932,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddCampReport;
+export default Test;
