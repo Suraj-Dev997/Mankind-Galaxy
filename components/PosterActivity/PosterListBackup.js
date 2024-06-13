@@ -1,10 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Image, TouchableOpacity,ActivityIndicator } from 'react-native';
-import { Button, Searchbar, IconButton } from 'react-native-paper';
-import { useRoute } from '@react-navigation/native';
-import { useNavigation } from '@react-navigation/native';
-import { BASE_URL } from '../Configuration/Config';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,Alert
+} from 'react-native';
+import {Button, Searchbar, IconButton} from 'react-native-paper';
+import {useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import {BASE_URL} from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useNetworkStatus from '../useNetworkStatus';
+
 
 const PosterList = () => {
   const route = useRoute();
@@ -12,19 +23,30 @@ const PosterList = () => {
   const [searchText, setSearchText] = useState('');
   const [users, setUsers] = useState([]); // Store fetched data
   const [isLoading, setIsLoading] = useState(true);
+  const isConnected = useNetworkStatus();
 
-  const handleSearchTextChange = (query) => {
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+      );
+    }
+  }, [isConnected]);
+
+  const handleSearchTextChange = query => {
     setSearchText(query);
   };
 
-  const { id } = route.params;
+  const {id} = route.params;
 
-  const handleEdit = (doctorId) => {
-    const { id } = route.params;
-    navigation.navigate('UpdateUserProfileForm', { doctorId, id }); // Pass the doctorId as a parameter
+  const handleEdit = doctorId => {
+    const {id} = route.params;
+    navigation.navigate('UpdateUserProfileForm', {doctorId, id}); // Pass the doctorId as a parameter
   };
 
-  const handleDelete = async (doctorId) => {
+  const handleDelete = async doctorId => {
     try {
       const ApiUrl = `${BASE_URL}${'/doc/deleteDoctor'}`;
       const response = await fetch(ApiUrl, {
@@ -39,7 +61,7 @@ const PosterList = () => {
       const data = await response.json();
       if (response.ok) {
         // Remove the deleted doctor from the state
-        const updatedUsers = users.filter((user) => user.doctor_id !== doctorId);
+        const updatedUsers = users.filter(user => user.doctor_id !== doctorId);
         setUsers(updatedUsers);
         console.log(data.message); // Log the success message
       } else {
@@ -52,7 +74,7 @@ const PosterList = () => {
 
   // Fetch data from the API
   useEffect(() => {
-    const fetchData = async (userId) => {
+    const fetchData = async userId => {
       try {
         setIsLoading(true);
         const ApiUrl = `${BASE_URL}${'/doc/getDoctorWithUserId'}`;
@@ -67,12 +89,11 @@ const PosterList = () => {
           }),
         });
         const data = await response.json();
-        console.log("nnnnnnnnnnnnnnnnn",data)
+        console.log('nnnnnnnnnnnnnnnnn', data);
         if (response.ok) {
           setUsers(data);
-       
+
           setIsLoading(false); // Set the fetched data
-        
         } else {
           console.error('Error fetching data:', data);
         }
@@ -82,23 +103,23 @@ const PosterList = () => {
     };
 
     AsyncStorage.getItem('userdata')
-      .then((data) => {
+      .then(data => {
         if (data) {
           const userData = JSON.parse(data);
           const userId = userData.responseData.user_id;
           // Call fetchData with the retrieved userId
-          console.log("Getting user id:", userId)
+          console.log('Getting user id:', userId);
           fetchData(userId);
         } else {
-          console.error('Invalid or missing data in AsyncStorage');
+          console.log('Invalid or missing data in AsyncStorage');
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error retrieving data:', error);
       });
 
     fetchData();
-  }, [id,users]);
+  }, [id, users]);
 
   const TableHeader = () => (
     <View style={styles.tableHeader}>
@@ -108,18 +129,20 @@ const PosterList = () => {
   );
 
   // Filter users based on the search text
-  const filteredUsers = users.filter((user) =>
+  const filteredUsers = users.filter(user =>
     searchText.length >= 3
       ? user.doctor_name?.toLowerCase().includes(searchText.toLowerCase())
-      : true
+      : true,
   );
   const ProfileUrl = `${BASE_URL}${'/uploads/profile/'}`;
 
-  
   // Render user item
-  const renderUserItem = ({ item }) => (
+  const renderUserItem = ({item}) => (
     <View style={styles.userItem}>
-      <Image source={{ uri: ProfileUrl + item.doctor_img }} style={styles.userImage} />
+      <Image
+        source={{uri: ProfileUrl + item.doctor_img}}
+        style={styles.userImage}
+      />
       <View style={styles.userInfo}>
         <Text>{item.doctor_name}</Text>
         <Text>Date: {item.camp_date}</Text>
@@ -130,7 +153,7 @@ const PosterList = () => {
             icon="file-image"
             iconColor="#0047b9"
             size={20}
-            onPress={() => navigation.navigate("PosterDownload")}
+            onPress={() => navigation.navigate('PosterDownload')}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
@@ -161,8 +184,7 @@ const PosterList = () => {
             icon="plus"
             mode="contained"
             style={styles.addbtn}
-            onPress={() => navigation.navigate("UserProfileForm", { id })}
-          >
+            onPress={() => navigation.navigate('UserProfileForm', {id})}>
             Add Doctor
           </Button>
         </View>
@@ -177,15 +199,16 @@ const PosterList = () => {
       <View style={styles.tableCont}>
         <TableHeader />
         {isLoading ? (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#0047b9"/>
-        </View>
-          ) : (
-        <FlatList
-          data={filteredUsers}
-          renderItem={renderUserItem}
-          keyExtractor={(item) => (item ? item.doctor_id.toString() : '0')} // Updated keyExtractor
-        />
+          <View
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <ActivityIndicator size="large" color="#0047b9" />
+          </View>
+        ) : (
+          <FlatList
+            data={filteredUsers}
+            renderItem={renderUserItem}
+            keyExtractor={item => (item ? item.doctor_id.toString() : '0')} // Updated keyExtractor
+          />
         )}
       </View>
     </View>

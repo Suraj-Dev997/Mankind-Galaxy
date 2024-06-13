@@ -21,6 +21,8 @@ import {BASE_URL} from '../Configuration/Config';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
+import useNetworkStatus from '../useNetworkStatus';
+
 
 const DoctorPoster = ({doctorInfo, doctorImage}) => {
   return (
@@ -60,6 +62,17 @@ const PosterDownload = () => {
     name: 'Dr. John Doe',
     // Add other static data here
   };
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+      );
+    }
+  }, [isConnected]);
 
   useEffect(() => {
     const handleMoreInfo = async doctor => {

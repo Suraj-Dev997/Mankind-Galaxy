@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.18.1",
     "@react-native-community/datetimepicker": "^7.5.0",
+    "@react-native-community/netinfo": "^11.3.1",
     "@react-native-firebase/app": "^18.0.0",
     "@react-native-firebase/messaging": "^18.0.0",
     "@react-native-picker/picker": "^2.4.10",
@@ -27,7 +28,6 @@
     "react-native-axios": "^0.17.1",
     "react-native-blob-util": "^0.19.1",
     "react-native-calendars": "^1.1295.0",
-    "react-native-cardview": "^2.0.5",
     "react-native-device-info": "^10.6.0",
     "react-native-document-picker": "^9.0.1",
     "react-native-fs": "^2.20.0",
@@ -36,6 +36,7 @@
     "react-native-image-picker": "^5.6.1",
     "react-native-linear-gradient": "^2.8.2",
     "react-native-modal-datetime-picker": "^17.1.0",
+    "react-native-multiple-select": "^0.5.12",
     "react-native-pager-view": "^6.1.4",
     "react-native-paper": "^5.10.3",
     "react-native-pdf": "^6.7.1",
@@ -45,6 +46,7 @@
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^13.14.0",
     "react-native-tab-view": "^3.5.1",
+    "react-native-toast-message": "^2.2.0",
     "react-native-vector-icons": "^9.2.0",
     "react-native-view-shot": "^3.7.0",
     "rn-fetch-blob": "^0.12.0"

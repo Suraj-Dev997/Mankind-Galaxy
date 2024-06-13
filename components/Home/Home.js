@@ -15,41 +15,78 @@ import { BASE_URL1 } from '../Configuration/Config';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { check, PERMISSIONS, request } from 'react-native-permissions';
+import Toast from 'react-native-toast-message';
+import NetInfo from '@react-native-community/netinfo';
+import useNetworkStatus from '../useNetworkStatus';
 
 
 
-export const Home =  () =>{
+
+export const Home = React.forwardRef((props, ref)  =>{
   const navigation = useNavigation();
   const [permissionStatus, setPermissionStatus] = useState('undetermined');
+  const [categories, setCategories] = useState([]);
+  const [showDarkModeAlert, setShowDarkModeAlert] = useState(false);
+ 
 
+
+  const isConnected = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isConnected) {
+      Alert.alert(
+        'No Internet Connection',
+        'Please check your internet connection.',
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+      );
+    }
+  }, [isConnected]);
   const handleCategoryPress = (categoryName) => {
 
     navigation.navigate('HomeMenu', { category: categoryName });
   };
 
-  const [categories, setCategories] = useState([]);
-  useEffect(() => {
-    // Define the API endpoint
-    const ApiUrl = `${BASE_URL}${'/cat/getAllCategory'}`;
+//   useEffect(() => {
 
-    // Make the API call using fetch
-    fetch(ApiUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        // Check if the response data contains an array of categories
-        if (Array.isArray(data) && data.length > 0) {
-          // Assuming the categories are in the first element of the array
-          const fetchedCategories = data[0];
+//     const ApiUrl = `${BASE_URL}${'/cat/getAllCategory'}`;
 
-          // Update the state with the fetched categories
-          setCategories(fetchedCategories);
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching categories:', error);
-      });
-  }, []);
 
+//     fetch(ApiUrl)
+//       .then((response) => response.json())
+//       .then((data) => {
+    
+//         if (Array.isArray(data) && data.length > 0) {
+       
+//           const fetchedCategories = data[0];
+// console.log("fetchedCategories",fetchedCategories);
+  
+//           setCategories(fetchedCategories);
+//         }
+//       })
+//       .catch((error) => {
+//         console.error('Error fetching categories:', error);
+//       });
+//   }, []);
+useEffect(() => {
+  const fetchData = async () => {
+    const startTime = new Date().getTime();
+    try {
+      const response = await fetch(`${BASE_URL}/cat/getAllCategory`);
+      const data = await response.json();
+      const endTime = new Date().getTime();
+      const timeTaken = endTime - startTime;
+      console.log('API Call Time Taken:', timeTaken, 'milliseconds');
+      if (Array.isArray(data) && data.length > 0) {
+        const fetchedCategories = data[0];
+        setCategories(fetchedCategories);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  fetchData();
+}, []);
 
 
 
@@ -66,6 +103,7 @@ export const Home =  () =>{
         });
         const data = await response.json();
         const latestVersion = data[0].version;
+        
         console.log("this is data",data);
         const currentVersion = DeviceInfo.getVersion(); // Replace with your current app version
         // const currentVersion = '1' // Replace with your current app version
@@ -91,6 +129,13 @@ export const Home =  () =>{
             { cancelable: false }
           );
         }
+      
+        // Automatically close the dark mode alert after 20 seconds
+        setShowDarkModeAlert(true);
+
+        setTimeout(() => {
+          setShowDarkModeAlert(false);
+        }, 2000);
       } catch (error) {
         console.error('Error checking app version:', error);
         Alert.alert(
@@ -102,7 +147,24 @@ export const Home =  () =>{
     checkAppVersion();
 
   }, []);
-
+  useEffect(() => {
+    if (showDarkModeAlert) {
+      Toast.show({
+        type: 'info',
+        text1: 'Attention',
+        text1Style: {
+          fontSize: 18, // Adjust font size as needed
+        // Change text color
+        },
+        text2: 'Please do not use the app in dark mode.',
+        text2Style: {
+          fontSize: 15, // Adjust font size as needed
+          color: '#0a3d57',
+        },
+        visibilityTime: 5000,
+      });
+    }
+  }, [showDarkModeAlert]);
 
   useEffect(() => {
     requestStoragePermission();
@@ -198,10 +260,11 @@ export const Home =  () =>{
           </View>
           
       </View>
+      <Toast ref={ref} />
    </LinearGradient>
      
     );
-  }
+  })
 
   const styles = StyleSheet.create({
    
