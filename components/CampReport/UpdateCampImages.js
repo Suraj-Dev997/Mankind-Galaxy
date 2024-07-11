@@ -20,7 +20,6 @@ import {BASE_URL} from '../Configuration/Config';
 import LinearGradient from 'react-native-linear-gradient';
 import useNetworkStatus from '../useNetworkStatus';
 
-
 const UpdateCampImages = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -38,7 +37,7 @@ const UpdateCampImages = () => {
       Alert.alert(
         'No Internet Connection',
         'Please check your internet connection.',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
       );
     }
   }, [isConnected]);
@@ -267,7 +266,11 @@ const UpdateCampImages = () => {
         const data = await response.json();
         console.log('Upload successful Response:', data);
         Alert.alert('Success', 'Camp Report Updated successfully', [
-          {text: 'OK', onPress: () => navigation.navigate('ReportList', {id})},
+          {
+            text: 'OK',
+            onPress: () =>
+              navigation.navigate('ReportList', {id, loadData: data}),
+          },
         ]);
         console.log('Forwarded Crid', id);
       } else {

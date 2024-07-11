@@ -23,10 +23,10 @@ import {format} from 'date-fns';
 import LinearGradient from 'react-native-linear-gradient';
 import useNetworkStatus from '../useNetworkStatus';
 
-
 const AddCampReport = () => {
   const [doctorNames, setDoctorNames] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [loading, setLoading] = useState(false);
   const [filteredDoctorNames, setFilteredDoctorNames] = useState([]);
   const [qualification, setQualification] = useState('');
   const [avatarUri, setAvatarUri] = useState(null); // To store the URI of the selected image
@@ -103,7 +103,7 @@ const AddCampReport = () => {
       Alert.alert(
         'No Internet Connection',
         'Please check your internet connection.',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
       );
     }
   }, [isConnected]);
@@ -569,6 +569,7 @@ const AddCampReport = () => {
       alert('Please fill in all required fields');
       return;
     }
+    setLoading(true);
     try {
       const ApiUrl = `${BASE_URL}${'/report/findDoctorPresent'}`;
       const response = await fetch(ApiUrl, {
@@ -595,9 +596,11 @@ const AddCampReport = () => {
       } else {
         console.log('Doctor not found');
         submitData();
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error:', error);
+      setLoading(false);
     }
   };
 
@@ -644,13 +647,12 @@ const AddCampReport = () => {
           navigation.navigate('AddCampData', {crid: data.crid, id});
           console.log('navigation values', id);
           console.log('navigation crid', data.crid);
-        }else if(data.errorCode === '2'){
+        } else if (data.errorCode === '2') {
           // Handle any other logic or display an error message
           console.log('A camp with the same MR and date already exists.');
           // Display an alert message for the user
           alert('A camp with the same MR and date already exists.');
-        } 
-        else {
+        } else {
           // Handle any other logic or display an error message
           console.log('API Request was not successful');
           // Display an alert message for the user
@@ -819,7 +821,11 @@ const AddCampReport = () => {
           />
           <LinearGradient colors={['#0047b9', '#0c93d7']} style={styles.addbtn}>
             <Button onPress={findDoctor} labelStyle={styles.addbtnText}>
-              Next
+              {loading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                'Next'
+              )}
             </Button>
           </LinearGradient>
         </View>

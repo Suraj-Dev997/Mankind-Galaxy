@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,8 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  ActivityIndicator,Alert
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {Button, Searchbar, IconButton} from 'react-native-paper';
@@ -16,7 +17,7 @@ import {useNavigation} from '@react-navigation/native';
 import {BASE_URL} from '../Configuration/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useNetworkStatus from '../useNetworkStatus';
-
+import {useFocusEffect} from '@react-navigation/native';
 
 const ReportList = () => {
   const route = useRoute();
@@ -25,13 +26,22 @@ const ReportList = () => {
   const [users, setUsers] = useState([]); // Store fetched data
   const [isLoading, setIsLoading] = useState(true);
   const isConnected = useNetworkStatus();
+  const {id, loadData} = route.params;
+
+  useFocusEffect(
+    useCallback(() => {
+      if (loadData) {
+        fetchData();
+      }
+    }, [loadData]),
+  );
 
   useEffect(() => {
     if (!isConnected) {
       Alert.alert(
         'No Internet Connection',
         'Please check your internet connection.',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
       );
     }
   }, [isConnected]);
@@ -40,7 +50,6 @@ const ReportList = () => {
     setSearchText(query);
   };
 
-  const {id} = route.params;
   const handleInfo = crid => {
     console.log('crid id', crid);
     navigation.navigate('CampInfo', {crId: crid, id}); // Pass the doctorId as a parameter
@@ -52,6 +61,7 @@ const ReportList = () => {
   };
 
   const handleDelete = async crid => {
+    setIsLoading(true);
     console.log('This g', crid);
     try {
       const ApiUrl = `${BASE_URL}${'/report/deleteReportWithId'}`;
@@ -71,74 +81,91 @@ const ReportList = () => {
         const updatedUsers = users.filter(user => user.crid !== crid);
         setUsers(updatedUsers);
         console.log(data.message); // Log the success message
+        fetchData();
+        setIsLoading(false);
       } else {
         console.error('Error deleting doctor:', data);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Error deleting doctor:', error);
+      setIsLoading(false);
     }
   };
 
-  // Fetch data from the API
-  useEffect(() => {
-    const fetchData = async userId => {
-      AsyncStorage.getItem('userdata')
-        .then(data => {
-          if (data) {
-            const userData = JSON.parse(data);
-            const userId = userData.responseData.user_id;
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const data = await AsyncStorage.getItem('userdata');
+  //       if (data) {
+  //         const userData = JSON.parse(data);
+  //         const userId = userData.responseData.user_id;
+  //         console.log('user id', userId);
+  //         console.log('subcat id', id);
+  //         // Fetch data from the API using the retrieved userId
+  //         const ApiUrl = `${BASE_URL}${'/report/getAllCampReport'}`;
+  //         const response = await fetch(ApiUrl, {
+  //           method: 'POST',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //           },
+  //           body: JSON.stringify({
+  //             userId: userId, // Use the retrieved userId
+  //             subCatId: id, // Replace with your subcategory ID
+  //           }),
+  //         });
+  //         const responseData = await response.json();
+  //         setUsers(responseData[0]);
+  //         setIsLoading(false);
+  //       } else {
+  //         console.log('Invalid or missing data in AsyncStorage');
+  //         setIsLoading(false);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching data: ', error);
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-            // Fetch data from the API using the retrieved userId
-            const ApiUrl = `${BASE_URL}${'/report/getAllCampReport'}`;
-            return fetch(ApiUrl, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                userId: userId, // Use the retrieved userId
-                subCatId: id, // Replace with your subcategory ID
-              }),
-            })
-              .then(response => response.json())
-              .then(responseData => {
-                setUsers(responseData[0]);
-                setIsLoading(false);
-              })
-              .catch(error => {
-                console.error('Error fetching data: ', error);
-                setIsLoading(false);
-              });
-          } else {
-            console.log('Invalid or missing data in AsyncStorage');
-            setIsLoading(false);
-          }
-        })
-        .catch(error => {
-          console.error('Error retrieving data: ', error);
-          setIsLoading(false);
+  //   fetchData(); // Call the fetchData function once when the component mounts
+  // }, [id]);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const data = await AsyncStorage.getItem('userdata');
+      if (data) {
+        const userData = JSON.parse(data);
+        const userId = userData.responseData.user_id;
+        console.log('user id', userId);
+        console.log('subcat id', id);
+        // Fetch data from the API using the retrieved userId
+        const ApiUrl = `${BASE_URL}${'/report/getAllCampReport'}`;
+        const response = await fetch(ApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: userId, // Use the retrieved userId
+            subCatId: id, // Replace with your subcategory ID
+          }),
         });
-    };
+        const responseData = await response.json();
+        setUsers(responseData[0]);
+        setIsLoading(false);
+      } else {
+        console.log('Invalid or missing data in AsyncStorage');
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error('Error fetching data: ', error);
+      setIsLoading(false);
+    }
+  };
 
-    // AsyncStorage.getItem('userdata')
-    //   .then((data) => {
-    //     if (data) {
-    //       const userData = JSON.parse(data);
-    //       const userId = userData.responseData.user_id;
-    //       // Call fetchData with the retrieved userId
-    //       console.log("Getting user id:", userId)
-    //       fetchData(userId);
-    //     } else {
-    //       console.log('Invalid or missing data in AsyncStorage');
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error retrieving data:', error);
-    //   });
-
-    const interval = setInterval(fetchData, 500); // Run the fetchData function every 1 second
-
-    return () => clearInterval(interval); // Cleanup the interval on component unmount
+  useEffect(() => {
+    fetchData(); // Call the fetchData function once when the component mounts or when 'id' changes
   }, [id]);
 
   const TableHeader = () => (

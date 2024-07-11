@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
 import useNetworkStatus from '../useNetworkStatus';
 
-
 const UploadCampImages = () => {
   const navigation = useNavigation();
   const route = useRoute();
@@ -37,7 +36,7 @@ const UploadCampImages = () => {
       Alert.alert(
         'No Internet Connection',
         'Please check your internet connection.',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}],
       );
     }
   }, [isConnected]);
@@ -128,7 +127,7 @@ const UploadCampImages = () => {
             type: 'image/jpeg',
           });
         });
-        console.log("form data",formData);
+        console.log('form data', formData);
         // Send a POST request with the FormData
         const response = await fetch(ApiUrl, {
           method: 'POST',
@@ -143,13 +142,18 @@ const UploadCampImages = () => {
           const data = await response.json();
           const endTime = new Date().getTime();
           const timeTaken = endTime - startTime;
-          console.log('Upload Images API Call Time Taken:', timeTaken, 'milliseconds');
+          console.log(
+            'Upload Images API Call Time Taken:',
+            timeTaken,
+            'milliseconds',
+          );
           console.log('Upload successful Response:', data);
 
           Alert.alert('Success', 'Camp Report uploaded successfully', [
             {
               text: 'OK',
-              onPress: () => navigation.navigate('ReportList', {id}),
+              onPress: () =>
+                navigation.navigate('ReportList', {id, loadData: data}),
             },
           ]);
           console.log('Forwarded Crid', id);
